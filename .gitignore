@@ -8,3 +8,6 @@ plots/**
 completions/_rustybam
 completions/rustybam.bash
 **.Rhistory
+logs/**
+results/**
+temp/**

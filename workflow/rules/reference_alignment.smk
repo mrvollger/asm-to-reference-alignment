@@ -33,7 +33,7 @@ rule alignment_index:
     input:
         ref=get_ref,
     output:
-        mmi="reference_alignment/{ref}/{ref}.mmi",
+        mmi="results/{ref}/{ref}.mmi",
     threads: 4
     conda:
         "../envs/env.yml"
@@ -102,8 +102,8 @@ rule compress_sam:
         aln=rules.alignment.output.aln,
         aln2=rules.alignment2.output.aln,
     output:
-        aln="reference_alignment/{ref}/bam/{sm}.bam",
-        index="reference_alignment/{ref}/bam/{sm}.bam.csi",
+        aln="results/{ref}/bam/{sm}.bam",
+        index="results/{ref}/bam/{sm}.bam.csi",
     threads: 1  # dont increase this, it will break things randomly 
     conda:
         "../envs/env.yml"
@@ -119,7 +119,7 @@ rule sam_to_paf:
     input:
         aln=rules.compress_sam.output.aln,
     output:
-        paf="reference_alignment/{ref}/paf/{sm}.paf",
+        paf="results/{ref}/paf/{sm}.paf",
     conda:
         "../envs/env.yml"
     shell:
@@ -131,7 +131,7 @@ rule aln_to_bed:
         #paf=rules.sam_to_paf.output.paf,
         aln=rules.compress_sam.output.aln,
     output:
-        bed="reference_alignment/{ref}/bed/{sm}.bed",
+        bed="results/{ref}/bed/{sm}.bed",
     conda:
         "../envs/env.yml"
     params:
@@ -145,10 +145,10 @@ rule aln_to_bed:
 
 rule bed_to_pdf:
     input:
-        bed="reference_alignment/{ref}/bed/{sm}_1.bed",
-        bed2="reference_alignment/{ref}/bed/{sm}_2.bed",
+        bed="results/{ref}/bed/{sm}_1.bed",
+        bed2="results/{ref}/bed/{sm}_2.bed",
     output:
-        pdf="reference_alignment/{ref}/pdf/ideogram.{sm}.pdf",
+        pdf="results/{ref}/pdf/ideogram.{sm}.pdf",
     threads: 1
     conda:
         "../envs/env.yml"
@@ -167,7 +167,7 @@ rule query_ends:
     input:
         paf=rules.sam_to_paf.output.paf,
     output:
-        bed=temp("reference_alignment/{ref}/ends/tmp.{sm}.bed"),
+        bed=temp("results/{ref}/ends/tmp.{sm}.bed"),
     params:
         smkdir=config["smkdir"],
     conda:
@@ -187,7 +187,7 @@ rule find_contig_ends:
         paf=rules.sam_to_paf.output.paf,
         bed=rules.query_ends.output.bed,
     output:
-        bed="reference_alignment/{ref}/ends/{sm}.bed",
+        bed="results/{ref}/ends/{sm}.bed",
     threads: 1
     conda:
         "../envs/env.yml"
@@ -205,7 +205,7 @@ rule collect_contig_ends:
     input:
         beds=expand(rules.find_contig_ends.output.bed, sm=df.index, ref="{ref}"),
     output:
-        bed="reference_alignment/{ref}/ends/all.ends.bed",
+        bed="results/{ref}/ends/all.ends.bed",
     threads: 1
     conda:
         "../envs/env.yml"
@@ -225,7 +225,7 @@ rule windowed_ends:
         fai=get_fai,
         bed=rules.collect_contig_ends.output.bed,
     output:
-        bed="reference_alignment/{ref}/ends/windowed.all.ends.bed",
+        bed="results/{ref}/ends/windowed.all.ends.bed",
     threads: 1
     conda:
         "../envs/env.yml"
@@ -245,7 +245,7 @@ rule pre_end_content:
         ref=get_ref,
         fai=get_fai,
     output:
-        allbed="reference_alignment/{ref}/ends/all.nuc.content.bed.gz",
+        allbed="results/{ref}/ends/all.nuc.content.bed.gz",
     threads: 1
     conda:
         "../envs/env.yml"
@@ -265,7 +265,7 @@ rule end_content:
         allbed=rules.pre_end_content.output.allbed,
         fai=get_fai,
     output:
-        bed="reference_alignment/{ref}/ends/all.ends.nuc.content.bed.gz",
+        bed="results/{ref}/ends/all.ends.nuc.content.bed.gz",
     threads: 1
     conda:
         "../envs/env.yml"
