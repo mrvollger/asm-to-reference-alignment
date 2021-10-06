@@ -33,7 +33,7 @@ rule alignment_index:
     input:
         ref=get_ref,
     output:
-        mmi="results/{ref}/{ref}.mmi",
+        mmi="temp/{ref}/{ref}.mmi",
     threads: 4
     conda:
         "../envs/env.yml"
