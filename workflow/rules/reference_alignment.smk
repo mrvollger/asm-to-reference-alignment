@@ -134,12 +134,10 @@ rule aln_to_bed:
         bed="results/{ref}/bed/{sm}.bed",
     conda:
         "../envs/env.yml"
-    params:
-        rb=config["rb"],
     threads: 1
     shell:
         """
-        {params.rb} stats --threads {threads} {input.aln} > {output.bed}
+        rb stats --threads {threads} {input.aln} > {output.bed}
         """
 
 
@@ -191,12 +189,10 @@ rule find_contig_ends:
     threads: 1
     conda:
         "../envs/env.yml"
-    params:
-        rb=config["rb"],
     shell:
         """
-        {params.rb} liftover --largest --qbed --bed {input.bed} {input.paf} \
-          | {params.rb} stats --paf --qbed \
+        rb liftover --largest --qbed --bed {input.bed} {input.paf} \
+          | rb stats --paf --qbed \
           > {output.bed}
         """
 
