@@ -1,0 +1,5 @@
+ref:
+  CHM13_V1.1: .test/ref.fasta
+tbl: .test/table.asm.tbl
+aln_threads: 12
+rb: rustybam
