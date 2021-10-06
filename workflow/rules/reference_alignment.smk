@@ -276,16 +276,16 @@ rule end_content:
 
 rule reference_alignment:
     input:
-        expand(rules.collect_contig_ends.output, ref=config.get("ref").keys()),
-        expand(rules.end_content.output, ref=config.get("ref").keys()),
-        expand(rules.windowed_ends.output, ref=config.get("ref").keys()),
-        expand(rules.sam_to_paf.output, sm=df.index, ref=config.get("ref").keys()),
+        #expand(rules.collect_contig_ends.output, ref=config.get("ref").keys()),
+        #expand(rules.end_content.output, ref=config.get("ref").keys()),
+        #expand(rules.windowed_ends.output, ref=config.get("ref").keys()),
+        #expand(rules.find_contig_ends.output, sm=df.index, ref=config.get("ref").keys()),
         #expand(
         #    rules.bed_to_pdf.output,
         #    sm=df["sample"].str.strip(),
         #    ref=config.get("ref").keys(),
         #),
         expand(rules.aln_to_bed.output, sm=df.index, ref=config.get("ref").keys()),
-        expand(rules.find_contig_ends.output, sm=df.index, ref=config.get("ref").keys()),
+        expand(rules.sam_to_paf.output, sm=df.index, ref=config.get("ref").keys()),
     message:
         "Reference alignments complete"
