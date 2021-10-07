@@ -59,6 +59,4 @@ df <- merge(window.df, liftover.df, by = c("original_mapping", "original_source"
     mutate(overlap = overlap_bp(.)) %>%
     data.table()
 
-head(df)
-
 write.table(df, file = snakemake@output$tbl, sep = "\t", row.names = F, quote = F)

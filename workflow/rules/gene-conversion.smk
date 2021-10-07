@@ -51,15 +51,17 @@ rule window_stats:
         paf=rules.window_alignment.output.aln,
         liftover_paf=rules.make_query_windows.output.paf,
     output:
-        tbl="results/{ref}/gene-conversion/{sm}_windows.tbl",
-        liftover_tbl="results/{ref}/gene-conversion/{sm}_liftover_windows.tbl",
+        tbl="results/{ref}/gene-conversion/{sm}_windows.tbl.gz",
+        liftover_tbl="results/{ref}/gene-conversion/{sm}_liftover_windows.tbl.gz",
     conda:
         "../envs/env.yml"
-    threads: config.get("aln_threads", 4)
+    threads: 4
     shell:
         """
-        rb stats --paf {input.paf} > {output.tbl}
-        rb stats --paf {input.liftover_paf} > {output.liftover_tbl}
+        rb stats --paf {input.paf} \
+            | pigz -p 4  > {output.tbl}
+        rb stats --paf {input.liftover_paf} \
+            | pigz -p {threads} > {output.liftover_tbl}
         """
 
 
@@ -71,6 +73,16 @@ rule candidate_gene_conversion:
         tbl="results/{ref}/gene-conversion/{sm}_candidate_windows.tbl",
     conda:
         "../envs/env.yml"
-    threads: config.get("aln_threads", 4)
     script:
         "../scripts/combine-mappings.R"
+
+
+rule gene_conversion:
+    input:
+        expand(
+            rules.candidate_gene_conversion.output,
+            sm=df.index,
+            ref=config.get("ref").keys(),
+        ),
+    message:
+        "Gene conversion run complete"
