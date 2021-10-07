@@ -1,10 +1,32 @@
 include: "reference_alignment.smk"
 
 
+rule gene_conversion_target_regions:
+    input:
+        genome=get_fai,
+        bed=config["bed"],
+    output:
+        bed=temp("temp/{ref}/gene-conversion/target-regions.bed"),
+    threads: 1
+    conda:
+        "../envs/env.yml"
+    params:
+        slop=2 * config.get("window", 10000),
+    shell:
+        """
+        bedtools sort -i {input.bed} \
+            | bedtools merge -i - \
+            | bedtools slop -i - -g {input.genome} -b {params.slop} \
+            | bedtools merge -i - \
+            > {output.bed}
+        """
+
+
 rule make_query_windows:
     input:
+        genome=get_fai,
         paf=rules.sam_to_paf.output.paf,
-        bed=config["bed"],
+        bed=rules.gene_conversion_target_regions.output.bed,
     output:
         paf=temp("temp/{ref}/gene-conversion/{sm}_liftover.paf"),
     threads: 1
@@ -15,9 +37,8 @@ rule make_query_windows:
         slide=config.get("slide", 5000),
     shell:
         """
-        csvtk cut  -tT -f 6,8,9,1,3,4 {input.paf} \
-            | bedtools intersect -u -f 0.1 -a - -b {input.bed} \
-            | cut -f 4,5,6 \
+        rb liftover --bed {input.bed} {input.paf} \
+            | csvtk cut  -tT -f 1,3,4 \
             | bedtools makewindows -s {params.slide} -w {params.window} -b - \
             | rb liftover -q --bed /dev/stdin --largest {input.paf} \
             | grep -v "cg:Z:10000=" \
