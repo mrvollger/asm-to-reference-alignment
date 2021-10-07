@@ -110,9 +110,10 @@ rule compress_sam:
     shell:
         """
         samtools cat {input.aln} {input.aln2} \
-            | samtools sort -m 8G --write-index \
                  -o {output.aln}
         """
+        # for some reason if I sort some cigars are turned into M instead of =/X
+        #| samtools sort -m 8G --write-index \
 
 
 rule sam_to_paf:
