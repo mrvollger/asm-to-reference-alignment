@@ -114,19 +114,73 @@ rule candidate_gene_conversion:
         window=rules.window_stats.output.tbl,
         liftover=rules.window_stats.output.liftover_tbl,
     output:
-        tbl="results/{ref}/gene-conversion/{sm}_candidate_windows.tbl",
+        tbl=temp("temp/{ref}/gene-conversion/{sm}_candidate_windows.tbl"),
     conda:
         "../envs/env.yml"
     script:
         "../scripts/combine-mappings.R"
 
 
+rule large_table:
+    input:
+        tbls=expand(
+            rules.candidate_gene_conversion.output, sm=df.index, allow_missing=True
+        ),
+    output:
+        tbl="results/{ref}/gene-conversion/all_candidate_windows.tbl.gz",
+    conda:
+        "../envs/env.yml"
+    threads: 4
+    shell:
+        """
+        (head -n 1 {input.tbls[0]}; tail -q -n +2 {input.tbls}) \
+            | pigz -p {threads} \
+            > {output.tbl}
+        """
+
+
+rule gene_conversion_windows:
+    input:
+        tbl=rules.large_table.output.tbl,
+    output:
+        tbl="results/{ref}/gene-conversion/gene_conversion_windows.tbl",
+    conda:
+        "../envs/env.yml"
+    script:
+        "../scripts/gene-conversion-windows.R"
+
+
+rule make_big_bed:
+    input:
+        tbl=rules.gene_conversion_windows.output.tbl,
+        fai=get_fai,
+    output:
+        bb="results/{ref}/gene-conversion/all_candidate_windows.bb",
+        bg="results/{ref}/gene-conversion/all_candidate_windows.bg",
+        bw="results/{ref}/gene-conversion/all_candidate_windows.bw",
+        bed=temp("temp/{ref}/gene-conversion/all_candidate_windows.bed"),
+    conda:
+        "../envs/env.yml"
+    params:
+        fmt=workflow.source_path("../scripts/bed.as"),
+    threads: 4
+    shell:
+        """
+        grep -v "reference_name" {input.tbl} \
+            | bedtools sort -i - -g {input.fai} > {output.bed}
+
+        bedToBigBed -as={params.fmt} -type=bed3+7 \
+            {output.bed} {input.fai} {output.bb} 
+
+        bedtools genomecov -i {output.bed} -g {input.fai} -bg > {output.bg}
+        bedGraphToBigWig {output.bg} {input.fai} {output.bw}
+        """
+
+
 rule gene_conversion:
     input:
-        expand(
-            rules.candidate_gene_conversion.output,
-            sm=df.index,
-            ref=config.get("ref").keys(),
-        ),
+        expand(rules.large_table.output.tbl, ref=config.get("ref").keys()),
+        expand(rules.gene_conversion_windows.output.tbl, ref=config.get("ref").keys()),
+        expand(rules.make_big_bed.output, ref=config.get("ref").keys()),
     message:
         "Gene conversion run complete"
