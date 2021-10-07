@@ -103,7 +103,6 @@ rule compress_sam:
         aln2=rules.alignment2.output.aln,
     output:
         aln="results/{ref}/bam/{sm}.bam",
-        index="results/{ref}/bam/{sm}.bam.csi",
     threads: 1  # dont increase this, it will break things randomly 
     conda:
         "../envs/env.yml"
