@@ -21,10 +21,26 @@ rule make_query_windows:
         """
 
 
+rule unzip_ref:
+    input:
+        query=get_asm,
+    output:
+        temp("temp/{ref}/gene-conversion/ref/{sm}_ref.fasta"),
+    benchmark:
+        "logs/{ref}/gene-conversion/alignment.{ref}_{sm}.benchmark.txt"
+    conda:
+        "../envs/env.yml"
+    threads: config.get("aln_threads", 4)
+    shell:
+        """
+        zcat -f -- {input.query} > {output}
+        """
+
+
 rule window_alignment:
     input:
         ref=get_ref,
-        query=get_asm,
+        query=rules.unzip_ref.output,
         paf=rules.make_query_windows.output.paf,
     output:
         aln=temp("temp/{ref}/gene-conversion/{sm}_windows.paf"),
@@ -40,7 +56,7 @@ rule window_alignment:
             --secondary=no --eqx \
             {input.ref} \
                 <( bedtools getfasta -name \
-                    -fi <(zcat -f -- {input.query}) \
+                    -fi {input.query} \
                     -bed <(awk -v OFS=$'\t' '{{name=$1":"$3"-"$4}}{{print $6,$8,$9,name}}' {input.paf}) \
                 ) \
             > {output.aln}
