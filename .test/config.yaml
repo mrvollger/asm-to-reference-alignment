@@ -3,3 +3,4 @@ ref:
 tbl: .test/table.asm.tbl
 aln_threads: 12
 rb: rustybam
+bed: .test/test.bed

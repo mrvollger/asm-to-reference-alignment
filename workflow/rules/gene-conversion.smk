@@ -4,6 +4,7 @@ include: "reference_alignment.smk"
 rule make_query_windows:
     input:
         paf=rules.sam_to_paf.output.paf,
+        bed=config["bed"],
     output:
         paf=temp("temp/{ref}/gene-conversion/{sm}_liftover.paf"),
     threads: 1
@@ -14,9 +15,12 @@ rule make_query_windows:
         slide=config.get("slide", 5000),
     shell:
         """
-        cut -f 1,3,4 {input.paf} \
+        csvtk cut  -tT -f 6,8,9,1,3,4 {input.paf} \
+            | bedtools intersect -u -a - -b {input.bed} \
+            | cut -f 4,5,6 \
             | bedtools makewindows -s {params.slide} -w {params.window} -b - \
             | rb liftover -q --bed /dev/stdin --largest {input.paf} \
+            | grep -v "cg:Z:10000=" \
             > {output.paf}
         """
 
@@ -53,7 +57,7 @@ rule window_alignment:
     threads: config.get("aln_threads", 4)
     shell:
         """
-        minimap2 -K 8G -t {threads} \
+        minimap2 -K 1G -t {threads} \
             -cx asm20 \
             --secondary=no --eqx \
             {input.ref} \
