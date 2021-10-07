@@ -40,7 +40,8 @@ rule unzip_ref:
 
 rule window_alignment:
     input:
-        ref=get_ref,
+        #ref=get_ref,
+        ref=rules.alignment_index.output.mmi,
         query=rules.unzip_ref.output,
         paf=rules.make_query_windows.output.paf,
     output:
