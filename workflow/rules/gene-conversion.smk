@@ -33,7 +33,8 @@ rule unzip_ref:
     threads: config.get("aln_threads", 4)
     shell:
         """
-        zcat -f -- {input.query} > {output}
+        seqtk seq -A -l 60 {input.query} > {output}
+        samtools index {output}
         """
 
 
