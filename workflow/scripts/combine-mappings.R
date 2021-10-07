@@ -1,6 +1,8 @@
 source("workflow/scripts/plotutils.R")
-windowf <- "temp/CHM13_V1.1/gene-conversion/HG002_1_windows.paf"
-liftoverf <- "results/CHM13_V1.1/gene-conversion/HG002_1_liftover_windows.tbl"
+windowf <- "results/CHM13_V1.1/gene-conversion/HG002_1_windows.tbl.gz"
+liftoverf <- "results/CHM13_V1.1/gene-conversion/HG002_1_liftover_windows.tbl.gz"
+liftoverf <- "/Users/mrvollger/Desktop/EichlerVolumes/assembly_breaks/nobackups/asm-to-reference-alignment/results/CHM13_V1.1/gene-conversion/HG002_1_liftover_windows.tbl.gz"
+windowf <- "/Users/mrvollger/Desktop/EichlerVolumes/assembly_breaks/nobackups/asm-to-reference-alignment/results/CHM13_V1.1/gene-conversion/HG002_1_windows.tbl.gz"
 windowf <- snakemake@input$window
 liftoverf <- snakemake@input$liftover
 print(windowf)

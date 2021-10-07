@@ -82,7 +82,7 @@ rule window_alignment:
             -cx asm20 \
             --secondary=no --eqx \
             {input.ref} \
-                <( bedtools getfasta -name \
+                <( bedtools getfasta -name+ \
                     -fi {input.query} \
                     -bed <(awk -v OFS=$'\t' '{{name=$1":"$3"-"$4}}{{print $6,$8,$9,name}}' {input.paf}) \
                 ) \
