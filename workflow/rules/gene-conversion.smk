@@ -16,7 +16,7 @@ rule make_query_windows:
     shell:
         """
         csvtk cut  -tT -f 6,8,9,1,3,4 {input.paf} \
-            | bedtools intersect -u -f 0.2 -a - -b {input.bed} \
+            | bedtools intersect -u -f 0.1 -a - -b {input.bed} \
             | cut -f 4,5,6 \
             | bedtools makewindows -s {params.slide} -w {params.window} -b - \
             | rb liftover -q --bed /dev/stdin --largest {input.paf} \
