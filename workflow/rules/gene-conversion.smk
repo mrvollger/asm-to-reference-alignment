@@ -11,7 +11,7 @@ rule make_query_windows:
         "../envs/env.yml"
     params:
         window=config.get("window", 10000),
-        slide=config.get("slide", 1000),
+        slide=config.get("slide", 5000),
     shell:
         """
         cut -f 1,3,4 {input.paf} \
