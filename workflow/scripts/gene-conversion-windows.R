@@ -79,7 +79,9 @@ ndf$targetName <- "."
 ndf$targetStrand <- "."
 
 # fix the columns when interchromosomal
-inter <- sdf$reference_name != sdf$reference_name.liftover
+inter <- as.character(sdf$reference_name) != as.character(sdf$reference_name.liftover)
+sum(inter)
+
 # TODO fix this so inters can be shown
 if (F) {
     ndf[inter]$`#chrom` <- sdf[inter]$reference_name.liftover
