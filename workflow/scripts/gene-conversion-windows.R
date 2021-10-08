@@ -31,20 +31,26 @@ gc.df$name <- paste(
 )
 gc.df$strand <- "."
 gc.df$color <- "0,127,211"
+gc.df$score <- 0
+gc.df$thickStart <- gc.df$reference_start.liftover
+gc.df$thickEnd <- gc.df$reference_end.liftover
 
 odf <- gc.df[, c(
     "reference_name.liftover",
     "reference_start.liftover",
     "reference_end.liftover",
     "name",
-    "perID_by_all.liftover",
+    "score",
     "strand",
-    "mismatches.liftover",
-    "mismatches",
+    "thickStart",
+    "thickEnd",
     "color",
     "reference_name",
     "reference_start",
     "reference_end",
+    "mismatches.liftover",
+    "mismatches",
+    "perID_by_all.liftover",
     "perID_by_all"
 )]
 odf2 <- data.table(copy(odf))
