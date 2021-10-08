@@ -7,7 +7,7 @@ df <- fread(f, nThread = 8, sep = "\t") %>% data.table()
 gc.df <- df[
     (overlap == 0 &
         perID_by_all - perID_by_all.liftover > 0.1 &
-        mismatches.liftover - mismatches > 1 &
+        mismatches.liftover - mismatches > 24 &
         matches + mismatches > 9000 &
         matches.liftover + mismatches.liftover > 9000),
 ]
@@ -21,11 +21,19 @@ if (F) {
 }
 
 gc.df$reference_name <- gc.df$`#reference_name`
-
+gc.df$name <- paste(
+    gc.df$mismatches.liftover - gc.df$mismatches,
+    ";",
+    gc.df$reference_name,
+    ":",
+    gc.df$reference_start,
+    sep = ""
+)
 odf <- gc.df[, c(
     "reference_name.liftover",
     "reference_start.liftover",
     "reference_end.liftover",
+    "name",
     "perID_by_all.liftover",
     "mismatches.liftover",
     "reference_name",

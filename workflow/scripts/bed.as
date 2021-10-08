@@ -4,6 +4,7 @@ table gene_conversion
 string  chrom;		"Chromosome for original alignment"
 uint    chromStart;	"Start position of original alignment"
 uint    chromEnd;	"End position of original alignment"
+string  name;		"Name with mismatch difference"
 float    perID_by_all;		"Percent identity of alignment at original alignment location"
 uint    mismatches;		"mismatches at original alignment"
 string  donorChrom;		"Chromosome for donor alignment"
