@@ -100,10 +100,12 @@ if (T) {
     ndf[inter]$sourceStart <- sdf[inter]$reference_start
     ndf[inter]$sourceEnd <- sdf[inter]$reference_end
 
-    print("inter: setting target")
+    print("inter: setting target name")
     ndf[inter]$targetChrom <- sdf[inter]$reference_name.liftover
-    ndf[inter]$targetStart <- sdf[inter]$chromStart
-    ndf[inter]$targetEnd <- sdf[inter]$chromEnd
+    print("inter: setting target start")
+    ndf[inter]$targetStart <- sdf[inter]$reference_start.liftover
+    print("inter: setting target end")
+    ndf[inter]$targetEnd <- sdf[inter]$reference_end.liftover
 } else {
     ndf <- ndf[!inter]
 }
