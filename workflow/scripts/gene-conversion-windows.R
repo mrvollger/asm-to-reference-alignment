@@ -109,8 +109,8 @@ if (T) {
 } else {
     ndf <- ndf[!inter]
 }
-print(names(ndf))
-print(names)
+print(head(ndf))
+print(dim(ndf))
 write.table(ndf,
     file = snakemake@output$interact,
     sep = "\t", row.names = F, quote = F
