@@ -30,7 +30,7 @@ gc.df$name <- paste(
     sep = ""
 )
 gc.df$strand <- "."
-gc.df$color <- "#007fd3"
+gc.df$color <- "0,127,211"
 
 odf <- gc.df[, c(
     "reference_name.liftover",
@@ -48,7 +48,7 @@ odf <- gc.df[, c(
     "perID_by_all"
 )]
 odf2 <- data.table(copy(odf))
-odf2$color <- "#d39000"
+odf2$color <- "211,144,0"
 lift_names <- c(
     "reference_name.liftover",
     "reference_start.liftover",
