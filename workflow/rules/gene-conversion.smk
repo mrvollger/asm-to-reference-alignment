@@ -171,7 +171,9 @@ rule make_big_bed:
     shell:
         """
         # make interactions
-        bedtools sort -i {input.interact} > {output.bed}
+        bedtools sort -i {input.interact} \
+            | awk '$3-$2 < 30e6' \
+            > {output.bed}
         bedToBigBed -as={params.interact} \
             -type=bed5+13 {output.bed} {input.fai} {output.interact}
 
