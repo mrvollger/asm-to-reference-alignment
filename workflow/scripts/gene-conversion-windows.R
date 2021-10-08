@@ -79,19 +79,22 @@ odf$targetStrand <- "."
 
 # fix the columns when interchromosomal
 inter <- sdf$reference_name != sdf$reference_name.liftover
+# TODO fix this so inters can be shown
+if (F) {
+    odf[inter]$`#chrom` <- sdf[inter]$reference_name.liftover
+    odf[inter]$chromStart <- sdf[inter]$reference_start.liftover
+    odf[inter]$chromEnd <- sdf[inter]$reference_end.liftover
 
-odf[inter]$`#chrom` <- sdf[inter]$reference_name.liftover
-odf[inter]$chromStart <- sdf[inter]$reference_start.liftover
-odf[inter]$chromEnd <- sdf[inter]$reference_end.liftover
+    odf[inter]$sourceChrom <- sdf[inter]$reference_name
+    odf[inter]$sourceStart <- sdf[inter]$reference_start
+    odf[inter]$sourceEnd <- sdf[inter]$reference_end
 
-odf[inter]$sourceChrom <- sdf[inter]$reference_name
-odf[inter]$sourceStart <- sdf[inter]$reference_start
-odf[inter]$sourceEnd <- sdf[inter]$reference_end
-
-odf[inter]$targetChrom <- sdf[inter]$`#chrom`
-odf[inter]$targetStart <- sdf[inter]$chromStart
-odf[inter]$targetEnd <- sdf[inter]$chromEnd
-
+    odf[inter]$targetChrom <- sdf[inter]$`#chrom`
+    odf[inter]$targetStart <- sdf[inter]$chromStart
+    odf[inter]$targetEnd <- sdf[inter]$chromEnd
+} else {
+    odf[!inter]
+}
 write.table(odf[, ..names],
     file = snakemake@output$interact,
     sep = "\t", row.names = F, quote = F
