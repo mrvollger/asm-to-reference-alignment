@@ -49,51 +49,52 @@ names <- c(
     "targetChrom", "targetStart", "targetEnd", "targetName", "targetStrand"
 )
 sdf <- copy(odf)
+ndf <- data.table()
 
-odf$`#chrom` <- sdf$reference_name.liftover
-odf$chromStart <- sdf$reference_start.liftover
-odf[chromStart > reference_start]$chromStart <-
-    sdf[reference_start.liftover > reference_start]$reference_start
+ndf$`#chrom` <- sdf$reference_name.liftover
+ndf$chromStart <- sdf$reference_start.liftover
+ndf[sdf$reference_start.liftover > sdf$reference_start]$chromStart <-
+    copy(sdf[sdf$reference_start.liftover > sdf$reference_start]$reference_start)
 
-odf$chromEnd <- sdf$reference_end.liftover
-odf[chromEnd < reference_end]$chromEnd <-
-    sdf[reference_end.liftover < reference_end]$reference_end
+ndf$chromEnd <- sdf$reference_end.liftover
+ndf[sdf$reference_end.liftover < sdf$reference_end]$chromEnd <-
+    copy(sdf[sdf$reference_end.liftover < sdf$reference_end]$reference_end)
 
-odf$name <- "."
-odf$score <- sdf$mismatches.liftover - sdf$mismatches
-odf$value <- sdf$mismatches.liftover / sdf$mismatches
-odf$exp <- "."
-odf$color <- 0
+ndf$name <- "."
+ndf$score <- sdf$mismatches.liftover - sdf$mismatches
+ndf$value <- sdf$mismatches.liftover / sdf$mismatches
+ndf$exp <- "."
+ndf$color <- 0
 
-odf$sourceChrom <- sdf$reference_name.liftover
-odf$sourceStart <- sdf$reference_start.liftover
-odf$sourceEnd <- sdf$reference_end.liftover
-odf$sourceName <- "."
-odf$sourceStrand <- "."
+ndf$sourceChrom <- sdf$reference_name.liftover
+ndf$sourceStart <- sdf$reference_start.liftover
+ndf$sourceEnd <- sdf$reference_end.liftover
+ndf$sourceName <- "."
+ndf$sourceStrand <- "."
 
-odf$targetChrom <- sdf$reference_name
-odf$targetStart <- sdf$reference_start
-odf$targetEnd <- sdf$reference_end
-odf$targetName <- "."
-odf$targetStrand <- "."
+ndf$targetChrom <- sdf$reference_name
+ndf$targetStart <- sdf$reference_start
+ndf$targetEnd <- sdf$reference_end
+ndf$targetName <- "."
+ndf$targetStrand <- "."
 
 # fix the columns when interchromosomal
 inter <- sdf$reference_name != sdf$reference_name.liftover
 # TODO fix this so inters can be shown
 if (F) {
-    odf[inter]$`#chrom` <- sdf[inter]$reference_name.liftover
-    odf[inter]$chromStart <- sdf[inter]$reference_start.liftover
-    odf[inter]$chromEnd <- sdf[inter]$reference_end.liftover
+    ndf[inter]$`#chrom` <- sdf[inter]$reference_name.liftover
+    ndf[inter]$chromStart <- sdf[inter]$reference_start.liftover
+    ndf[inter]$chromEnd <- sdf[inter]$reference_end.liftover
 
-    odf[inter]$sourceChrom <- sdf[inter]$reference_name
-    odf[inter]$sourceStart <- sdf[inter]$reference_start
-    odf[inter]$sourceEnd <- sdf[inter]$reference_end
+    ndf[inter]$sourceChrom <- sdf[inter]$reference_name
+    ndf[inter]$sourceStart <- sdf[inter]$reference_start
+    ndf[inter]$sourceEnd <- sdf[inter]$reference_end
 
-    odf[inter]$targetChrom <- sdf[inter]$`#chrom`
-    odf[inter]$targetStart <- sdf[inter]$chromStart
-    odf[inter]$targetEnd <- sdf[inter]$chromEnd
+    ndf[inter]$targetChrom <- sdf[inter]$`#chrom`
+    ndf[inter]$targetStart <- sdf[inter]$chromStart
+    ndf[inter]$targetEnd <- sdf[inter]$chromEnd
 } else {
-    odf[!inter]
+    ndf <- ndf[!inter]
 }
 write.table(odf[, ..names],
     file = snakemake@output$interact,
