@@ -167,7 +167,7 @@ rule make_big_bed:
     shell:
         """
         grep -v "reference_name" {input.tbl} \
-            | bedtools sort -i - -g {input.fai} > {output.bed}
+            | bedtools sort -i - > {output.bed}
 
         bedToBigBed -as={params.fmt} -type=bed3+7 \
             {output.bed} {input.fai} {output.bb} 
