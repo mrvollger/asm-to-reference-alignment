@@ -51,11 +51,11 @@ names <- c(
 odf$`#chrom` <- odf$reference_name.liftover
 odf$chromStart <- odf$reference_start.liftover
 odf[chromStart > reference_start]$chromStart <-
-    odf[chromStart > reference_start]$reference_start
+    odf[reference_start.liftover > reference_start]$reference_start
 
 odf$chromEnd <- odf$reference_end.liftover
 odf[chromEnd < reference_end]$chromEnd <-
-    odf[chromEnd < reference_end]$reference_end
+    odf[reference_end.liftover < reference_end]$reference_end
 
 odf$name <- "."
 odf$score <- odf$mismatches.liftover - odf$mismatches
