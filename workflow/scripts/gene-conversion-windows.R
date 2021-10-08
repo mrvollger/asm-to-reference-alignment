@@ -86,8 +86,7 @@ ndf$targetStrand <- "."
 inter <- as.character(sdf$reference_name) != as.character(sdf$reference_name.liftover)
 sum(inter)
 
-# TODO fix this so inters can be shown
-if (F) {
+if (T) {
     ndf[inter]$`#chrom` <- sdf[inter]$reference_name.liftover
     ndf[inter]$chromStart <- sdf[inter]$reference_start.liftover
     ndf[inter]$chromEnd <- sdf[inter]$reference_end.liftover
