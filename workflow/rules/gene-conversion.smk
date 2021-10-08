@@ -144,6 +144,7 @@ rule gene_conversion_windows:
         tbl=rules.large_table.output.tbl,
     output:
         tbl="results/{ref}/gene-conversion/gene_conversion_windows.tbl",
+        interact="results/{ref}/gene-conversion/gene_conversion_interactions.bed",
     conda:
         "../envs/env.yml"
     script:
@@ -153,8 +154,10 @@ rule gene_conversion_windows:
 rule make_big_bed:
     input:
         tbl=rules.gene_conversion_windows.output.tbl,
+        interact=rules.gene_conversion_windows.output.interact,
         fai=get_fai,
     output:
+        interact="results/{ref}/gene-conversion/all_candidate_interactions.bb",
         bb="results/{ref}/gene-conversion/all_candidate_windows.bb",
         bg="results/{ref}/gene-conversion/all_candidate_windows.bg",
         bw="results/{ref}/gene-conversion/all_candidate_windows.bw",
@@ -163,9 +166,16 @@ rule make_big_bed:
         "../envs/env.yml"
     params:
         fmt=workflow.source_path("../scripts/bed.as"),
+        interact=workflow.source_path("../scripts/interact.as"),
     threads: 4
     shell:
         """
+        # make interactions
+        bedtools sort -i {input.interact} > {output.bed}
+        bedToBigBed -as={params.interact} \
+            -type=bed5+13 {output.bed} {input.fai} {output.interact}
+
+        # make others
         grep -v "reference_name" {input.tbl} \
             | bedtools sort -i - > {output.bed}
 

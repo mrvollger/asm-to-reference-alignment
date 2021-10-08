@@ -32,8 +32,64 @@ odf <- gc.df[, c(
     "perID_by_all",
     "mismatches"
 )]
-
 write.table(odf,
     file = snakemake@output$tbl,
+    sep = "\t", row.names = F, quote = F
+)
+
+# make the interaction file
+names <- c(
+    "#chrom", "chromStart", "chromEnd",
+    "name",
+    "score",
+    "value",
+    "exp",
+    "color",
+    "sourceChrom", "sourceStart", "sourceEnd", "sourceName", "sourceStrand",
+    "targetChrom", "targetStart", "targetEnd", "targetName", "targetStrand"
+)
+odf$`#chrom` <- odf$reference_name.liftover
+odf$chromStart <- odf$reference_start.liftover
+odf[chromStart > reference_start]$chromStart <-
+    odf[chromStart > reference_start]$reference_start
+
+odf$chromEnd <- odf$reference_end.liftover
+odf[chromEnd < reference_end]$chromEnd <-
+    odf[chromEnd < reference_end]$reference_end
+
+odf$name <- "."
+odf$score <- odf$mismatches.liftover - odf$mismatches
+odf$value <- odf$mismatches.liftover / odf$mismatches
+odf$exp <- "."
+odf$color <- 0
+
+odf$sourceChrom <- odf$reference_name.liftover
+odf$sourceStart <- odf$reference_start.liftover
+odf$sourceEnd <- odf$reference_end.liftover
+odf$sourceName <- "."
+odf$sourceStrand <- "."
+
+odf$targetChrom <- odf$reference_name
+odf$targetStart <- odf$reference_start
+odf$targetEnd <- odf$reference_end
+odf$targetName <- "."
+odf$targetStrand <- "."
+
+# fix the columns when interchromosomal
+inter <- odf$reference_name != odf$reference_name.liftover
+
+odf[inter]$chromStart <- odf[inter]$reference_start.liftover
+odf[inter]$chromEnd <- odf[inter]$reference_end.liftover
+
+odf[inter]$sourceChrom <- odf[inter]$reference_name
+odf[inter]$sourceStart <- odf[inter]$reference_start
+odf[inter]$sourceEnd <- odf[inter]$reference_end
+
+odf[inter]$targetChrom <- odf[inter]$`#chrom`
+odf[inter]$targetStart <- odf[inter]$chromStart
+odf[inter]$targetEnd <- odf[inter]$chromEnd
+
+write.table(odf[, ..names],
+    file = snakemake@output$interact,
     sep = "\t", row.names = F, quote = F
 )
