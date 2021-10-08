@@ -29,24 +29,46 @@ gc.df$name <- paste(
     gc.df$reference_start,
     sep = ""
 )
+gc.df$strand <- "."
+gc.df$color <- "#007fd3"
+
 odf <- gc.df[, c(
     "reference_name.liftover",
     "reference_start.liftover",
     "reference_end.liftover",
     "name",
     "perID_by_all.liftover",
+    "strand",
     "mismatches.liftover",
+    "mismatches",
+    "color",
     "reference_name",
     "reference_start",
     "reference_end",
-    "perID_by_all",
-    "mismatches"
+    "perID_by_all"
 )]
+odf2 <- data.table(copy(odf))
+odf2$color <- "#d39000"
+lift_names <- c(
+    "reference_name.liftover",
+    "reference_start.liftover",
+    "reference_end.liftover"
+)
+dono_names <- c(
+    "reference_name",
+    "reference_start",
+    "reference_end"
+)
+for (i in 1:length(lift_names)) {
+    odf2[, eval(lift_names[i])] <- odf[, eval(dono_names[i])]
+}
+for (i in 1:length(lift_names)) {
+    odf2[, eval(dono_names[i])] <- odf[, eval(lift_names[i])]
+}
 
-print(sum(as.character(odf$reference_name) != as.character(odf$reference_name.liftover)))
 
 fwrite(
-    odf,
+    rbind(odf, odf2),
     file = snakemake@output$tbl,
     sep = "\t",
     row.names = F,
