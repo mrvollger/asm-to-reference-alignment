@@ -78,6 +78,7 @@ odf$targetStrand <- "."
 # fix the columns when interchromosomal
 inter <- odf$reference_name != odf$reference_name.liftover
 
+odf[inter]$`#chrom` <- odf[inter]$reference_name.liftover
 odf[inter]$chromStart <- odf[inter]$reference_start.liftover
 odf[inter]$chromEnd <- odf[inter]$reference_end.liftover
 
