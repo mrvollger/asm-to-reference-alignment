@@ -107,7 +107,9 @@ if (T) {
 } else {
     ndf <- ndf[!inter]
 }
-write.table(ndf[, ..names],
+print(names(ndf))
+print(names)
+write.table(ndf,
     file = snakemake@output$interact,
     sep = "\t", row.names = F, quote = F
 )
