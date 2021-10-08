@@ -37,9 +37,12 @@ odf <- gc.df[, c(
 
 print(sum(as.character(odf$reference_name) != as.character(odf$reference_name.liftover)))
 
-write.table(odf,
+fwrite(
+    odf,
     file = snakemake@output$tbl,
-    sep = "\t", row.names = F, quote = F
+    sep = "\t",
+    row.names = F,
+    quote = F
 )
 # make the interaction file
 names <- c(
@@ -111,7 +114,11 @@ if (T) {
 }
 print(head(ndf))
 print(dim(ndf))
-write.table(ndf,
+fwrite(
+    ndf,
     file = snakemake@output$interact,
-    sep = "\t", row.names = F, quote = F
+    sep = "\t",
+    row.names = F,
+    quote = F
 )
+print("written")
