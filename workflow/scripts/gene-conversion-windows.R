@@ -7,7 +7,7 @@ df <- fread(f, nThread = 8, sep = "\t") %>% data.table()
 gc.df <- df[
     (overlap == 0 &
         perID_by_all - perID_by_all.liftover > 0.1 &
-        mismatches.liftover - mismatches > 24 &
+        mismatches.liftover - mismatches > 4 &
         matches + mismatches > 9000 &
         matches.liftover + mismatches.liftover > 9000),
 ]
