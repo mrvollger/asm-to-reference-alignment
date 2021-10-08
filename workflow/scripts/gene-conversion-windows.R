@@ -20,13 +20,15 @@ if (F) {
         theme_cowplot()
 }
 
+gc.df$reference_name <- gc.df$`#reference_name`
+
 odf <- gc.df[, c(
     "reference_name.liftover",
     "reference_start.liftover",
     "reference_end.liftover",
     "perID_by_all.liftover",
     "mismatches.liftover",
-    "#reference_name",
+    "reference_name",
     "reference_start",
     "reference_end",
     "perID_by_all",
@@ -39,7 +41,6 @@ write.table(odf,
     file = snakemake@output$tbl,
     sep = "\t", row.names = F, quote = F
 )
-
 # make the interaction file
 names <- c(
     "#chrom", "chromStart", "chromEnd",
@@ -54,17 +55,17 @@ names <- c(
 sdf <- copy(odf)
 ndf <- data.table()
 
-ndf$`#chrom` <- sdf$reference_name.liftover
-ndf$chromStart <- sdf$reference_start.liftover
-ndf[sdf$reference_start.liftover > sdf$reference_start]$chromStart <-
-    copy(sdf[sdf$reference_start.liftover > sdf$reference_start]$reference_start)
+ndf$`#chrom` <- sdf$`reference_name.liftover`
+ndf$chromStart <- sdf$`reference_start.liftover`
+ndf[sdf$`reference_start.liftover` > sdf$reference_start]$chromStart <-
+    copy(sdf[sdf$`reference_start.liftover` > sdf$reference_start]$reference_start)
 
-ndf$chromEnd <- sdf$reference_end.liftover
-ndf[sdf$reference_end.liftover < sdf$reference_end]$chromEnd <-
-    copy(sdf[sdf$reference_end.liftover < sdf$reference_end]$reference_end)
+ndf$chromEnd <- sdf$`reference_end.liftover`
+ndf[sdf$`reference_end.liftover` < sdf$reference_end]$chromEnd <-
+    copy(sdf[sdf$`reference_end.liftover` < sdf$reference_end]$reference_end)
 
 ndf$name <- "."
-ndf$score <- sdf$mismatches.liftover - sdf$mismatches
+ndf$score <- sdf$`mismatches.liftover` - sdf$mismatches
 ndf$value <- sdf$mismatches.liftover / sdf$mismatches
 ndf$exp <- "."
 ndf$color <- 0
