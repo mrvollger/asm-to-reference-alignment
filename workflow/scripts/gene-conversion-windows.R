@@ -53,25 +53,20 @@ odf <- gc.df[, c(
     "perID_by_all.liftover",
     "perID_by_all"
 )]
+
 odf2 <- data.table(copy(odf))
 odf2$color <- "211,144,0"
-lift_names <- c(
-    "reference_name.liftover",
-    "reference_start.liftover",
-    "reference_end.liftover"
-)
-dono_names <- c(
-    "reference_name",
-    "reference_start",
-    "reference_end"
-)
-for (i in 1:length(lift_names)) {
-    odf2[, eval(lift_names[i])] <- odf[, eval(dono_names[i])]
-}
-for (i in 1:length(lift_names)) {
-    odf2[, eval(dono_names[i])] <- odf[, eval(lift_names[i])]
-}
 
+odf2$reference_name.liftover <- odf$reference_name
+odf2$reference_start.liftover <- odf$reference_start
+odf2$reference_end.liftover <- odf$reference_end
+
+odf2$reference_name <- odf$reference_name.liftover
+odf2$reference_start <- odf$reference_start.liftover
+odf2$reference_end <- odf$reference_end.liftover
+
+odf2$thickStart <- odf2$reference_start.liftover
+odf2$thickEnd <- odf2$reference_end.liftover
 
 fwrite(
     rbind(odf, odf2),
