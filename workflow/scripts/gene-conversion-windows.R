@@ -65,7 +65,7 @@ ndf[sdf$`reference_end.liftover` < sdf$reference_end]$chromEnd <-
     copy(sdf[sdf$`reference_end.liftover` < sdf$reference_end]$reference_end)
 
 ndf$name <- "."
-ndf$score <- sdf$`mismatches.liftover` - sdf$mismatches
+ndf$score <- 0 # sdf$`mismatches.liftover` - sdf$mismatches
 ndf$value <- sdf$mismatches.liftover / sdf$mismatches
 ndf$exp <- "."
 ndf$color <- 0
@@ -88,16 +88,20 @@ sum(inter)
 dim(odf)
 dim(sdf)
 dim(ndf)
-if (F) {
+print(head(ndf))
+if (T) {
+    print("inter: setting 1-3")
     ndf[inter]$`#chrom` <- sdf[inter]$reference_name.liftover
     ndf[inter]$chromStart <- sdf[inter]$reference_start.liftover
     ndf[inter]$chromEnd <- sdf[inter]$reference_end.liftover
 
+    print("inter: setting source")
     ndf[inter]$sourceChrom <- sdf[inter]$reference_name
     ndf[inter]$sourceStart <- sdf[inter]$reference_start
     ndf[inter]$sourceEnd <- sdf[inter]$reference_end
 
-    ndf[inter]$targetChrom <- sdf[inter]$`#chrom`
+    print("inter: setting target")
+    ndf[inter]$targetChrom <- sdf[inter]$reference_name.liftover
     ndf[inter]$targetStart <- sdf[inter]$chromStart
     ndf[inter]$targetEnd <- sdf[inter]$chromEnd
 } else {
