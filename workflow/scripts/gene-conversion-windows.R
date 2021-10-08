@@ -32,6 +32,9 @@ odf <- gc.df[, c(
     "perID_by_all",
     "mismatches"
 )]
+
+print(as.character(sdf$reference_name) != as.character(sdf$reference_name.liftover))
+
 write.table(odf,
     file = snakemake@output$tbl,
     sep = "\t", row.names = F, quote = F
