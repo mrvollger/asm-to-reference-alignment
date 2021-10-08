@@ -48,47 +48,49 @@ names <- c(
     "sourceChrom", "sourceStart", "sourceEnd", "sourceName", "sourceStrand",
     "targetChrom", "targetStart", "targetEnd", "targetName", "targetStrand"
 )
-odf$`#chrom` <- odf$reference_name.liftover
-odf$chromStart <- odf$reference_start.liftover
-odf[chromStart > reference_start]$chromStart <-
-    odf[reference_start.liftover > reference_start]$reference_start
+sdf <- copy(odf)
 
-odf$chromEnd <- odf$reference_end.liftover
+odf$`#chrom` <- sdf$reference_name.liftover
+odf$chromStart <- sdf$reference_start.liftover
+odf[chromStart > reference_start]$chromStart <-
+    sdf[reference_start.liftover > reference_start]$reference_start
+
+odf$chromEnd <- sdf$reference_end.liftover
 odf[chromEnd < reference_end]$chromEnd <-
-    odf[reference_end.liftover < reference_end]$reference_end
+    sdf[reference_end.liftover < reference_end]$reference_end
 
 odf$name <- "."
-odf$score <- odf$mismatches.liftover - odf$mismatches
-odf$value <- odf$mismatches.liftover / odf$mismatches
+odf$score <- sdf$mismatches.liftover - sdf$mismatches
+odf$value <- sdf$mismatches.liftover / sdf$mismatches
 odf$exp <- "."
 odf$color <- 0
 
-odf$sourceChrom <- odf$reference_name.liftover
-odf$sourceStart <- odf$reference_start.liftover
-odf$sourceEnd <- odf$reference_end.liftover
+odf$sourceChrom <- sdf$reference_name.liftover
+odf$sourceStart <- sdf$reference_start.liftover
+odf$sourceEnd <- sdf$reference_end.liftover
 odf$sourceName <- "."
 odf$sourceStrand <- "."
 
-odf$targetChrom <- odf$reference_name
-odf$targetStart <- odf$reference_start
-odf$targetEnd <- odf$reference_end
+odf$targetChrom <- sdf$reference_name
+odf$targetStart <- sdf$reference_start
+odf$targetEnd <- sdf$reference_end
 odf$targetName <- "."
 odf$targetStrand <- "."
 
 # fix the columns when interchromosomal
-inter <- odf$reference_name != odf$reference_name.liftover
+inter <- sdf$reference_name != sdf$reference_name.liftover
 
-odf[inter]$`#chrom` <- odf[inter]$reference_name.liftover
-odf[inter]$chromStart <- odf[inter]$reference_start.liftover
-odf[inter]$chromEnd <- odf[inter]$reference_end.liftover
+odf[inter]$`#chrom` <- sdf[inter]$reference_name.liftover
+odf[inter]$chromStart <- sdf[inter]$reference_start.liftover
+odf[inter]$chromEnd <- sdf[inter]$reference_end.liftover
 
-odf[inter]$sourceChrom <- odf[inter]$reference_name
-odf[inter]$sourceStart <- odf[inter]$reference_start
-odf[inter]$sourceEnd <- odf[inter]$reference_end
+odf[inter]$sourceChrom <- sdf[inter]$reference_name
+odf[inter]$sourceStart <- sdf[inter]$reference_start
+odf[inter]$sourceEnd <- sdf[inter]$reference_end
 
-odf[inter]$targetChrom <- odf[inter]$`#chrom`
-odf[inter]$targetStart <- odf[inter]$chromStart
-odf[inter]$targetEnd <- odf[inter]$chromEnd
+odf[inter]$targetChrom <- sdf[inter]$`#chrom`
+odf[inter]$targetStart <- sdf[inter]$chromStart
+odf[inter]$targetEnd <- sdf[inter]$chromEnd
 
 write.table(odf[, ..names],
     file = snakemake@output$interact,
