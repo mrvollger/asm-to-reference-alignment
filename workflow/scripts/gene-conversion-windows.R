@@ -33,7 +33,7 @@ odf <- gc.df[, c(
     "mismatches"
 )]
 
-print(as.character(odf$reference_name) != as.character(odf$reference_name.liftover))
+print(sum(as.character(odf$reference_name) != as.character(odf$reference_name.liftover)))
 
 write.table(odf,
     file = snakemake@output$tbl,
