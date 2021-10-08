@@ -85,8 +85,10 @@ ndf$targetStrand <- "."
 # fix the columns when interchromosomal
 inter <- as.character(sdf$reference_name) != as.character(sdf$reference_name.liftover)
 sum(inter)
-
-if (T) {
+dim(odf)
+dim(sdf)
+dim(ndf)
+if (F) {
     ndf[inter]$`#chrom` <- sdf[inter]$reference_name.liftover
     ndf[inter]$chromStart <- sdf[inter]$reference_start.liftover
     ndf[inter]$chromEnd <- sdf[inter]$reference_end.liftover
