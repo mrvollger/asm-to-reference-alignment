@@ -159,7 +159,7 @@ rule make_big_bed:
     output:
         interact="results/{ref}/gene-conversion/all_candidate_interactions.bb",
         bb="results/{ref}/gene-conversion/all_candidate_windows.bb",
-        bwa="results/{ref}/gene-conversion/all_candidate_windows_aceptor.bw",
+        bwa="results/{ref}/gene-conversion/all_candidate_windows_acceptor.bw",
         bwd="results/{ref}/gene-conversion/all_candidate_windows_donor.bw",
         bg=temp("results/{ref}/gene-conversion/all_candidate_windows.bg"),
         bed=temp("temp/{ref}/gene-conversion/all_candidate_windows.bed"),
