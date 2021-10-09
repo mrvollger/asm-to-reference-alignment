@@ -167,7 +167,7 @@ rule make_big_bed:
     params:
         fmt=workflow.source_path("../scripts/bed.as"),
         interact=workflow.source_path("../scripts/interact.as"),
-    threads: 4
+    threads: 1
     shell:
         """
         # make interactions
@@ -181,7 +181,7 @@ rule make_big_bed:
         grep -v "reference_name" {input.tbl} \
             | bedtools sort -i - > {output.bed}
 
-        bedToBigBed -as={params.fmt} -type=bed9+7 \
+        bedToBigBed -as={params.fmt} -type=bed9+9 \
             {output.bed} {input.fai} {output.bb} 
 
         bedtools genomecov -i {output.bed} -g {input.fai} -bg > {output.bg}
