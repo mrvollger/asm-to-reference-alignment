@@ -35,6 +35,7 @@ gc.df$color <- "0,127,211"
 gc.df$score <- 0
 gc.df$thickStart <- gc.df$reference_start.liftover
 gc.df$thickEnd <- gc.df$reference_end.liftover
+gc.df$status <- "Acceptor"
 
 odf <- gc.df[, c(
     "reference_name.liftover",
@@ -46,6 +47,7 @@ odf <- gc.df[, c(
     "thickStart",
     "thickEnd",
     "color",
+    "status",
     "reference_name",
     "reference_start",
     "reference_end",
@@ -58,6 +60,7 @@ odf <- gc.df[, c(
 
 odf2 <- data.table(copy(odf))
 odf2$color <- "211,144,0"
+odf2$status <- "Donor"
 
 odf2$reference_name.liftover <- odf$reference_name
 odf2$reference_start.liftover <- odf$reference_start
