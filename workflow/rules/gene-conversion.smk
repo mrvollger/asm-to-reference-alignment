@@ -159,8 +159,9 @@ rule make_big_bed:
     output:
         interact="results/{ref}/gene-conversion/all_candidate_interactions.bb",
         bb="results/{ref}/gene-conversion/all_candidate_windows.bb",
-        bg="results/{ref}/gene-conversion/all_candidate_windows.bg",
-        bw="results/{ref}/gene-conversion/all_candidate_windows.bw",
+        bwa="results/{ref}/gene-conversion/all_candidate_windows_aceptor.bw",
+        bwd="results/{ref}/gene-conversion/all_candidate_windows_donor.bw",
+        bg=temp("results/{ref}/gene-conversion/all_candidate_windows.bg"),
         bed=temp("temp/{ref}/gene-conversion/all_candidate_windows.bed"),
     conda:
         "../envs/env.yml"
@@ -184,8 +185,13 @@ rule make_big_bed:
         bedToBigBed -as={params.fmt} -type=bed9+9 \
             {output.bed} {input.fai} {output.bb} 
 
-        bedtools genomecov -i {output.bed} -g {input.fai} -bg > {output.bg}
-        bedGraphToBigWig {output.bg} {input.fai} {output.bw}
+        bedtools genomecov -i <(grep -w Donor {output.bed}) \
+            -g {input.fai} -bg > {output.bg}
+        bedGraphToBigWig {output.bg} {input.fai} {output.bwd}
+
+        bedtools genomecov -i <(grep -w Acceptor {output.bed}) \
+            -g {input.fai} -bg > {output.bg}
+        bedGraphToBigWig {output.bg} {input.fai} {output.bwa}
         """
 
 
