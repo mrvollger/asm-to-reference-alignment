@@ -181,7 +181,7 @@ rule make_big_bed:
         grep -v "reference_name" {input.tbl} \
             | bedtools sort -i - > {output.bed}
 
-        bedToBigBed -as={params.fmt} -type=bed9+9 \
+        bedToBigBed -as={params.fmt} -type=bed9+8 \
             {output.bed} {input.fai} {output.bb} 
 
         bedtools genomecov -i {output.bed} -g {input.fai} -bg > {output.bg}

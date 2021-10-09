@@ -36,8 +36,6 @@ gc.df$score <- 0
 gc.df$thickStart <- gc.df$reference_start.liftover
 gc.df$thickEnd <- gc.df$reference_end.liftover
 
-gc.df[, c("Sample", "Hap", "Other") := tstrsplit(gc.df$original_source, "#", fixed = TRUE)]
-
 odf <- gc.df[, c(
     "reference_name.liftover",
     "reference_start.liftover",
@@ -55,8 +53,7 @@ odf <- gc.df[, c(
     "mismatches",
     "perID_by_all.liftover",
     "perID_by_all",
-    "Sample",
-    "Hap"
+    "original_source"
 )]
 
 odf2 <- data.table(copy(odf))
