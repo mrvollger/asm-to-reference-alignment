@@ -52,6 +52,7 @@ track_interact = """
     shortLabel {sm} interact-gc
     longLabel {sm} gene conversion interactions
     type bigInteract
+    maxHeightPixels 100:10:5
     visibility full
 """
 
