@@ -213,7 +213,7 @@ rule make_big_beds:
         """
         # make others
         grep -v "reference_name" {input.tbl} \
-            | grep {wildcards.sm} \
+            | grep -w {wildcards.sm} \
             | bedtools sort -i - > {output.bed}
 
         bedToBigBed -as={params.fmt} -type=bed9+ \
