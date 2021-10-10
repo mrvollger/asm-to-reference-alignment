@@ -59,6 +59,8 @@ track_interact = """
 track_super = """
 track gene-conversion-by-sample
 superTrack on show
+shortLabel gc-by-sample
+longLabel gene conversion by sample
 
 """
 
