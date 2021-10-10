@@ -50,7 +50,6 @@ type bigWig
 color 0,127,211
 visibility full
 
-
 track gene-conversion
 bigDataUrl all_candidate_windows.bb
 shortLabel gene conversion
@@ -58,7 +57,7 @@ longLabel gene conversion
 type bigBed 9 +
 itemRgb on
 visibility dense
-
+maxItems 100000
 """
 
 
