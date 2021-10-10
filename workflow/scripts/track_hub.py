@@ -23,7 +23,7 @@ trackDb trackDb.txt
 """
 
 track = """
-    track gc {sm}
+    track g-c-{sm}
     parent gene-conversion
     bigDataUrl gene-conversion/{sm}.bb
     shortLabel {sm} gc
