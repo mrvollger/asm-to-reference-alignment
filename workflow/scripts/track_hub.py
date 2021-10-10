@@ -70,7 +70,8 @@ track_comp = """
     compositeTrack on
     shortLabel {sm}-gc
     longLabel {sm} gene conversion
-    type bigBed 9 +
+    type bigWig
+    visibility dense
         
         track gc-{sm}
         parent {sm}
