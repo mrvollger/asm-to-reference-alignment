@@ -33,9 +33,39 @@ track = """
     visibility dense
 """
 
+all_tracks = """
+track Donor 
+bigDataUrl all_candidate_windows_donor.bw
+shortLabel Donor 
+longLabel Donor
+type bigWig
+color 211,144,0
+visibility full
+
+track Acceptor 
+bigDataUrl all_candidate_windows_acceptor.bw
+shortLabel Acceptor 
+longLabel Acceptor
+type bigWig
+color 0,127,211
+visibility full
+
+
+track gene-conversion
+bigDataUrl all_candidate_windows.bb
+shortLabel gene conversion
+longLabel gene conversion
+type bigBed 9 +
+itemRgb on
+visibility dense
+
+"""
+
+
 with open(snakemake.output.track, "w") as out:
     out.write(track_db_header)
     [out.write(track.format(sm=sm)) for sm in snakemake.params.samples]
+    out.write(all_tracks)
 
 open(snakemake.output.hub, "w").write(hub)
 
