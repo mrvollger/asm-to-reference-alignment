@@ -1,15 +1,3 @@
-track_db_header = """
-track gene-conversion
-compositeTrack off
-shortLabel gene-conversion
-longLabel gene-conversion
-visibility hide
-priority 30
-type bigBed 9 +
-itemRgb on
-maxItems 100000
-"""
-
 hub = """
 hub gene-conversion
 shortLabel gene-conversion
@@ -17,9 +5,21 @@ longLabel gene-conversion
 genomesFile genomes.txt
 email mvollger.edu
 """
+
 genomes = """
 genome {ref}
 trackDb trackDb.txt
+"""
+
+track_db_header = """
+track gene-conversion
+compositeTrack off
+shortLabel gene-conversion
+longLabel gene-conversion
+visibility hide
+type bigBed 9 +
+itemRgb on
+maxItems 100000
 """
 
 track = """
@@ -30,31 +30,17 @@ track = """
     longLabel {sm} gene conversion
     type bigBed 9 +
     itemRgb on
-    priority {order}
     visibility dense
-"""
-
-
-track_db_interact_header = """
-track interact-gene-conversion
-compositeTrack off
-shortLabel interact-gc
-longLabel gene conversion interactions
-visibility hide
-priority 30
-type bigInteract
-maxItems 100000
 """
 
 track_interact = """
     track interact-g-c-{sm}
-    parent interact-gene-conversion
+    parent gene-conversion
     bigDataUrl gene-conversion/{sm}.interact.bb
     shortLabel {sm} interact-gc
     longLabel {sm} gene conversion interactions
     type bigInteract
     maxHeightPixels 100:10:5
-    priority {order}
     visibility full
 """
 
@@ -98,9 +84,9 @@ maxItems 100000
 with open(snakemake.output.track, "w") as out:
     out.write(all_tracks)
     out.write(track_db_header)
-    out.write(track_db_interact_header)
+    # out.write(track_db_interact_header)
     [
-        out.write((track + track_interact).format(sm=sm, order=idx + 1))
+        out.write((track + track_interact).format(sm=sm))
         for idx, sm in enumerate(snakemake.params.samples)
     ]
 
