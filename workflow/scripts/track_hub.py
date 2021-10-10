@@ -96,11 +96,11 @@ maxItems 100000
 with open(snakemake.output.track, "w") as out:
     out.write(all_tracks)
     out.write(track_db_header)
-    [out.write(track.format(sm=sm)) for sm in snakemake.params.samples]
-    # add in the interactions
     out.write(track_db_interact_header)
-    [out.write(track_interact.format(sm=sm)) for sm in snakemake.params.samples]
-
+    [
+        out.write(track.format(sm=sm) + track_interact.format(sm=sm))
+        for sm in snakemake.params.samples
+    ]
 
 open(snakemake.output.hub, "w").write(hub)
 
