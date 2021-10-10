@@ -95,8 +95,8 @@ rule window_stats:
         paf=rules.window_alignment.output.aln,
         liftover_paf=rules.make_query_windows.output.paf,
     output:
-        tbl="results/{ref}/gene-conversion/{sm}_windows.tbl.gz",
-        liftover_tbl="results/{ref}/gene-conversion/{sm}_liftover_windows.tbl.gz",
+        tbl=temp("temp/{ref}/gene-conversion/{sm}_windows.tbl.gz"),
+        liftover_tbl=temp("temp/{ref}/gene-conversion/{sm}_liftover_windows.tbl.gz"),
     conda:
         "../envs/env.yml"
     threads: 4
@@ -121,6 +121,18 @@ rule candidate_gene_conversion:
         "../scripts/combine-mappings.R"
 
 
+rule gene_conversion_windows_per_sample:
+    input:
+        tbl=rules.candidate_gene_conversion.output.tbl,
+    output:
+        bed="results/{ref}/gene-conversion/tables/{sm}.bed",
+        interact="results/{ref}/gene-conversion/interactions/{sm}.bed",
+    conda:
+        "../envs/env.yml"
+    script:
+        "../scripts/gene-conversion-windows.R"
+
+
 rule large_table:
     input:
         tbls=expand(
@@ -143,7 +155,7 @@ rule gene_conversion_windows:
     input:
         tbl=rules.large_table.output.tbl,
     output:
-        tbl="results/{ref}/gene-conversion/gene_conversion_windows.tbl",
+        bed="results/{ref}/gene-conversion/gene_conversion_windows.tbl",
         interact="results/{ref}/gene-conversion/gene_conversion_interactions.bed",
     conda:
         "../envs/env.yml"
@@ -153,7 +165,7 @@ rule gene_conversion_windows:
 
 rule make_big_bed:
     input:
-        tbl=rules.gene_conversion_windows.output.tbl,
+        bed=rules.gene_conversion_windows.output.bed,
         interact=rules.gene_conversion_windows.output.interact,
         fai=get_fai,
     output:
@@ -180,18 +192,16 @@ rule make_big_bed:
         bedToBigBed -as={params.interact} \
             -type=bed5+13 {output.bed} {input.fai} {output.interact}
 
-        # make others
-        grep -v "reference_name" {input.tbl} \
-            | bedtools sort -i - > {output.bed}
-
+        # all windows
         bedToBigBed -as={params.fmt} -type=bed9+10 \
-            {output.bed} {input.fai} {output.bb} 
+            {input.bed} {input.fai} {output.bb} 
 
-        bedtools genomecov -i <(grep -w Donor {output.bed}) \
+        # bed graphs
+        bedtools genomecov -i <(grep -w Donor {input.bed}) \
             -g {input.fai} -bg > {output.bg}
         bedGraphToBigWig {output.bg} {input.fai} {output.bwd}
 
-        bedtools genomecov -i <(grep -w Acceptor {output.bed}) \
+        bedtools genomecov -i <(grep -w Acceptor {input.bed}) \
             -g {input.fai} -bg > {output.bg}
         bedGraphToBigWig {output.bg} {input.fai} {output.bwa}
         """
@@ -199,11 +209,10 @@ rule make_big_bed:
 
 rule make_big_beds:
     input:
-        tbl=rules.gene_conversion_windows.output.tbl,
+        bed=rules.gene_conversion_windows_per_sample.output.bed,
         fai=get_fai,
     output:
         bb="results/{ref}/gene-conversion/trackHub/gene-conversion/{sm}.bb",
-        bed=temp("temp/{ref}/gene-conversion/trackHub/gene-conversion/{sm}.bed"),
     conda:
         "../envs/env.yml"
     params:
@@ -212,12 +221,8 @@ rule make_big_beds:
     shell:
         """
         # make others
-        grep -v "reference_name" {input.tbl} \
-            | grep -w {wildcards.sm} \
-            | bedtools sort -i - > {output.bed}
-
         bedToBigBed -as={params.fmt} -type=bed9+ \
-            {output.bed} {input.fai} {output.bb} 
+            {input.bed} {input.fai} {output.bb} 
         """
 
 
@@ -245,7 +250,7 @@ rule make_trackdb:
 rule gene_conversion:
     input:
         expand(rules.large_table.output.tbl, ref=config.get("ref").keys()),
-        expand(rules.gene_conversion_windows.output.tbl, ref=config.get("ref").keys()),
+        expand(rules.gene_conversion_windows.output.bed, ref=config.get("ref").keys()),
         expand(rules.make_big_bed.output, ref=config.get("ref").keys()),
         expand(rules.make_big_beds.output, sm=df.index, ref=config.get("ref").keys()),
         expand(rules.make_trackdb.output, ref=config.get("ref").keys()),

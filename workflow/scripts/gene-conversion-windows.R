@@ -75,8 +75,11 @@ odf2$thickStart <- odf2$reference_start.liftover
 odf2$thickEnd <- odf2$reference_end.liftover
 
 fwrite(
-    rbind(odf, odf2),
-    file = snakemake@output$tbl,
+    rbind(odf, odf2) %>%
+        arrange(reference_name.liftover, reference_start.liftover) %>%
+        dplyr::rename(`#reference_name.liftover` = reference_name.liftover) %>%
+        data.table(),
+    file = snakemake@output$bed,
     sep = "\t",
     row.names = F,
     quote = F
