@@ -34,6 +34,13 @@ track = """
 """
 
 all_tracks = """
+track g-c-interact
+bigDataUrl all_candidate_interactions.bb
+shortLabel gc interact
+longLabel gene conversion interactions
+type bigInteract
+visibility full
+
 track Donor 
 bigDataUrl all_candidate_windows_donor.bw
 shortLabel Donor 
