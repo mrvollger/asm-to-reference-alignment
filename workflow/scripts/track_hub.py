@@ -63,7 +63,7 @@ bigDataUrl all_candidate_interactions.bb
 shortLabel gc interact
 longLabel gene conversion interactions
 type bigInteract
-visibility full
+visibility hide
 
 track Donor 
 bigDataUrl all_candidate_windows_donor.bw
