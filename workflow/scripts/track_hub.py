@@ -50,7 +50,7 @@ type bigWig
 color 0,127,211
 visibility full
 
-track gene-conversion
+track gene-conversion-windows
 bigDataUrl all_candidate_windows.bb
 shortLabel gene conversion
 longLabel gene conversion
