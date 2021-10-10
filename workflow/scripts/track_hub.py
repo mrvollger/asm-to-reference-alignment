@@ -58,6 +58,7 @@ type bigBed 9 +
 itemRgb on
 visibility dense
 maxItems 100000
+
 """
 
 
