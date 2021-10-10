@@ -63,9 +63,9 @@ maxItems 100000
 
 
 with open(snakemake.output.track, "w") as out:
+    out.write(all_tracks)
     out.write(track_db_header)
     [out.write(track.format(sm=sm)) for sm in snakemake.params.samples]
-    out.write(all_tracks)
 
 open(snakemake.output.hub, "w").write(hub)
 
