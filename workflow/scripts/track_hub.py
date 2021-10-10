@@ -23,10 +23,10 @@ trackDb trackDb.txt
 """
 
 track = """
-    track gene-conversion_{sm}
+    track gc {sm}
     parent gene-conversion
     bigDataUrl gene-conversion/{sm}.bb
-    shortLabel {sm} gene conversion
+    shortLabel {sm} gc
     longLabel {sm} gene conversion
     type bigBed 9 +
     itemRgb on
