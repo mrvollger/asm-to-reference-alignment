@@ -33,6 +33,18 @@ track = """
     visibility dense
 """
 
+
+track_db_interact_header = """
+track interact-gene-conversion
+compositeTrack off
+shortLabel interact-gc
+longLabel gene conversion interactions
+visibility hide
+priority 30
+type bigInteract
+maxItems 100000
+"""
+
 track_interact = """
     track interact-g-c-{sm}
     parent gene-conversion
@@ -40,7 +52,7 @@ track_interact = """
     shortLabel {sm} interact-gc
     longLabel {sm} gene conversion interactions
     type bigInteract
-    maxHeightPixels 100:10:5
+    maxHeightPixels 100:20:5
     visibility full
 """
 
@@ -84,7 +96,7 @@ maxItems 100000
 with open(snakemake.output.track, "w") as out:
     out.write(all_tracks)
     out.write(track_db_header)
-    # out.write(track_db_interact_header)
+    out.write(track_db_interact_header)
     [
         out.write((track + track_interact).format(sm=sm))
         for idx, sm in enumerate(snakemake.params.samples)
