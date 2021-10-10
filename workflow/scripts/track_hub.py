@@ -47,7 +47,7 @@ maxItems 100000
 
 track_interact = """
     track interact-g-c-{sm}
-    parent gene-conversion
+    parent interact-gene-conversion
     bigDataUrl gene-conversion/{sm}.interact.bb
     shortLabel {sm} interact-gc
     longLabel {sm} gene conversion interactions
@@ -60,8 +60,8 @@ track_interact = """
 all_tracks = """
 track g-c-interact
 bigDataUrl all_candidate_interactions.bb
-shortLabel gc interact
-longLabel gene conversion interactions
+shortLabel all gc interact
+longLabel all gene conversion interactions
 type bigInteract
 visibility hide
 
@@ -83,8 +83,8 @@ visibility full
 
 track gene-conversion-windows
 bigDataUrl all_candidate_windows.bb
-shortLabel gene conversion
-longLabel gene conversion
+shortLabel all g-c windows
+longLabel all gene conversion windows
 type bigBed 9 +
 itemRgb on
 visibility dense
