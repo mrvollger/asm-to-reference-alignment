@@ -210,19 +210,32 @@ rule make_big_bed:
 rule make_big_beds:
     input:
         bed=rules.gene_conversion_windows_per_sample.output.bed,
+        interact=rules.gene_conversion_windows_per_sample.output.interact,
         fai=get_fai,
     output:
+        bed=temp("temp/{ref}/gene-conversion/trackHub/gene-conversion/{sm}.bb"),
         bb="results/{ref}/gene-conversion/trackHub/gene-conversion/{sm}.bb",
+        interact=(
+            "results/{ref}/gene-conversion/trackHub/gene-conversion/{sm}.interact.bb"
+        ),
     conda:
         "../envs/env.yml"
     params:
+        interact=workflow.source_path("../scripts/interact.as"),
         fmt=workflow.source_path("../scripts/bed.as"),
     threads: 1
     shell:
         """
+         # make interactions
+         bedtools sort -i {input.interact} \
+             | awk '$3-$2 < 30e6' \
+             > {output.bed}
+         bedToBigBed -as={params.interact} \
+             -type=bed5+13 {output.bed} {input.fai} {output.interact}
+
         # make others
-        bedToBigBed -as={params.fmt} -type=bed9+ \
-            {input.bed} {input.fai} {output.bb} 
+         bedToBigBed -as={params.fmt} -type=bed9+ \
+             {input.bed} {input.fai} {output.bb} 
         """
 
 
