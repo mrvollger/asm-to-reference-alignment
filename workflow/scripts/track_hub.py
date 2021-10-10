@@ -56,6 +56,39 @@ track_interact = """
     visibility full
 """
 
+track_super = """
+track gene-conversion-by-sample
+superTrack on show
+
+"""
+
+track_comp = """
+    track {sm}
+    parent gene-conversion-by-sample
+    compositeTrack on
+    shortLabel {sm}-gc
+    longLabel {sm} gene conversion
+        
+        track gc-{sm}
+        parent {sm}
+        bigDataUrl gene-conversion/{sm}.bb
+        shortLabel {sm} gc
+        longLabel {sm} gene conversion
+        type bigBed 9 +
+        itemRgb on
+        visibility dense
+
+        track interact-{sm}
+        parent {sm}
+        bigDataUrl gene-conversion/{sm}.interact.bb
+        shortLabel {sm} interact
+        longLabel {sm} interactions
+        type bigInteract
+        maxHeightPixels 100:20:5
+        visibility full
+   
+"""
+
 
 all_tracks = """
 track g-c-interact
@@ -95,12 +128,16 @@ maxItems 100000
 
 with open(snakemake.output.track, "w") as out:
     out.write(all_tracks)
-    out.write(track_db_header)
-    out.write(track_db_interact_header)
-    [
-        out.write((track + track_interact).format(sm=sm))
-        for idx, sm in enumerate(snakemake.params.samples)
-    ]
+    if False:
+        out.write(track_db_header)
+        out.write(track_db_interact_header)
+        [
+            out.write((track + track_interact).format(sm=sm))
+            for idx, sm in enumerate(snakemake.params.samples)
+        ]
+    else:
+        out.write(track_super)
+        [out.write(track_comp.format(sm=sm)) for sm in snakemake.params.samples]
 
 open(snakemake.output.hub, "w").write(hub)
 
