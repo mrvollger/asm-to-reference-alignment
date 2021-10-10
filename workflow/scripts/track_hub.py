@@ -71,7 +71,6 @@ track_comp = """
     shortLabel {sm}-gc
     longLabel {sm} gene conversion
     type bigBed 9 +
-    visibility full
         
         track gc-{sm}
         parent {sm}
