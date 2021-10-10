@@ -157,12 +157,14 @@ rule make_big_bed:
         interact=rules.gene_conversion_windows.output.interact,
         fai=get_fai,
     output:
-        interact="results/{ref}/gene-conversion/all_candidate_interactions.bb",
-        bb="results/{ref}/gene-conversion/all_candidate_windows.bb",
-        bwa="results/{ref}/gene-conversion/all_candidate_windows_acceptor.bw",
-        bwd="results/{ref}/gene-conversion/all_candidate_windows_donor.bw",
-        bg=temp("results/{ref}/gene-conversion/all_candidate_windows.bg"),
-        bed=temp("temp/{ref}/gene-conversion/all_candidate_windows.bed"),
+        interact=(
+            "results/{ref}/gene-conversion/trackHub/all_candidate_interactions.bb"
+        ),
+        bb="results/{ref}/gene-conversion/trackHub/all_candidate_windows.bb",
+        bwa="results/{ref}/gene-conversion/trackHub/all_candidate_windows_acceptor.bw",
+        bwd="results/{ref}/gene-conversion/trackHub/all_candidate_windows_donor.bw",
+        bg=temp("temp/{ref}/gene-conversion/trackHub/all_candidate_windows.bg"),
+        bed=temp("temp/{ref}/gene-conversion/trackHub/all_candidate_windows.bed"),
     conda:
         "../envs/env.yml"
     params:
@@ -182,7 +184,7 @@ rule make_big_bed:
         grep -v "reference_name" {input.tbl} \
             | bedtools sort -i - > {output.bed}
 
-        bedToBigBed -as={params.fmt} -type=bed9+9 \
+        bedToBigBed -as={params.fmt} -type=bed9+10 \
             {output.bed} {input.fai} {output.bb} 
 
         bedtools genomecov -i <(grep -w Donor {output.bed}) \
@@ -195,10 +197,57 @@ rule make_big_bed:
         """
 
 
+rule make_big_beds:
+    input:
+        tbl=rules.gene_conversion_windows.output.tbl,
+        fai=get_fai,
+    output:
+        bb="results/{ref}/gene-conversion/trackHub/gene-conversion/{sm}.bb",
+        bed=temp("temp/{ref}/gene-conversion/trackHub/gene-conversion/{sm}.bed"),
+    conda:
+        "../envs/env.yml"
+    params:
+        fmt=workflow.source_path("../scripts/bed.as"),
+    threads: 1
+    shell:
+        """
+        # make others
+        grep -v "reference_name" {input.tbl} \
+            | grep {wildcards.sm} \
+            | bedtools sort -i - > {output.bed}
+
+        bedToBigBed -as={params.fmt} -type=bed9+ \
+            {output.bed} {input.fai} {output.bb} 
+        """
+
+
+rule make_trackdb:
+    input:
+        bigwig=expand(rules.make_big_beds.output, sm=df.index, allow_missing=True),
+    output:
+        track="results/{ref}/gene-conversion/trackHub/trackDb.txt",
+        hub="results/{ref}/gene-conversion/trackHub/hub.txt",
+        genomes="results/{ref}/gene-conversion/trackHub/genomes.txt",
+    conda:
+        "../envs/env.yml"
+    threads: 1
+    resources:
+        mem=2,
+        hrs=24,
+    log:
+        "logs/{ref}/gene-conversion/trackHub.log",
+    params:
+        samples=list(df.index),
+    script:
+        "../scripts/track_hub.py"
+
+
 rule gene_conversion:
     input:
         expand(rules.large_table.output.tbl, ref=config.get("ref").keys()),
         expand(rules.gene_conversion_windows.output.tbl, ref=config.get("ref").keys()),
         expand(rules.make_big_bed.output, ref=config.get("ref").keys()),
+        expand(rules.make_big_beds.output, sm=df.index, ref=config.get("ref").keys()),
+        expand(rules.make_trackdb.output, ref=config.get("ref").keys()),
     message:
         "Gene conversion run complete"

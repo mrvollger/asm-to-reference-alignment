@@ -18,5 +18,6 @@ uint    mismatches;		"mismatches at original alignment"
 uint    donorMismatches;		"mismatches at donor alignment"
 float    perID_by_all;		"Percent identity of alignment at original alignment location"
 float    donor_perID_by_all;		"Percent identity of alignment at donor location"
+string  Sample;		"Sample"
 string  Source;		"Source location on the assembly"
 )

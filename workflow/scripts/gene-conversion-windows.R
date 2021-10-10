@@ -55,6 +55,7 @@ odf <- gc.df[, c(
     "mismatches",
     "perID_by_all.liftover",
     "perID_by_all",
+    "sample",
     "original_source"
 )]
 

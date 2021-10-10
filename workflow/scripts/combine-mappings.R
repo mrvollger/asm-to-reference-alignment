@@ -1,12 +1,15 @@
 source("workflow/scripts/plotutils.R")
+sample <- "HG002_1"
 windowf <- "results/CHM13_V1.1/gene-conversion/HG002_1_windows.tbl.gz"
 liftoverf <- "results/CHM13_V1.1/gene-conversion/HG002_1_liftover_windows.tbl.gz"
 liftoverf <- "/Users/mrvollger/Desktop/EichlerVolumes/assembly_breaks/nobackups/asm-to-reference-alignment/results/CHM13_V1.1/gene-conversion/HG002_1_liftover_windows.tbl.gz"
 windowf <- "/Users/mrvollger/Desktop/EichlerVolumes/assembly_breaks/nobackups/asm-to-reference-alignment/results/CHM13_V1.1/gene-conversion/HG002_1_windows.tbl.gz"
 windowf <- snakemake@input$window
 liftoverf <- snakemake@input$liftover
+sample <- snakemake@wildcards$sm
 print(windowf)
 print(liftoverf)
+print(sample)
 
 window.df <- fread(windowf) %>%
     separate(query_name,
@@ -60,5 +63,6 @@ overlap_bp <- function(df) {
 df <- merge(window.df, liftover.df, by = c("original_mapping", "original_source"), suffixes = c("", ".liftover")) %>%
     mutate(overlap = overlap_bp(.)) %>%
     data.table()
+df$sample <- sample
 
 write.table(df, file = snakemake@output$tbl, sep = "\t", row.names = F, quote = F)
