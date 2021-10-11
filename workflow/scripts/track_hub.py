@@ -89,7 +89,7 @@ track_comp = """
         shortLabel {sm} interact
         longLabel {sm} interactions
         type bigInteract
-        maxHeightPixels 100:20:5
+        maxHeightPixels 100:30:5
         visibility full
    
 """
