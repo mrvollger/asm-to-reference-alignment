@@ -1,5 +1,5 @@
 source("workflow/scripts/plotutils.R")
-f <- "/Users/mrvollger/Desktop/EichlerVolumes/assembly_breaks/nobackups/asm-to-reference-alignment/all_candidate_windows.gz"
+f <- "/Users/mrvollger/Desktop/EichlerVolumes/assembly_breaks/nobackups/asm-to-reference-alignment/results/CHM13_V1.1/gene-conversion/all_candidate_windows.tbl.gz"
 f <- "results/CHM13_V1.1/gene-conversion/all_candidate_windows.tbl.gz"
 f <- snakemake@input$tbl
 print(f)
@@ -14,11 +14,24 @@ gc.df <- df[
 ]
 print("data subset")
 if (F) {
-    ggplot(gc.df) +
-        geom_histogram(aes(mismatches.liftover - mismatches), bins = 20) +
-        scale_x_continuous(trans = "log10") +
-        annotation_logticks() +
+    dim(gc.df)
+    p <- df[
+        perID_by_events - perID_by_events.liftover > 0.01 &
+            matches - matches.liftover > 1 &
+            matches + mismatches > 9e3 &
+            matches.liftover + mismatches.liftover > 9e3 &
+            `#reference_name` != "chrY"
+    ] %>%
+        filter(perID_by_events > 99.5) %>%
+        ggplot() +
+        geom_histogram(aes(matches - matches.liftover),
+            binwidth = 1
+        ) +
+        facet_zoom(xlim = c(0, 20)) +
+        # scale_x_continuous(trans = "log10") +
+        # annotation_logticks() +
         theme_cowplot()
+    ggsave("~/Desktop/gc.pdf", plot = p)
 }
 
 gc.df$reference_name <- gc.df$`#reference_name`
