@@ -35,10 +35,14 @@ rule make_query_windows:
     params:
         window=config.get("window", 10000),
         slide=config.get("slide", 5000),
+        min_aln_len=config.get("min_aln_len", 1e6),
+        buffer=config.get("buffer", 25e3),
     shell:
         """
         rb liftover --bed {input.bed} {input.paf} \
             | csvtk cut  -tT -f 1,3,4 \
+            | awk '$3-$2>{params.min_aln_len}' \
+            | awk -v OFS=$'\t' '{{$2+={params.buffer}; $3-={params.buffer}}}{{print $0}}' \
             | bedtools makewindows -s {params.slide} -w {params.window} -b - \
             | rb liftover -q --bed /dev/stdin --largest {input.paf} \
             | grep -v "cg:Z:10000=" \
