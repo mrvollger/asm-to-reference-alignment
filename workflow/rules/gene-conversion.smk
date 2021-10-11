@@ -39,15 +39,15 @@ rule make_query_windows:
         buffer=config.get("buffer", 25e3),
     shell:
         """
-        rb liftover --bed {input.bed} {input.paf} \
+        awk '$4-$3>{params.min_aln_len}' {input.paf} \
+            | rb liftover --bed {input.bed} \
             | csvtk cut  -tT -f 1,3,4 \
-            | awk '$3-$2>{params.min_aln_len}' \
-            | awk -v OFS=$'\t' '{{$2+={params.buffer}; $3-={params.buffer}}}{{print $0}}' \
             | bedtools makewindows -s {params.slide} -w {params.window} -b - \
             | rb liftover -q --bed /dev/stdin --largest {input.paf} \
             | grep -v "cg:Z:10000=" \
             > {output.paf}
         """
+        #| awk -v OFS=$'\t' '{{$2+={params.buffer}; $3-={params.buffer}}}{{print $0}}' \
 
 
 rule unzip_ref:
