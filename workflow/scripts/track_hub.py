@@ -72,7 +72,7 @@ track_comp = """
     shortLabel {sm}-gc
     longLabel {sm} gene conversion
     type bigWig
-    visibility dense
+    visibility full
         
         track gc-{sm}
         parent {sm}
