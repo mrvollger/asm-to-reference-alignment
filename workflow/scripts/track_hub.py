@@ -109,6 +109,7 @@ shortLabel Donor
 longLabel Donor
 type bigWig
 color 211,144,0
+autoScale on
 visibility full
 
 track Acceptor 
@@ -117,6 +118,7 @@ shortLabel Acceptor
 longLabel Acceptor
 type bigWig
 color 0,127,211
+autoScale on
 visibility full
 
 track gene-conversion-windows
