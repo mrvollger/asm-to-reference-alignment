@@ -24,6 +24,7 @@ filter.score 0:10000
 filterByRange.score on
 filterLimits.score 0:10000
 filterLabel.score Minimum decrease in mismatches
+priority 10
 """
 
 track = """
@@ -46,10 +47,11 @@ shortLabel interact-gc
 longLabel gene conversion interactions
 visibility hide
 type bigInteract
+maxItems 100000
 filter.score 0:10000
 filterByRange.score on
 filterLimits.score 0:10000
-maxItems 100000
+priority 10
 """
 
 track_interact = """
@@ -145,11 +147,13 @@ maxItems 100000
 
 with open(snakemake.output.track, "w") as out:
     out.write(all_tracks)
-    if False:
+    if True:
         out.write(track_db_header)
         out.write(track_db_interact_header)
         [
-            out.write((track + track_interact).format(sm=sm, pri=idx + 1, pri2=idx + 2))
+            out.write(
+                (track + track_interact).format(sm=sm, pri=10, pri2=10)
+            )  # pri=idx + 1, pri2=idx + 2))
             for idx, sm in enumerate(snakemake.params.samples)
         ]
     else:
