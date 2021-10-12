@@ -48,9 +48,9 @@ longLabel gene conversion interactions
 visibility hide
 type bigInteract
 maxItems 100000
-filter.score 0:10000
+filter.score 5:1000
 filterByRange.score on
-filterLimits.score 0:10000
+filterLimits.score 0:1000
 priority 10
 """
 
@@ -71,9 +71,9 @@ track gene-conversion-by-sample
 superTrack on show
 shortLabel gc-by-sample
 longLabel gene conversion by sample
-filter.score 0:10000
+filter.score 5:1000
 filterByRange.score on
-filterLimits.score 0:10000
+filterLimits.score 0:1000
 
 """
 
