@@ -133,6 +133,8 @@ rule gene_conversion_windows_per_sample:
         interact="results/{ref}/gene-conversion/interactions/{sm}.bed",
     conda:
         "../envs/env.yml"
+    params:
+        window=config.get("window", 10000),
     script:
         "../scripts/gene-conversion-windows.R"
 
@@ -163,6 +165,8 @@ rule gene_conversion_windows:
         interact="results/{ref}/gene-conversion/gene_conversion_interactions.bed",
     conda:
         "../envs/env.yml"
+    params:
+        window=config.get("window", 10000),
     script:
         "../scripts/gene-conversion-windows.R"
 

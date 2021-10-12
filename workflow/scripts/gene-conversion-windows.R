@@ -1,23 +1,28 @@
 source("workflow/scripts/plotutils.R")
 f <- "/Users/mrvollger/Desktop/EichlerVolumes/assembly_breaks/nobackups/asm-to-reference-alignment/results/CHM13_V1.1/gene-conversion/all_candidate_windows.tbl.gz"
 f <- "results/CHM13_V1.1/gene-conversion/all_candidate_windows.tbl.gz"
+window <- 1e4
+window <- snakemake@params$window
 f <- snakemake@input$tbl
 print(f)
 df <- fread(f, nThread = 8, sep = "\t") %>% data.table()
 
 gc.df <- df[
     (overlap == 0 &
-        perID_by_all - perID_by_all.liftover > 0.1 &
-        mismatches.liftover - mismatches > 4 &
-        matches + mismatches > 9000 &
-        matches.liftover + mismatches.liftover > 9000),
+        perID_by_matches >= 99.5 &
+        perID_by_all > perID_by_all.liftover &
+        mismatches.liftover - mismatches >= 2 * window / 1e3 | mismatches.liftover / mismatches > 2 &
+        matches + mismatches > 0.95 * window &
+        matches.liftover + mismatches.liftover > 0.95 * window),
 ]
+dim(gc.df)
 print("data subset")
 if (F) {
     dim(gc.df)
     p <- df[
-        perID_by_events - perID_by_events.liftover > 0.01 &
-            matches - matches.liftover > 1 &
+        perID_by_all >= 99.0 &
+            perID_by_all - perID_by_all.liftover > 0.00 &
+            matches - matches.liftover > 0 &
             matches + mismatches > 9e3 &
             matches.liftover + mismatches.liftover > 9e3 &
             `#reference_name` != "chrY"
@@ -28,9 +33,16 @@ if (F) {
             binwidth = 1
         ) +
         facet_zoom(xlim = c(0, 20)) +
+        # scale_y_continuous(trans = "log10") +
         # scale_x_continuous(trans = "log10") +
         # annotation_logticks() +
         theme_cowplot()
+    nrow(p$data)
+    p <- p + annotate("text",
+        x = 500, y = 500,
+        label = paste("n = ", comma(nrow(p$data))),
+        size = 3
+    )
     ggsave("~/Desktop/gc.pdf", plot = p)
 }
 
@@ -45,7 +57,7 @@ gc.df$name <- paste(
 )
 gc.df$strand <- "."
 gc.df$color <- "0,127,211"
-gc.df$score <- 0
+gc.df$score <- gc.df$mismatches.liftover - gc.df$mismatches
 gc.df$thickStart <- gc.df$reference_start.liftover
 gc.df$thickEnd <- gc.df$reference_end.liftover
 gc.df$status <- "Acceptor"
@@ -121,7 +133,7 @@ ndf[sdf$`reference_end.liftover` < sdf$reference_end]$chromEnd <-
     copy(sdf[sdf$`reference_end.liftover` < sdf$reference_end]$reference_end)
 
 ndf$name <- "."
-ndf$score <- 500 # sdf$`mismatches.liftover` - sdf$mismatches
+ndf$score <- sdf$mismatches.liftover - sdf$mismatches
 ndf$value <- sdf$mismatches.liftover / sdf$mismatches
 ndf$exp <- "."
 ndf$color <- 0

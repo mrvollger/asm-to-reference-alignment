@@ -20,6 +20,10 @@ visibility hide
 type bigBed 9 +
 itemRgb on
 maxItems 100000
+filter.score 0:10000
+filterByRange.score on
+filterLimits.score 0:10000
+filterLabel.score Minimum decrease in mismatches
 """
 
 track = """
