@@ -5,7 +5,7 @@ table interact
     uint chromStart;     "Start position of lower region. For interchromosomal, set to chromStart of this region" 
     uint chromEnd;       "End position of upper region. For interchromosomal, set to chromEnd of this region"
     string name;         "Name of item, for display.  Usually 'sourceName/targetName/exp' or empty"
-    uint score;          "Decrease in the number of mismatches"
+    uint score;          "Decrease in the number of mismatches (max of 1000)."
     double value;        "Strength of interaction or other data value. Typically basis for score"
     string exp;          "Experiment name (metadata for filtering). Use . if not applicable"
     string color;        "Item color.  Specified as r,g,b or hexadecimal #RRGGBB or html color name, as in //www.w3.org/TR/css3-color/#html4. Use 0 and spectrum setting to shade by score"
