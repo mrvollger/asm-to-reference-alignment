@@ -57,7 +57,7 @@ gc.df$name <- paste(
 )
 gc.df$strand <- "."
 gc.df$color <- "0,127,211"
-gc.df$score <- min(gc.df$mismatches.liftover - gc.df$mismatches, 1000)
+gc.df$score <- pmin(gc.df$mismatches.liftover - gc.df$mismatches, 1000)
 gc.df$thickStart <- gc.df$reference_start.liftover
 gc.df$thickEnd <- gc.df$reference_end.liftover
 gc.df$status <- "Acceptor"
@@ -133,7 +133,7 @@ ndf[sdf$`reference_end.liftover` < sdf$reference_end]$chromEnd <-
     copy(sdf[sdf$`reference_end.liftover` < sdf$reference_end]$reference_end)
 
 ndf$name <- "."
-ndf$score <- min(sdf$mismatches.liftover - sdf$mismatches, 1000)
+ndf$score <- pmin(sdf$mismatches.liftover - sdf$mismatches, 1000)
 ndf$value <- sdf$mismatches.liftover / sdf$mismatches
 ndf$exp <- "."
 ndf$color <- 0
