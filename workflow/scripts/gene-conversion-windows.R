@@ -56,9 +56,8 @@ gc.df <- df[
     (perID_by_matches >= 99.5 &
         perID_by_all > perID_by_all.liftover &
         ((mismatches.liftover - mismatches >= 2 * window / 1e4) |
-            (mismatches.liftover / mismatches > 2)) &
-        matches + mismatches > 0.95 * window &
-        matches.liftover + mismatches.liftover > 0.95 * window),
+            (mismatches.liftover / mismatches > 2))
+    )
 ]
 dim(gc.df)
 print("data subset")

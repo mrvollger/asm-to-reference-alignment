@@ -71,9 +71,9 @@ df <- merge(
     mutate(overlap = overlap_bp(.)) %>%
     filter(
         overlap == 0 &
-            matches + mismatches >= 0.95 * window &
-            matches.liftover + mismatches.liftover >= 0.95 * window &
-            mismatches.liftover >= mismatches
+            matches + mismatches >= 0.9 * window &
+            matches.liftover + mismatches.liftover >= 0.9 * window &
+            perID_by_all.liftover <= perID_by_all
     ) %>%
     relocate(original_mapping, .after = last_col()) %>%
     relocate(original_source, .after = last_col()) %>%
