@@ -50,7 +50,7 @@ rule make_query_windows:
             | csvtk cut  -tT -f 1,3,4 \
             | bedtools makewindows -s {params.slide} -w {params.window} -b - \
             | rb liftover -q --bed /dev/stdin --largest {input.paf} \
-            | grep -v "cg:Z:10000=" \
+            | grep -v "cg:Z:{params.window}=" \
             > {output.paf}
         """
         #| awk -v OFS=$'\t' '{{$2+={params.buffer}; $3-={params.buffer}}}{{print $0}}' \
