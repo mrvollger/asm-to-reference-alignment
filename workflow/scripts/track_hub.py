@@ -56,7 +56,7 @@ track_interact = """
     track interact-g-c-{sm}
     parent gene-conversion
     bigDataUrl gene-conversion/{sm}.interact.bb
-    shortLabel {sm} gc
+    shortLabel {sm} gc interact
     longLabel {sm} gene conversion interactions
     type bigInteract
     maxHeightPixels 100:30:5
@@ -150,7 +150,7 @@ with open(snakemake.output.track, "w") as out:
         # out.write(track_db_interact_header)
         [
             out.write(
-                (track + track_interact).format(sm=sm, pri=idx + 1, pri2=idx + 2)
+                (track + track_interact).format(sm=sm, pri=idx + 1, pri2=idx + 1)
             )  # pri=idx + 1, pri2=idx + 2))
             for idx, sm in enumerate(snakemake.params.samples)
         ]
