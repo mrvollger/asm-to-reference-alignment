@@ -7,12 +7,12 @@ import sys
 
 
 @njit
-def intersect(a, a0, a1, b, b0, b1, dist=0, limit=0):
+def intersect(a, a0, a1, b, b0, b1, dist):
     """
     check if two genomic intervals overlap
     """
-    if limit:
-        dist = min(dist, limit * (a1 - a0 + b1 - b0))
+    # if limit:
+    #    dist = min(dist, limit * (a1 - a0 + b1 - b0))
     return (a == b) and ((a1 + dist) >= b0) and ((b1 + dist) >= a0)
 
 
@@ -61,8 +61,8 @@ if __name__ == "__main__":
         if pre is None:
             pre = cur
             continue
-        first_intersects = intersect(*pre[0:3], *cur[0:3], dist=args.dist)
-        second_intersects = intersect(*pre[3:6], *cur[3:6], dist=args.dist)
+        first_intersects = intersect(*pre[0:3], *cur[0:3], args.dist)
+        second_intersects = intersect(*pre[3:6], *cur[3:6], args.dist)
         if not (first_intersects and second_intersects):
             group += 1
         # print(cur, first_intersects, second_intersects, group)
