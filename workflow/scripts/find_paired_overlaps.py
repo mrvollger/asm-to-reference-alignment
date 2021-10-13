@@ -57,10 +57,14 @@ if __name__ == "__main__":
         if pre is None:
             pre = cur
             continue
-        first_intersects = intersect(*pre[0:3], *cur[0:3], args.dist)
-        second_intersects = intersect(*pre[3:6], *cur[3:6], args.dist)
+        first_intersects = intersect(
+            pre[0], pre[1], pre[2], cur[0], cur[1], cur[2], args.dist
+        )
+        second_intersects = intersect(
+            pre[3], pre[4], pre[5], cur[3], cur[4], cur[5], args.dist
+        )
         if not (first_intersects and second_intersects):
             group += 1
         # print(cur, first_intersects, second_intersects, group)
-        print(f"{pre[6].strip()}\t{group}")
+        print(f"{cur[6].strip()}\t{group}")
         pre = cur
