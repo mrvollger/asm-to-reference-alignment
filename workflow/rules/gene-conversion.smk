@@ -112,12 +112,12 @@ rule window_stats:
     threads: 4
     shell:
         """
-        rb stats --paf {input.paf} \
-            | awk '$3>$2' \
-            | pigz -p 4  > {output.tbl}
-        rb stats --paf {input.liftover_paf} \
-            | awk '$3>$2' \
-            | pigz -p {threads} > {output.liftover_tbl}
+        rb stats --threads {threads} --paf {input.paf} \
+            | csvtk filter2 -C "$" -tT -f '$3>$2' \
+            > {output.tbl}
+        rb stats --threads {threads} --paf {input.liftover_paf} \
+            | csvtk filter2 -C "$" -tT -f '$3>$2' \
+            > {output.liftover_tbl}
         """
 
 
