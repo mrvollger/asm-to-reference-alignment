@@ -113,8 +113,10 @@ rule window_stats:
     shell:
         """
         rb stats --paf {input.paf} \
+            | awk '$3>$2' \
             | pigz -p 4  > {output.tbl}
         rb stats --paf {input.liftover_paf} \
+            | awk '$3>$2' \
             | pigz -p {threads} > {output.liftover_tbl}
         """
 
