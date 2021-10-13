@@ -109,7 +109,7 @@ rule window_stats:
         liftover_tbl=temp("temp/{ref}/gene-conversion/{sm}_liftover_windows.tbl"),
     conda:
         "../envs/env.yml"
-    threads: 4
+    threads: 1
     shell:
         """
         rb stats --threads {threads} --paf {input.paf} \
