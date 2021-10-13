@@ -6,7 +6,13 @@ rule gene_conversion_target_regions:
         genome=get_fai,
         bed=config["bed"],
     output:
-        bed=temp("temp/{ref}/gene-conversion/{window}-target-regions.bed"),
+        bed=temp(
+            expand(
+                "temp/{ref}/gene-conversion/{window}-target-regions.bed",
+                window=config["window"],
+                allow_missing=True,
+            )
+        ),
     threads: 1
     conda:
         "../envs/env.yml"
@@ -278,7 +284,6 @@ rule gene_conversion:
         expand(
             rules.gene_conversion_target_regions.output,
             ref=config.get("ref").keys(),
-            window=config.get("window"),
         ),
     message:
         "Gene conversion run complete"
