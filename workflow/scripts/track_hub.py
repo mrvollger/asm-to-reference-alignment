@@ -30,7 +30,7 @@ track = """
     track g-c-{sm}
     parent gene-conversion
     bigDataUrl gene-conversion/{sm}.bb
-    shortLabel {sm} gc
+    shortLabel {sm} gc D/A
     longLabel {sm} gene conversion
     type bigBed 9 +
     itemRgb on
@@ -56,7 +56,7 @@ track_interact = """
     track interact-g-c-{sm}
     parent gene-conversion
     bigDataUrl gene-conversion/{sm}.interact.bb
-    shortLabel {sm} gc interact
+    shortLabel {sm} gc
     longLabel {sm} gene conversion interactions
     type bigInteract
     maxHeightPixels 100:30:5
