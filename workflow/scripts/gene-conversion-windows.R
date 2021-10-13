@@ -52,6 +52,7 @@ df
 
 gc.df <- df[
     (perID_by_matches >= 99.5 &
+        reference_name == reference_name.liftover &
         perID_by_all > perID_by_all.liftover &
         ((mismatches.liftover - mismatches >= 2 * window / 1e4) |
             (mismatches.liftover / mismatches > 2)) &
@@ -62,14 +63,12 @@ dim(gc.df)
 print("data subset")
 if (F) {
     dim(gc.df)
-    p <- df[
-        perID_by_all >= 99.0 &
-            perID_by_all - perID_by_all.liftover > 0.00 &
-            matches - matches.liftover > 0 &
-            matches + mismatches > 9e3 &
-            matches.liftover + mismatches.liftover > 9e3 &
-            `#reference_name` != "chrY"
-    ] %>%
+    p <- df[perID_by_all >= 99.0 &
+        perID_by_all - perID_by_all.liftover > 0.00 &
+        matches - matches.liftover > 0 &
+        matches + mismatches > 9e3 &
+        matches.liftover + mismatches.liftover > 9e3 &
+        `#reference_name` != "chrY"] %>%
         filter(perID_by_events > 99.5) %>%
         ggplot() +
         geom_histogram(aes(matches - matches.liftover),
