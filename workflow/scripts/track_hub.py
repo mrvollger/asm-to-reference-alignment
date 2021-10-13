@@ -149,7 +149,7 @@ with open(snakemake.output.track, "w") as out:
     out.write(all_tracks)
     if True:
         out.write(track_db_header)
-        out.write(track_db_interact_header)
+        # out.write(track_db_interact_header)
         [
             out.write(
                 (track + track_interact).format(sm=sm, pri=10, pri2=10)
