@@ -6,7 +6,7 @@ rule gene_conversion_target_regions:
         genome=get_fai,
         bed=config["bed"],
     output:
-        bed=temp("temp/{ref}/gene-conversion/target-regions.bed"),
+        bed=temp("temp/{ref}/gene-conversion/{window}-target-regions.bed"),
     threads: 1
     conda:
         "../envs/env.yml"
