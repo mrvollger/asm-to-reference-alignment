@@ -20,9 +20,9 @@ visibility hide
 type bigBed 9 +
 itemRgb on
 maxItems 100000
-filter.score 0:10000
+filter.score 5:1000
 filterByRange.score on
-filterLimits.score 0:10000
+filterLimits.score 0:1000
 filterLabel.score Minimum decrease in mismatches
 priority 10
 """
@@ -56,12 +56,12 @@ priority 10
 
 track_interact = """
     track interact-g-c-{sm}
-    parent interact-gene-conversion
+    parent gene-conversion
     bigDataUrl gene-conversion/{sm}.interact.bb
-    shortLabel {sm} interact-gc
+    shortLabel {sm} gc
     longLabel {sm} gene conversion interactions
     type bigInteract
-    maxHeightPixels 100:20:5
+    maxHeightPixels 100:30:5
     priority {pri2}
     visibility full
 """
