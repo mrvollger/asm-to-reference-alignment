@@ -7,8 +7,9 @@ f <- snakemake@input$bed
 print(f)
 df <- fread(f, nThread = 8, sep = "\t") %>%
     mutate(reference_name = `#reference_name`) %>%
-    group_by(group, contig) %>%
+    group_by(group, contig, reference_name, reference_name.liftover, sample) %>%
     summarise(
+        `#reference_name` = unique(`#reference_name`),
         reference_name = unique(reference_name),
         reference_start = min(reference_start),
         reference_end = max(reference_end),
@@ -50,9 +51,9 @@ df <- fread(f, nThread = 8, sep = "\t") %>%
     data.table()
 df
 
+# reference_name == reference_name.liftover &
 gc.df <- df[
     (perID_by_matches >= 99.5 &
-        reference_name == reference_name.liftover &
         perID_by_all > perID_by_all.liftover &
         ((mismatches.liftover - mismatches >= 2 * window / 1e4) |
             (mismatches.liftover / mismatches > 2)) &
