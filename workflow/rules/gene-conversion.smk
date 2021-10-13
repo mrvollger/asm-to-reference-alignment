@@ -50,6 +50,8 @@ rule make_query_windows:
             | csvtk cut  -tT -f 1,3,4 \
             | bedtools makewindows -s {params.slide} -w {params.window} -b - \
             | rb liftover -q --bed /dev/stdin --largest {input.paf} \
+            | csvtk filter2 -tT -f '$4>$3' \
+            | csvtk filter2 -tT -f '$9>$8' \
             | grep -v "cg:Z:{params.window}=" \
             > {output.paf}
         """
@@ -113,10 +115,8 @@ rule window_stats:
     shell:
         """
         rb stats --threads {threads} --paf {input.paf} \
-            | csvtk filter2 -C "$" -tT -f '$3>$2' \
             > {output.tbl}
         rb stats --threads {threads} --paf {input.liftover_paf} \
-            | csvtk filter2 -C "$" -tT -f '$3>$2' \
             > {output.liftover_tbl}
         """
 
