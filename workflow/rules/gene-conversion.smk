@@ -276,7 +276,9 @@ rule gene_conversion:
         expand(rules.make_big_beds.output, sm=df.index, ref=config.get("ref").keys()),
         expand(rules.make_trackdb.output, ref=config.get("ref").keys()),
         expand(
-            rules.gene_conversion_target_regions.output, ref=config.get("ref").keys()
+            rules.gene_conversion_target_regions.output,
+            ref=config.get("ref").keys(),
+            window=config.get("window"),
         ),
     message:
         "Gene conversion run complete"
