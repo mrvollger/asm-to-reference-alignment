@@ -24,7 +24,6 @@ filter.score 5:1000
 filterByRange.score on
 filterLimits.score 0:1000
 filterLabel.score Minimum decrease in mismatches
-priority 10
 """
 
 track = """
@@ -51,7 +50,6 @@ maxItems 100000
 filter.score 5:1000
 filterByRange.score on
 filterLimits.score 0:1000
-priority 10
 """
 
 track_interact = """
@@ -152,7 +150,7 @@ with open(snakemake.output.track, "w") as out:
         # out.write(track_db_interact_header)
         [
             out.write(
-                (track + track_interact).format(sm=sm, pri=10, pri2=10)
+                (track + track_interact).format(sm=sm, pri=idx + 1, pri2=idx + 2)
             )  # pri=idx + 1, pri2=idx + 2))
             for idx, sm in enumerate(snakemake.params.samples)
         ]
