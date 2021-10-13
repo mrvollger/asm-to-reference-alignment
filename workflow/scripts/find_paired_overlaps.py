@@ -64,7 +64,7 @@ if __name__ == "__main__":
             pre[3], pre[4], pre[5], cur[3], cur[4], cur[5], args.dist
         )
         if first_intersects and second_intersects:
-            group += 1
+            group += 0
         else:
             group += 1
         # print(cur, first_intersects, second_intersects, group)
