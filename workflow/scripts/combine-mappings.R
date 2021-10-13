@@ -73,7 +73,7 @@ df <- merge(
         overlap == 0 &
             matches + mismatches >= 0.9 * window &
             matches.liftover + mismatches.liftover >= 0.9 * window &
-            perID_by_all.liftover <= perID_by_all
+            matches - matches.liftover > -5
     ) %>%
     relocate(original_mapping, .after = last_col()) %>%
     relocate(original_source, .after = last_col()) %>%
