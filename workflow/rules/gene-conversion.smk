@@ -105,8 +105,8 @@ rule window_stats:
         paf=rules.window_alignment.output.aln,
         liftover_paf=rules.make_query_windows.output.paf,
     output:
-        tbl=temp("temp/{ref}/gene-conversion/{sm}_windows.tbl.gz"),
-        liftover_tbl=temp("temp/{ref}/gene-conversion/{sm}_liftover_windows.tbl.gz"),
+        tbl=temp("temp/{ref}/gene-conversion/{sm}_windows.tbl"),
+        liftover_tbl=temp("temp/{ref}/gene-conversion/{sm}_liftover_windows.tbl"),
     conda:
         "../envs/env.yml"
     threads: 4
