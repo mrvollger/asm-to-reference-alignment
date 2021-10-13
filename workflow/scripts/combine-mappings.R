@@ -7,6 +7,8 @@ windowf <- "/Users/mrvollger/Desktop/EichlerVolumes/assembly_breaks/nobackups/as
 windowf <- snakemake@input$window
 liftoverf <- snakemake@input$liftover
 sample <- snakemake@wildcards$sm
+window <- 10000
+window <- snakemake@params$window
 print(windowf)
 print(liftoverf)
 print(sample)
@@ -60,9 +62,23 @@ overlap_bp <- function(df) {
     intersects * overlap
 }
 
-df <- merge(window.df, liftover.df, by = c("original_mapping", "original_source"), suffixes = c("", ".liftover")) %>%
+df <- merge(
+    window.df,
+    liftover.df,
+    by = c("original_mapping", "original_source"),
+    suffixes = c("", ".liftover")
+) %>%
     mutate(overlap = overlap_bp(.)) %>%
+    filter(
+        overlap == 0 &
+            matches + mismatches >= 0.95 * window &
+            matches.liftover + mismatches.liftover >= 0.95 * window &
+            mismatches.liftover >= mismatches
+    ) %>%
+    relocate(original_mapping, .after = last_col()) %>%
+    relocate(original_source, .after = last_col()) %>%
+    arrange(`#reference_name`, `reference_start`, `reference_end`) %>%
     data.table()
 df$sample <- sample
 
-write.table(df, file = snakemake@output$tbl, sep = "\t", row.names = F, quote = F)
+write.table(df, file = snakemake@output$bed, sep = "\t", row.names = F, quote = F)

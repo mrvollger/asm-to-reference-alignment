@@ -3,15 +3,58 @@ f <- "/Users/mrvollger/Desktop/EichlerVolumes/assembly_breaks/nobackups/asm-to-r
 f <- "results/CHM13_V1.1/gene-conversion/all_candidate_windows.tbl.gz"
 window <- 1e4
 window <- snakemake@params$window
-f <- snakemake@input$tbl
+f <- snakemake@input$bed
 print(f)
-df <- fread(f, nThread = 8, sep = "\t") %>% data.table()
+df <- fread(f, nThread = 8, sep = "\t") %>%
+    mutate(reference_name = `#reference_name`) %>%
+    group_by(group, contig) %>%
+    summarise(
+        reference_name = unique(reference_name),
+        reference_start = min(reference_start),
+        reference_end = max(reference_end),
+        matches = sum(matches),
+        mismatches = sum(mismatches),
+        deletion_events = sum(deletion_events),
+        insertion_events = sum(insertion_events),
+        deletions = sum(deletions),
+        insertions = sum(insertions),
+        reference_name.liftover = unique(reference_name.liftover),
+        reference_start.liftover = min(reference_start.liftover),
+        reference_end.liftover = max(reference_end.liftover),
+        matches.liftover = sum(matches.liftover),
+        mismatches.liftover = sum(mismatches.liftover),
+        deletion_events.liftover = sum(deletion_events.liftover),
+        insertion_events.liftover = sum(insertion_events.liftover),
+        deletions.liftover = sum(deletions.liftover),
+        insertions.liftover = sum(insertions.liftover),
+        sample = unique(sample),
+        contig_start = min(contig_start),
+        contig_end = max(contig_end),
+        overlap = sum(overlap)
+    ) %>%
+    mutate(
+        perID_by_matches = 100 * matches / (matches + mismatches),
+        perID_by_events =
+            100 * matches / (matches + mismatches + insertion_events + deletion_events),
+        perID_by_all =
+            100 * matches / (matches + mismatches + insertions + deletions),
+        perID_by_matches.liftover =
+            100 * matches.liftover / (matches.liftover + mismatches.liftover),
+        perID_by_events.liftover =
+            100 * matches.liftover / (matches.liftover + mismatches.liftover + insertion_events.liftover + deletion_events.liftover),
+        perID_by_all.liftover =
+            100 * matches.liftover / (matches.liftover + mismatches.liftover + insertions.liftover + deletions.liftover),
+        original_source =
+            paste(contig, ":", contig_start, "-", contig_end, sep = "")
+    ) %>%
+    data.table()
+df
 
 gc.df <- df[
-    (overlap == 0 &
-        perID_by_matches >= 99.5 &
+    (perID_by_matches >= 99.5 &
         perID_by_all > perID_by_all.liftover &
-        mismatches.liftover - mismatches >= 2 * window / 1e4 | mismatches.liftover / mismatches > 2 &
+        ((mismatches.liftover - mismatches >= 2 * window / 1e4) |
+            (mismatches.liftover / mismatches > 2)) &
         matches + mismatches > 0.95 * window &
         matches.liftover + mismatches.liftover > 0.95 * window),
 ]
@@ -46,7 +89,6 @@ if (F) {
     ggsave("~/Desktop/gc.pdf", plot = p)
 }
 
-gc.df$reference_name <- gc.df$`#reference_name`
 gc.df$name <- paste(
     gc.df$mismatches.liftover - gc.df$mismatches,
     ";",

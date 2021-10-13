@@ -1,6 +1,10 @@
 include: "reference_alignment.smk"
 
 
+window = 5000
+slide = window
+
+
 rule gene_conversion_target_regions:
     input:
         genome=get_fai,
@@ -9,7 +13,7 @@ rule gene_conversion_target_regions:
         bed=temp(
             expand(
                 "temp/{ref}/gene-conversion/{window}-target-regions.bed",
-                window=config["window"],
+                window=config.get("window", window),
                 allow_missing=True,
             )
         ),
@@ -17,7 +21,7 @@ rule gene_conversion_target_regions:
     conda:
         "../envs/env.yml"
     params:
-        slop=2 * config.get("window", 10000),
+        slop=2 * config.get("window", window),
     shell:
         """
         bedtools sort -i {input.bed} \
@@ -39,8 +43,8 @@ rule make_query_windows:
     conda:
         "../envs/env.yml"
     params:
-        window=config.get("window", 10000),
-        slide=config.get("slide", 5000),
+        window=config.get("window", window),
+        slide=config.get("slide", slide),
         min_aln_len=config.get("min_aln_len", 1e6),
         buffer=config.get("buffer", 25e3),
     shell:
@@ -127,55 +131,77 @@ rule candidate_gene_conversion:
         window=rules.window_stats.output.tbl,
         liftover=rules.window_stats.output.liftover_tbl,
     output:
-        tbl=temp("temp/{ref}/gene-conversion/{sm}_candidate_windows.tbl"),
+        bed=temp("temp/{ref}/gene-conversion/{sm}_candidate_windows.bed"),
     conda:
         "../envs/env.yml"
+    params:
+        window=config.get("window", window),
     script:
         "../scripts/combine-mappings.R"
 
 
+rule group_gene_conversion:
+    input:
+        bed=rules.candidate_gene_conversion.output.bed,
+    output:
+        bed=temp("temp/{ref}/gene-conversion/{sm}_candidate_windows.group.bed"),
+    conda:
+        "../envs/env.yml"
+    params:
+        dist=int(config.get("window", window) / 20),
+        find_pairs=workflow.source_path("../scripts/find_paired_overlaps.py"),
+    shell:
+        """
+        python {params.find_pairs} \
+            --cols 23 24 25 \
+            --dist {params.dist} \
+            {input.bed} \
+        > {output.bed}
+        """
+
+
 rule gene_conversion_windows_per_sample:
     input:
-        tbl=rules.candidate_gene_conversion.output.tbl,
+        bed=rules.group_gene_conversion.output.bed,
     output:
         bed="results/{ref}/gene-conversion/tables/{sm}.bed",
         interact="results/{ref}/gene-conversion/interactions/{sm}.bed",
     conda:
         "../envs/env.yml"
     params:
-        window=config.get("window", 10000),
+        window=config.get("window", window),
     script:
         "../scripts/gene-conversion-windows.R"
 
 
 rule large_table:
     input:
-        tbls=expand(
-            rules.candidate_gene_conversion.output, sm=df.index, allow_missing=True
+        beds=expand(
+            rules.group_gene_conversion.output.bed, sm=df.index, allow_missing=True
         ),
     output:
-        tbl="results/{ref}/gene-conversion/all_candidate_windows.tbl.gz",
+        bed="results/{ref}/gene-conversion/all_candidate_windows.tbl.gz",
     conda:
         "../envs/env.yml"
     threads: 4
     shell:
         """
-        (head -n 1 {input.tbls[0]}; tail -q -n +2 {input.tbls}) \
+        (head -n 1 {input.beds[0]}; tail -q -n +2 {input.beds}) \
             | pigz -p {threads} \
-            > {output.tbl}
+            > {output.bed}
         """
 
 
 rule gene_conversion_windows:
     input:
-        tbl=rules.large_table.output.tbl,
+        bed=rules.large_table.output.bed,
     output:
         bed="results/{ref}/gene-conversion/gene_conversion_windows.tbl",
         interact="results/{ref}/gene-conversion/gene_conversion_interactions.bed",
     conda:
         "../envs/env.yml"
     params:
-        window=config.get("window", 10000),
+        window=config.get("window", window),
     script:
         "../scripts/gene-conversion-windows.R"
 
@@ -279,7 +305,7 @@ rule make_trackdb:
 
 rule gene_conversion:
     input:
-        expand(rules.large_table.output.tbl, ref=config.get("ref").keys()),
+        expand(rules.large_table.output, ref=config.get("ref").keys()),
         expand(rules.gene_conversion_windows.output.bed, ref=config.get("ref").keys()),
         expand(rules.make_big_bed.output, ref=config.get("ref").keys()),
         expand(rules.make_big_beds.output, sm=df.index, ref=config.get("ref").keys()),
