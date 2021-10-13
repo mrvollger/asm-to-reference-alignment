@@ -150,7 +150,9 @@ with open(snakemake.output.track, "w") as out:
         # out.write(track_db_interact_header)
         [
             out.write(
-                (track + track_interact).format(sm=sm, pri=idx + 1, pri2=idx + 1)
+                (track + track_interact).format(
+                    sm=sm, pri=2 * idx + 1, pri2=2 * idx + 2
+                )
             )  # pri=idx + 1, pri2=idx + 2))
             for idx, sm in enumerate(snakemake.params.samples)
         ]
