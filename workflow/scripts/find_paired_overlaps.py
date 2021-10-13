@@ -1,12 +1,8 @@
 #!/usr/bin/env python
-import numpy as np
-from numba import njit
-import pandas as pd
 import argparse
 import sys
 
 
-@njit
 def intersect(a, a0, a1, b, b0, b1, dist):
     """
     check if two genomic intervals overlap
