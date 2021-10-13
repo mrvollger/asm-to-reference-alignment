@@ -55,6 +55,7 @@ if __name__ == "__main__":
     group = 0
     for cur in read_bed_line(args):
         if pre is None:
+            print(f"{cur[6].strip()}\t{group}")
             pre = cur
             continue
         first_intersects = intersect(
