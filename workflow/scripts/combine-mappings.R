@@ -73,7 +73,7 @@ df <- merge(
         overlap == 0 &
             matches + mismatches >= 0.9 * window &
             matches.liftover + mismatches.liftover >= 0.9 * window &
-            matches - matches.liftover > -5
+            matches - matches.liftover > -window / 1e3
     ) %>%
     relocate(original_mapping, .after = last_col()) %>%
     relocate(original_source, .after = last_col()) %>%
