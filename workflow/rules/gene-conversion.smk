@@ -62,7 +62,8 @@ rule unzip_ref:
     input:
         query=get_asm,
     output:
-        temp("temp/{ref}/gene-conversion/ref/{sm}_ref.fasta"),
+        fa=temp("temp/{ref}/gene-conversion/ref/{sm}_ref.fasta"),
+        fai=temp("temp/{ref}/gene-conversion/ref/{sm}_ref.fasta.fai"),
     benchmark:
         "logs/{ref}/gene-conversion/alignment.{ref}_{sm}.benchmark.txt"
     conda:
@@ -70,16 +71,16 @@ rule unzip_ref:
     threads: config.get("aln_threads", 4)
     shell:
         """
-        seqtk seq -A -l 60 {input.query} > {output}
-        samtools faidx {output}
+        seqtk seq -A -l 60 {input.query} > {output.fa}
+        samtools faidx {output.fa}
         """
 
 
 rule window_alignment:
     input:
-        #ref=get_ref,
         ref=rules.alignment_index.output.mmi,
-        query=rules.unzip_ref.output,
+        query=rules.unzip_ref.output.fa,
+        fai=rules.unzip_ref.output.fai,
         paf=rules.make_query_windows.output.paf,
     output:
         aln=temp("temp/{ref}/gene-conversion/{sm}_windows.paf"),
