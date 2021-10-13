@@ -63,7 +63,9 @@ if __name__ == "__main__":
         second_intersects = intersect(
             pre[3], pre[4], pre[5], cur[3], cur[4], cur[5], args.dist
         )
-        if not (first_intersects and second_intersects):
+        if first_intersects and second_intersects:
+            group += 1
+        else:
             group += 1
         # print(cur, first_intersects, second_intersects, group)
         print(f"{cur[6].strip()}\t{group}")
