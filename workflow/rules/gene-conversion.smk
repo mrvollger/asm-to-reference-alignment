@@ -148,7 +148,7 @@ rule group_gene_conversion:
     conda:
         "../envs/env.yml"
     params:
-        dist=int(config.get("window", window) / 20),
+        dist=config.get("window", window),
         find_pairs=workflow.source_path("../scripts/find_paired_overlaps.py"),
     shell:
         """
