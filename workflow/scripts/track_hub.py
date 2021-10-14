@@ -169,10 +169,6 @@ view_format_comp = """
     shortLabel gc-by-sample
     visibility full
     subGroup1 view Views bb=Colored_bigBed_items int=Interact_Data
-    maxItems 100000
-    filter.score 5:1000
-    filterByRange.score on
-    filterLimits.score 0:1000
 
 """
 view_fromat_bb = """
@@ -185,6 +181,10 @@ view_fromat_bb = """
         view bb
         visibility dense
         itemRgb on 
+        maxItems 100000
+        filter.score 5:1000
+        filterByRange.score on
+        filterLimits.score 0:1000
 
 """
 view_format_bb_sm = """
@@ -193,9 +193,9 @@ view_format_bb_sm = """
             #    even though a parent declaration is also needed
             # All these tracks should be the same type of data
             track gene-conversion-by-sample-bb-{sm}
+            parent gene-conversion-by-sample-bb
             type bigBed 9 +
             longLabel {sm} gene conversion bb 
-            parent gene-conversion-by-sample-bb
             bigDataUrl gene-conversion/{sm}.bb
             shortLabel {sm}-gc-bb
             subGroups view=bb
@@ -209,6 +209,10 @@ view_format_int = """
         view int
         visibility full
         maxHeightPixels 100:30:5
+        maxItems 100000
+        filter.score 5:1000
+        filterByRange.score on
+        filterLimits.score 0:1000
 
 """
 view_format_int_sm = """
