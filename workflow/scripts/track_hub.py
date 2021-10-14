@@ -208,12 +208,12 @@ view_format_int = """
         parent gene-conversion-by-sample on
         view int
         visibility full
-        maxHeightPixels 100:30:5
+        maxHeightPixels 100:50:5
         maxItems 100000
         filter.score 5:1000
         filterByRange.score on
         filterLimits.score 0:1000
-        gene-conversion-by-sample-interact.endsVisisble two
+        endsVisisble two
 
 """
 view_format_int_sm = """
