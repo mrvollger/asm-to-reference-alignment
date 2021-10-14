@@ -213,7 +213,7 @@ view_format_int = """
         filter.score 5:1000
         filterByRange.score on
         filterLimits.score 0:1000
-        endsVisible two
+        endsVisible one
 
 """
 view_format_int_sm = """
