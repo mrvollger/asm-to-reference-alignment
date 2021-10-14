@@ -74,7 +74,7 @@ df <- merge(
             # matches + mismatches >= 0.9 * window &
             # matches.liftover + mismatches.liftover >= 0.9 * window &
             matches + mismatches >= 0.9 * (matches.liftover + mismatches.liftover) &
-            matches - matches.liftover > -window / 1e3
+            matches - matches.liftover > -2 * window / 1e3
     ) %>%
     relocate(original_mapping, .after = last_col()) %>%
     relocate(original_source, .after = last_col()) %>%
