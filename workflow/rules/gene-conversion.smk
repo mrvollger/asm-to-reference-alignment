@@ -50,12 +50,11 @@ rule make_query_windows:
     shell:
         """
         awk '$4-$3>{params.min_aln_len}' {input.paf} \
+            | rb breakpaf -s {params.window} - \
             | rb liftover --bed {input.bed} \
             | csvtk cut  -tT -f 1,3,4 \
             | bedtools makewindows -s {params.slide} -w {params.window} -b - \
             | rb liftover -q --bed /dev/stdin --largest {input.paf} \
-            | csvtk filter2 -tT -f '$4>$3' \
-            | csvtk filter2 -tT -f '$9>$8' \
             | grep -v "cg:Z:{params.window}=" \
             > {output.paf}
         """
