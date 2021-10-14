@@ -180,7 +180,7 @@ view_fromat_bb = """
         track gene-conversion-by-sample-bb
         parent gene-conversion-by-sample on
         view bb
-        visibility dense
+        visibility pack
         itemRgb on 
         maxItems 100000
         filter.score 5:1000

@@ -96,6 +96,8 @@ gc.df$name <- paste(
     gc.df$reference_start,
     sep = ""
 )
+gc.df$name <- gc.df$mismatches.liftover - gc.df$mismatches
+
 gc.df$strand <- "."
 gc.df$color <- "0,127,211"
 gc.df$score <- pmin(gc.df$mismatches.liftover - gc.df$mismatches, 1000)
