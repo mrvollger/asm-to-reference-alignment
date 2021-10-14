@@ -213,7 +213,6 @@ view_format_int = """
         filter.score 5:1000
         filterByRange.score on
         filterLimits.score 0:1000
-        endsVisisble one
 
 """
 view_format_int_sm = """
@@ -225,6 +224,7 @@ view_format_int_sm = """
             bigDataUrl gene-conversion/{sm}.interact.bb
             shortLabel {sm}-gc-interact
             subGroups view=int
+            endsVisisble one
 
 """
 
