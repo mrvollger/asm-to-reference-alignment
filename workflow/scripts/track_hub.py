@@ -208,7 +208,7 @@ view_format_int = """
         parent gene-conversion-by-sample on
         view int
         visibility full
-        maxHeightPixels 100:50:5
+        maxHeightPixels 100:55:5
         maxItems 100000
         filter.score 5:1000
         filterByRange.score on
