@@ -224,7 +224,6 @@ view_format_int_sm = """
             bigDataUrl gene-conversion/{sm}.interact.bb
             shortLabel {sm}-gc-interact
             subGroups view=int
-            endsVisisble two
 
 """
 
