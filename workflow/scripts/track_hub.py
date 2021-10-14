@@ -169,7 +169,6 @@ view_format_comp = """
     shortLabel gc-by-sample
     visibility full
     subGroup1 view Views bb=Colored_bigBed_items int=Interact_Data
-    endsVisible one
 
 """
 view_fromat_bb = """
@@ -225,6 +224,7 @@ view_format_int_sm = """
             bigDataUrl gene-conversion/{sm}.interact.bb
             shortLabel {sm}-gc-interact
             subGroups view=int
+            endsVisible one
 
 """
 
