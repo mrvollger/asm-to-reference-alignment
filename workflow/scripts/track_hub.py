@@ -143,9 +143,85 @@ maxItems 100000
 """
 
 
+view_format_super = """
+# SuperTrack declaration no type or visibility is required
+# However "show" is needed to have a superTrack on by  default
+track gene-conversion
+longLabel gene conversion for HPRC samples
+superTrack on show
+shortLabel gene-conversion
+
+"""
+view_format_comp = """
+    # Composite declaration, usually composite tracks are all of one type,
+    #   and the type can be declared.
+    # When a mixed type (some bigBeds, some bigWigs) you need to use the unusual
+    #   'type bed 3' declaration.
+    # The subGroup1 line will define groups,
+    #   in this case the special 'view' group
+    #   (a new subGroup2 could be metadata)
+    # Later individual tracks will identify what 'subGroups id' they belong to.
+    track gene-conversion-by-sample
+    type bed 3
+    longLabel gene conversion by sample
+    parent gene-conversion
+    compositeTrack on
+    shortLabel gc-by-sample
+    visibility full
+    subGroup1 view Views bb=Colored_bigBed_items int=Interact_Data
+
+"""
+view_fromat_bb = """
+        # This is the unexpected part about views,
+        #    you need a separate parent to group the view
+        # So this new view-specific stanza with "view id"
+        #    can collect all tracks with some visibility settings
+        track gene-conversion-by-sample-bb
+        parent gene-conversion-by-sample on
+        view bb
+        visibility dense
+        itemRgb on 
+
+"""
+view_format_bb_sm = """
+            # Child bigBed in this view
+            # The 'subGroups view=bb' shares this track belongs in a view,
+            #    even though a parent declaration is also needed
+            # All these tracks should be the same type of data
+            track gene-conversion-by-sample-bb-{sm}
+            type bigBed 9 +
+            longLabel {sm} gene conversion bb 
+            parent gene-conversion-by-sample-bb
+            bigDataUrl gene-conversion/{sm}.bb
+            shortLabel {sm}-gc-bb
+            subGroups view=bb
+
+"""
+view_format_int = """
+        # New View Stanza that collects all interact in this composite
+        # This declares related bigInteract tracks    
+        track gene-conversion-by-sample-interact
+        parent gene-conversion-by-sample on
+        view int
+        visibility full
+        maxHeightPixels 100:30:5
+
+"""
+view_format_int_sm = """
+            # Child one Interact
+            track gene-conversion-by-sample-interact-{sm}
+            type bigInteract
+            longLabel {sm} gene conversion interactions
+            parent gene-conversion-by-sample-interact
+            bigDataUrl gene-conversion/{sm}.interact.bb
+            shortLabel {sm}-gc-interact
+            subGroups view=int
+
+"""
+
 with open(snakemake.output.track, "w") as out:
     out.write(all_tracks)
-    if True:
+    if False:
         out.write(track_db_header)
         # out.write(track_db_interact_header)
         [
@@ -156,6 +232,15 @@ with open(snakemake.output.track, "w") as out:
             )  # pri=idx + 1, pri2=idx + 2))
             for idx, sm in enumerate(snakemake.params.samples)
         ]
+    elif True:
+        out.write(view_format_super)
+        out.write(view_format_comp)
+        # big beds
+        out.write(view_fromat_bb)
+        [out.write(view_format_bb_sm.format(sm=sm)) for sm in snakemake.params.samples]
+        # bigInteract
+        out.write(view_format_int)
+        [out.write(view_format_int_sm.format(sm=sm)) for sm in snakemake.params.samples]
     else:
         out.write(track_super)
         [out.write(track_comp.format(sm=sm)) for sm in snakemake.params.samples]
