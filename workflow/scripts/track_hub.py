@@ -169,6 +169,10 @@ view_format_comp = """
     shortLabel gc-by-sample
     visibility full
     subGroup1 view Views bb=Colored_bigBed_items int=Interact_Data
+    maxItems 100000
+    filter.score 5:1000
+    filterByRange.score on
+    filterLimits.score 0:1000
 
 """
 view_fromat_bb = """
@@ -210,9 +214,9 @@ view_format_int = """
 view_format_int_sm = """
             # Child one Interact
             track gene-conversion-by-sample-interact-{sm}
+            parent gene-conversion-by-sample-interact
             type bigInteract
             longLabel {sm} gene conversion interactions
-            parent gene-conversion-by-sample-interact
             bigDataUrl gene-conversion/{sm}.interact.bb
             shortLabel {sm}-gc-interact
             subGroups view=int
