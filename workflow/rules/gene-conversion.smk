@@ -253,10 +253,12 @@ rule make_big_beds:
     input:
         bed=rules.gene_conversion_windows_per_sample.output.bed,
         interact=rules.gene_conversion_windows_per_sample.output.interact,
+        liftover_tbl=rules.window_stats.output.liftover_tbl,
         fai=get_fai,
     output:
-        bed=temp("temp/{ref}/gene-conversion/trackHub/gene-conversion/{sm}.bb"),
+        bed=temp("temp/{ref}/gene-conversion/trackHub/gene-conversion/{sm}.bed"),
         bb="results/{ref}/gene-conversion/trackHub/gene-conversion/{sm}.bb",
+        bg="results/{ref}/gene-conversion/trackHub/gene-conversion/{sm}.bg",
         interact=(
             "results/{ref}/gene-conversion/trackHub/gene-conversion/{sm}.interact.bb"
         ),
@@ -265,6 +267,7 @@ rule make_big_beds:
     params:
         interact=workflow.source_path("../scripts/interact.as"),
         fmt=workflow.source_path("../scripts/bed.as"),
+        slide=config.get("slide", slide),
     threads: 1
     shell:
         """
@@ -278,6 +281,16 @@ rule make_big_beds:
         # make others
          bedToBigBed -as={params.fmt} -type=bed9+ \
              {input.bed} {input.fai} {output.bb} 
+
+
+        csvtk cut  -tT -C "$" \
+            -f query_name,query_start,query_end,mismatches \
+            {input.liftover_tbl} \
+            | tail -n+2 \
+            | awk -v OFS=$'\t' '{{print $1,$2,$2+1,$4}}' \
+            | bedtools sort -i - \
+            > {output.bed}
+        bedGraphToBigWig {output.bed} {input.fai} {output.bg}
         """
 
 

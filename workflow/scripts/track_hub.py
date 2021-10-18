@@ -168,7 +168,7 @@ view_format_comp = """
     compositeTrack on
     shortLabel gc-by-sample
     visibility full
-    subGroup1 view Views bb=Colored_bigBed_items int=Interact_Data
+    subGroup1 view Views bb=Colored_bigBed_items int=Interact_Data bg=BigBedGraph_items
 
 """
 view_fromat_bb = """
@@ -227,6 +227,32 @@ view_format_int_sm = """
 
 """
 
+view_format_bg = """
+        track gene-conversion-by-sample-bg
+        parent gene-conversion-by-sample on
+        view bg
+        visibility full
+        maxHeightPixels 100:10:5
+        maxItems 100000
+"""
+
+view_format_bg_sm = """
+            track gene-conversion-by-sample-bg-{sm}
+            parent gene-conversion-by-sample-bg
+            longLabel {sm} gene conversion bg
+            bigDataUrl gene-conversion/{sm}.bg
+            shortLabel {sm}-gc-bg
+            subGroups view=bg
+            autoScale Off
+            graphTypeDefault Bar
+            gridDefault OFF
+            windowingFunction Mean
+            color 175,4,4
+            altColor 47,79,79
+            viewLimits 0:5
+            type bigWig 0 1000
+"""
+
 with open(snakemake.output.track, "w") as out:
     out.write(all_tracks)
     if False:
@@ -249,6 +275,9 @@ with open(snakemake.output.track, "w") as out:
         # bigInteract
         out.write(view_format_int)
         [out.write(view_format_int_sm.format(sm=sm)) for sm in snakemake.params.samples]
+        # bedGraph
+        out.write(view_format_bg)
+        [out.write(view_format_bg_sm.format(sm=sm)) for sm in snakemake.params.samples]
     else:
         out.write(track_super)
         [out.write(track_comp.format(sm=sm)) for sm in snakemake.params.samples]
