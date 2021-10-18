@@ -126,7 +126,20 @@ odf <- gc.df[, c(
     "sample",
     "original_source"
 )]
+fwrite(
+    odf %>%
+        arrange(reference_name.liftover, reference_start.liftover) %>%
+        dplyr::rename(`#reference_name.liftover` = reference_name.liftover) %>%
+        data.table(),
+    file = snakemake@output$acceptor,
+    sep = "\t",
+    row.names = F,
+    quote = F
+)
 
+#
+# add donor sites
+#
 odf2 <- data.table(copy(odf))
 odf2$color <- "211,144,0"
 odf2$status <- "Donor"

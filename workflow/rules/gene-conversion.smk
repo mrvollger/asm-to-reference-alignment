@@ -163,6 +163,7 @@ rule gene_conversion_windows_per_sample:
     input:
         bed=rules.group_gene_conversion.output.bed,
     output:
+        acceptor="results/{ref}/gene-conversion/tables/{sm}.acceptor.bed",
         bed="results/{ref}/gene-conversion/tables/{sm}.bed",
         interact="results/{ref}/gene-conversion/interactions/{sm}.bed",
     conda:
@@ -195,6 +196,7 @@ rule gene_conversion_windows:
     input:
         bed=rules.large_table.output.bed,
     output:
+        acceptor="results/{ref}/gene-conversion/acceptor_gene_conversion_windows.bed",
         bed="results/{ref}/gene-conversion/gene_conversion_windows.tbl",
         interact="results/{ref}/gene-conversion/gene_conversion_interactions.bed",
     conda:
@@ -319,7 +321,12 @@ rule make_trackdb:
 rule gene_conversion:
     input:
         expand(rules.large_table.output, ref=config.get("ref").keys()),
-        expand(rules.gene_conversion_windows.output.bed, ref=config.get("ref").keys()),
+        expand(rules.gene_conversion_windows.output, ref=config.get("ref").keys()),
+        expand(
+            rules.gene_conversion_windows_per_sample.output,
+            sm=df.index,
+            ref=config.get("ref").keys(),
+        ),
         expand(rules.make_big_bed.output, ref=config.get("ref").keys()),
         expand(rules.make_big_beds.output, sm=df.index, ref=config.get("ref").keys()),
         expand(rules.make_trackdb.output, ref=config.get("ref").keys()),
