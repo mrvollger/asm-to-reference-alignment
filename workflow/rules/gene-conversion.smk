@@ -289,6 +289,7 @@ rule make_big_beds:
             | tail -n+2 \
             | awk -v OFS=$'\t' '{{print $1,$2,$2+1,$4}}' \
             | bedtools sort -i - \
+            | bedtools merge -i - -c 4 -o mean \
             > {output.bed}
         bedGraphToBigWig {output.bed} {input.fai} {output.bg}
         """
