@@ -318,10 +318,37 @@ rule make_trackdb:
         "../scripts/track_hub.py"
 
 
+rule make_tbl:
+    input:
+        expand(
+            rules.gene_conversion_windows_per_sample.output.acceptor,
+            sm=df.index,
+            allow_missing=True,
+        ),
+    output:
+        tbl="results/{ref}/gene-conversion/acceptor_manifest_table.tsv",
+    threads: 1
+    params:
+        samples=list(df.index),
+    run:
+        with open(output.tbl, "w+") as out:
+            out.write("sample\thap\tfile\n")
+            for sm, f in zip(params.samples, input):
+                sm, hap = sm.split("_")
+                out.write(
+                    "{}\t{}\t{}\n".format(
+                        sm,
+                        hap,
+                        os.path.abspath(f),
+                    )
+                )
+
+
 rule gene_conversion:
     input:
+        expand(rules.make_tbl.output, ref=config.get("ref").keys()),
         expand(rules.large_table.output, ref=config.get("ref").keys()),
-        expand(rules.gene_conversion_windows.output, ref=config.get("ref").keys()),
+        expand(rules.gene_conversion_windows.output.bed, ref=config.get("ref").keys()),
         expand(
             rules.gene_conversion_windows_per_sample.output,
             sm=df.index,
