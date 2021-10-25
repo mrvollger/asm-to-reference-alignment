@@ -30,11 +30,15 @@ parser$add_argument("-b", "--asm2",  help="bed file with a second asm mapping")
 parser$add_argument("-k", "--karyotype",  help="karyotpye file for different genomes")
 parser$add_argument("-p", "--plot",  help="output plot, must have .pdf ext.", default = "~/Desktop/ideogram.pdf")
 args <- parser$parse_args()
+filename=args$asm
+filename="~/Desktop/EichlerVolumes/chm13_t2t/nobackups/chm1_20211004_from_phillippy_group/2021-10-25/chm1_to_chm13.tbl"
 
 
-asmdf<- function(filename, colors){
+asmdf<- function(filename, colors, minlen=1e6){
   asmvshg = read.table(filename, header=T, comment.char = ">")
   names(asmvshg)[1:3] = c("chr", "start", "end") #, "rlen", "strand", "name")
+  asmvshg = asmvshg[asmvshg$end-asmvshg$start>minlen,]
+  
   asmvshg$name = asmvshg$query_name
   print(head(asmvshg))
   curcolor = 1
@@ -58,7 +62,7 @@ asmdf<- function(filename, colors){
   return(asmvshg)
 }
 
-asmvshg = asmdf(args$asm,  c("#2081f9", "#f99820") ) 
+asmvshg = asmdf(filename,  c("#2081f9", "#f99820") ) 
 
 if(!is.null(args$asm2)){
   asmvshg2 = asmdf(args$asm2,  c("#159934", "#99157a") )
@@ -91,3 +95,4 @@ if(F){
   dir ="~/Desktop/EichlerVolumes/chm13_t2t/nobackups/assembly_alignments/rustybam/workflow/scripts/"
   save(GENOME, CYTOFULL, NOM, file = glue("{dir}/chm13.karyo.RData"))
 }
+

@@ -19,11 +19,12 @@ if(! require("GenomicRanges")) BiocManager::install("GenomicRanges")
 indir="~/Desktop/EichlerVolumes/chm13_t2t/nobackups/assembly_alignments/rustybam/reference_alignment/bed/"
 parser <- ArgumentParser()
 parser$add_argument("-a", "--asm",  help="bed file with all the asm mapping", default = glue("{indir}/HG00733_1.bed"))
-parser$add_argument("-b", "--asm2",  help="bed file with a second asm mapping", default = glue("{indir}/HG00733_2.bed"))
+parser$add_argument("-b", "--asm2",  help="bed file with a second asm mapping")#, default = glue("{indir}/HG00733_2.bed"))
 parser$add_argument("-k", "--karyotype",  help="karyotpye file for different genomes")
 parser$add_argument("-p", "--plot",  help="output plot, must have .pdf ext.", default = "~/Desktop/ideogram.pdf")
 args <- parser$parse_args()
 filename=args$asm
+filename="~/Desktop/EichlerVolumes/chm13_t2t/nobackups/chm1_20211004_from_phillippy_group/2021-10-25/chm1_to_chm13.tbl"
 
 asmdf<- function(filename, colors){
   asmvshg = fread(filename, header=T)
@@ -48,7 +49,7 @@ asmdf<- function(filename, colors){
   return(asmvshg)
 }
 
-asmvshg = asmdf(args$asm,  c("#2081f9", "#f99820") ) 
+asmvshg = asmdf(filename,  c("#2081f9", "#f99820") ) 
 
 if(!is.null(args$asm2)){
   asmvshg2 = asmdf(args$asm2,  c("#159934", "#99157a") )

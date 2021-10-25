@@ -289,8 +289,9 @@ large_sd_blocks_with_ends$genes = sapply(large_sd_blocks_with_ends$genes, paste,
 dim(large_sd_blocks_with_ends)
 
 
+#large_sd_blocks_with_ends= fread(glue("{odir}/len_vs_nsamples.datatable.tsv"))
 p.len_vs_n_samples = ggplot(data = large_sd_blocks_with_ends,
-                            aes(x = n_haplotypes, y = y)) +
+                            aes(x = n_haplotypes, y = y/1e3)) +
   geom_point(aes(color = `SD locus`),#, shape = mCNV),
              size = 3,
              alpha = 0.75) +
@@ -302,15 +303,15 @@ p.len_vs_n_samples = ggplot(data = large_sd_blocks_with_ends,
   stat_cor(method = "pearson") +
   scale_color_manual(values = c( NEWCOLOR, OLDCOLOR)) +#"purple",
   theme_cowplot() +
-  xlab("# broken haplotype assemblies across the SD locus") +
+  xlab("# broken haplotype assemblies\nacross the SD locus") +
   geom_vline(aes(xintercept = 94), color = "black", linetype = "dashed") +
-  ylab("Length of the SD locus") + theme(legend.position = "top")
+  ylab("Length of the SD locus (kbp)") + theme(legend.position = "top")
 p.len_vs_n_samples
 my_ggsave(
   file = "{odir}/len_vs_nsamples.pdf",
   plot = p.len_vs_n_samples,
-  height = 8,
-  width = 10
+  height = 11*0.55,
+  width = 10*0.55
 )
 
 #----------------------- windowed anlysis -----------------------------------#
