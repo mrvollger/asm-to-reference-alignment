@@ -34,21 +34,28 @@ filename=args$asm
 filename="~/Desktop/EichlerVolumes/chm13_t2t/nobackups/chm1_20211004_from_phillippy_group/2021-10-25/chm1_to_chm13.tbl"
 
 
-asmdf<- function(filename, colors, minlen=1e6){
+asmdf<- function(filename, colors, minalnsize=1e6){
   asmvshg = read.table(filename, header=T, comment.char = ">")
   names(asmvshg)[1:3] = c("chr", "start", "end") #, "rlen", "strand", "name")
-  asmvshg = asmvshg[asmvshg$end-asmvshg$start>minlen,]
-  
+  asmvshg = asmvshg %>% 
+    group_by(query_name, chr) %>%
+    summarise(bp_aligned = sum(end-start)) %>%
+    merge(asmvshg) %>% 
+    filter(bp_aligned > minalnsize) %>%
+    arrange(chr, start, query_name) %>%
+    data.table()
+
   asmvshg$name = asmvshg$query_name
   print(head(asmvshg))
   curcolor = 1
   lencolors = length(colors)
   precontig = ""
   asmcolor = NULL
+  seen = c()
   y = NULL
   for(i in 1:nrow(asmvshg) ){
     contig = as.character(asmvshg$name[i])
-    if(contig != precontig){
+    if( contig != precontig ){
       curcolor = (curcolor + 1) %% lencolors 
       precontig = contig
     }
