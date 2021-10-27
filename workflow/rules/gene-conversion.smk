@@ -39,6 +39,8 @@ rule make_query_windows:
         bed=rules.gene_conversion_target_regions.output.bed,
     output:
         paf=temp("temp/{ref}/gene-conversion/{sm}_liftover.paf"),
+    log:
+        "logs/{ref}/gene-conversion/{sm}_liftover.log",
     threads: 1
     conda:
         "../envs/env.yml"
@@ -49,14 +51,14 @@ rule make_query_windows:
         buffer=config.get("buffer", 25e3),
     shell:
         """
-        awk '$4-$3>{params.min_aln_len}' {input.paf} \
+        ( awk '$4-$3>{params.min_aln_len}' {input.paf} \
             | rb breakpaf -s {params.window} - \
             | rb liftover --bed {input.bed} \
             | csvtk cut  -tT -f 1,3,4 \
             | bedtools makewindows -s {params.slide} -w {params.window} -b - \
             | rb liftover -q --bed /dev/stdin --largest {input.paf} \
             | grep -v "cg:Z:{params.window}=" \
-            > {output.paf}
+            > {output.paf} ) 2> {log}
         """
         #| awk -v OFS=$'\t' '{{$2+={params.buffer}; $3-={params.buffer}}}{{print $0}}' \
 
