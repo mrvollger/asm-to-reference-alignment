@@ -4,3 +4,5 @@ tbl: config/table.asm.tbl
 aln_threads: 8
 # subset the gene conversion analysis to just these regions on the reference
 bed: /net/eichler/vol26/projects/chm13_t2t/nobackups/Assembly_analysis/SEDEF/chm13_v1.1_plus38Y.SDs.bed
+window: 2000
+slide: 1000

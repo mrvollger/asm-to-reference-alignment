@@ -28,21 +28,25 @@ parser <- ArgumentParser()
 parser$add_argument("-a", "--asm",  help="bed file with all the asm mapping", default = glue("{indir}/HG00733_1.bed"))
 parser$add_argument("-b", "--asm2",  help="bed file with a second asm mapping")
 parser$add_argument("-k", "--karyotype",  help="karyotpye file for different genomes")
+parser$add_argument("--min",  help="minimum amount of total alginemnts between a target and query for it to appear", default=1e6)
 parser$add_argument("-p", "--plot",  help="output plot, must have .pdf ext.", default = "~/Desktop/ideogram.pdf")
 args <- parser$parse_args()
 filename=args$asm
 filename="~/Desktop/EichlerVolumes/chm13_t2t/nobackups/chm1_20211004_from_phillippy_group/2021-10-25/chm1_to_chm13.tbl"
 
 
-asmdf<- function(filename, colors, minalnsize=1e6){
+asmdf<- function(filename, colors, minalnsize=args$min){
   asmvshg = read.table(filename, header=T, comment.char = ">")
   names(asmvshg)[1:3] = c("chr", "start", "end") #, "rlen", "strand", "name")
   asmvshg = asmvshg %>% 
     group_by(query_name, chr) %>%
-    summarise(bp_aligned = sum(end-start)) %>%
+    summarise(bp_aligned = sum(end-start),
+              min_start=min(start),
+              max_end=max(end)
+              ) %>%
     merge(asmvshg) %>% 
     filter(bp_aligned > minalnsize) %>%
-    arrange(chr, start, query_name) %>%
+    arrange(chr, min_start) %>%
     data.table()
 
   asmvshg$name = asmvshg$query_name
@@ -89,6 +93,7 @@ kp <- plotKaryotype(genome=GENOME, cytobands = CYTOFULL, chromosomes = NOM, plot
 }
 
 # adding asm bed number one
+kpRect(kp, chr=asmvshg$chr, x0=asmvshg$min_start, x1=asmvshg$max_end, y0=(asmvshg$y+asmvshg$y1)/2, y1=(asmvshg$y+asmvshg$y1)/2, col=asmvshg$color)
 kpRect(kp, chr=asmvshg$chr, x0=asmvshg$start, x1=asmvshg$end, y0=asmvshg$y, y1=asmvshg$y1, col=asmvshg$color)
 
 # adding second asm if there
