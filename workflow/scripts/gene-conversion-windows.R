@@ -5,6 +5,7 @@ window <- 1e4
 window <- snakemake@params$window
 f <- snakemake@input$bed
 print(f)
+
 df <- fread(f, nThread = 8, sep = "\t") %>%
     mutate(reference_name = `#reference_name`) %>%
     group_by(group, contig, reference_name, reference_name.liftover, sample) %>%
@@ -49,8 +50,14 @@ df <- fread(f, nThread = 8, sep = "\t") %>%
             paste(contig, ":", contig_start, "-", contig_end, sep = "")
     ) %>%
     data.table()
-df
 
+remove_par <- (df$reference_name == "chrX" &
+    df$reference_name.liftover == "chrY") |
+    (df$reference_name == "chrY" &
+        df$reference_name.liftover == "chrX")
+df <- df[!remove_par, ]
+
+df
 # reference_name == reference_name.liftover &
 gc.df <- df[
     (perID_by_matches >= 99.5 &
