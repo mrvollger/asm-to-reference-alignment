@@ -1,6 +1,7 @@
 #!/usr/bin/env Rscript
 options(repos=structure(c(CRAN="http://cran.us.r-project.org")))
 .libPaths(c("~/local/R/library", .libPaths()))
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 if(! require("tidyverse")) install.packages("tidyverse")
 if(! require("ggnewscale")) install.packages("ggnewscale")
@@ -17,7 +18,7 @@ if(! require("karyoploteR")) BiocManager::install("karyoploteR")
 if(! require("GenomicRanges")) BiocManager::install("GenomicRanges")
 if(! require("argparse")) BiocManager::install("argparse")
 
-dir = paste0(getwd(),"/workflow/scripts")
+dir = paste0(getwd())#,"/workflow/scripts")
 print(dir)
 load(glue("{dir}/chm13.karyo.RData"))
 

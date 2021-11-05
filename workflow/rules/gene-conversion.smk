@@ -233,7 +233,6 @@ rule make_big_bed:
         """
         # make interactions
         bedtools sort -i {input.interact} \
-            | awk '$3-$2 < 30e6' \
             > {output.bed}
         bedToBigBed -as={params.interact} \
             -type=bed5+13 {output.bed} {input.fai} {output.interact}
@@ -277,7 +276,6 @@ rule make_big_beds:
         """
          # make interactions
          bedtools sort -i {input.interact} \
-             | awk '$3-$2 < 30e6' \
              > {output.bed}
          bedToBigBed -as={params.interact} \
              -type=bed5+13 {output.bed} {input.fai} {output.interact}
