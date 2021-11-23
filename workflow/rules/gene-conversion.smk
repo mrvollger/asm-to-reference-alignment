@@ -35,7 +35,7 @@ rule gene_conversion_target_regions:
 rule make_gene_conversion_windows:
     input:
         genome=get_fai,
-        paf=rules.sam_to_paf.output.paf,
+        paf=ancient(rules.sam_to_paf.output.paf),
         bed=rules.gene_conversion_target_regions.output.bed,
     output:
         bed=temp("temp/{ref}/gene-conversion/{sm}_sliding_windows.bed"),
