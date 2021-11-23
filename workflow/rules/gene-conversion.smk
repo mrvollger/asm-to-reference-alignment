@@ -32,13 +32,13 @@ rule gene_conversion_target_regions:
         """
 
 
-rule make_query_windows:
+rule make_gene_conversion_windows:
     input:
         genome=get_fai,
         paf=rules.sam_to_paf.output.paf,
         bed=rules.gene_conversion_target_regions.output.bed,
     output:
-        paf=temp("temp/{ref}/gene-conversion/{sm}_liftover.paf"),
+        bed=temp("temp/{ref}/gene-conversion/{sm}_sliding_windows.bed"),
     log:
         "logs/{ref}/gene-conversion/{sm}_liftover.log",
     threads: 1
@@ -51,11 +51,32 @@ rule make_query_windows:
         buffer=config.get("buffer", 25e3),
     shell:
         """
-        ( awk '$4-$3>{params.min_aln_len}' {input.paf} \
+        awk '$4-$3>{params.min_aln_len}' {input.paf} \
             | rb breakpaf -s {params.window} - \
             | rb liftover --bed {input.bed} \
             | csvtk cut  -tT -f 1,3,4 \
             | bedtools makewindows -s {params.slide} -w {params.window} -b - \
+        > {output.bed}
+        """
+
+
+rule make_query_windows:
+    input:
+        genome=get_fai,
+        paf=rules.sam_to_paf.output.paf,
+        bed=config.get("gcwindows", rules.make_gene_conversion_windows.output.bed),
+    output:
+        paf=temp("temp/{ref}/gene-conversion/{sm}_liftover.paf"),
+    log:
+        "logs/{ref}/gene-conversion/{sm}_liftover.log",
+    threads: 1
+    conda:
+        "../envs/env.yml"
+    params:
+        window=config.get("window", window),
+    shell:
+        """
+        cat {input.bed} \
             | rb liftover -q --bed /dev/stdin --largest {input.paf} \
             | grep -v "cg:Z:{params.window}=" \
             > {output.paf} ) 2> {log}
