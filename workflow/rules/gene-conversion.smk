@@ -56,6 +56,7 @@ rule make_gene_conversion_windows:
             | rb liftover --bed {input.bed} \
             | csvtk cut  -tT -f 1,3,4 \
             | bedtools makewindows -s {params.slide} -w {params.window} -b - \
+            | sed 's/$/\t{wildcards.sm}/g' \
         > {output.bed}
         """
 
@@ -76,7 +77,7 @@ rule make_query_windows:
         window=config.get("window", window),
     shell:
         """
-        cat {input.bed} \
+        grep -w {wildcards.sm} {input.bed} \
             | rb liftover -q --bed /dev/stdin --largest {input.paf} \
             | grep -v "cg:Z:{params.window}=" \
             > {output.paf} ) 2> {log}
