@@ -77,7 +77,7 @@ rule make_query_windows:
         window=config.get("window", window),
     shell:
         """
-        grep -w {wildcards.sm} {input.bed} \
+        (grep -w {wildcards.sm} {input.bed} \
             | rb liftover -q --bed /dev/stdin --largest {input.paf} \
             | grep -v "cg:Z:{params.window}=" \
             > {output.paf} ) 2> {log}
