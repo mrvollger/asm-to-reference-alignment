@@ -247,7 +247,7 @@ rule make_gene_conversion_windows_for_realign:
         """
         csvtk -tT -C "$" cut -f  original_source,sample {input.bed} \
             | sed -r 's/-|:/\t/g' \
-            | tail -n +1 \
+            | tail -n +2 \
         > {output.bed}
         """
 
