@@ -285,7 +285,7 @@ with open(snakemake.output.track, "w") as out:
 open(snakemake.output.hub, "w").write(hub)
 
 ref = snakemake.wildcards.ref
-if ref == "CHM13_V1.1":
+if "CHM13_V1.1" in ref:
     print("changing ref")
     ref = "t2t-chm13-v1.1"
 open(snakemake.output.genomes, "w").write(genomes.format(ref=ref))
