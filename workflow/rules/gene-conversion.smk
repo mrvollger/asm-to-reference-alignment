@@ -177,6 +177,7 @@ rule group_gene_conversion:
     params:
         dist=min(2 * config.get("slide", slide), config.get("window", window)),
         find_pairs=workflow.source_path("../scripts/find_paired_overlaps.py"),
+        group=("gcwindows" in config),
     shell:
         """
         python {params.find_pairs} \
