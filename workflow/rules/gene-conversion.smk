@@ -68,6 +68,7 @@ rule make_query_windows:
         bed=config.get("gcwindows", rules.make_gene_conversion_windows.output.bed),
     output:
         paf=temp("temp/{ref}/gene-conversion/{sm}_liftover.paf"),
+        tbed=temp("temp/{ref}/gene-conversion/{sm}_liftover.bed"),
     log:
         "logs/{ref}/gene-conversion/{sm}_liftover.log",
     threads: 1
@@ -79,7 +80,11 @@ rule make_query_windows:
         """
         grep -w {wildcards.sm} {input.bed} \
             | cut -f 1-3 \
-            | rb liftover -q --bed /dev/stdin --largest {input.paf} \
+            | bedtools sort -i -  > {output.tbed}
+
+        head {output.tbed}
+
+        rb liftover -q --bed {output.tbed} --largest {input.paf} \
             | grep -v "cg:Z:{params.window}=" \
             > {output.paf} 2> {log}
         """
