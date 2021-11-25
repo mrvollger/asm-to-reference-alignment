@@ -78,6 +78,7 @@ rule make_query_windows:
     shell:
         """
         grep -w {wildcards.sm} {input.bed} \
+            | cut -f 1-3 \
             | rb liftover -q --bed /dev/stdin --largest {input.paf} \
             | grep -v "cg:Z:{params.window}=" \
             > {output.paf} 2> {log}
