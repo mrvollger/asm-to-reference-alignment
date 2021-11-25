@@ -5,6 +5,8 @@ window <- 1e4
 window <- snakemake@params$window
 f <- snakemake@input$bed
 print(f)
+options(scipen = 999)
+
 
 df <- fread(f, nThread = 8, sep = "\t") %>%
     mutate(reference_name = `#reference_name`) %>%
@@ -62,8 +64,10 @@ df
 gc.df <- df[
     (perID_by_matches >= 99.5 &
         perID_by_all > perID_by_all.liftover &
-        ((mismatches.liftover - mismatches >= 2 * window / 1e4) |
-            (mismatches.liftover / mismatches > 2))
+        (
+            (mismatches.liftover - mismatches >= 2 * window / 1e4) |
+                (mismatches.liftover / mismatches > 2)
+        )
     )
 ]
 dim(gc.df)
@@ -141,7 +145,8 @@ fwrite(
     file = snakemake@output$acceptor,
     sep = "\t",
     row.names = F,
-    quote = F
+    quote = F,
+    scipen = 999
 )
 
 #
@@ -170,7 +175,8 @@ fwrite(
     file = snakemake@output$bed,
     sep = "\t",
     row.names = F,
-    quote = F
+    quote = F,
+    scipen = 999
 )
 # make the interaction file
 names <- c(
@@ -247,6 +253,7 @@ fwrite(
     file = snakemake@output$interact,
     sep = "\t",
     row.names = F,
-    quote = F
+    quote = F,
+    scipen = 999
 )
 print("written")

@@ -33,6 +33,8 @@ library(ggridges)
 library(ggpmisc)
 library(ggforce)
 library(ggpubr)
+options(scipen=999)
+
 
 odir <<- "../../plots"
 odir <<- "~/mvollger@uw.edu - Google Drive/Shared drives/AssemblyGaps/Figures/mrv_figures/."

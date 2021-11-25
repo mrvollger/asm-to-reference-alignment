@@ -82,8 +82,6 @@ rule make_query_windows:
             | cut -f 1-3 \
             | bedtools sort -i -  > {output.tbed}
 
-        head {output.tbed}
-
         rb liftover -q --bed {output.tbed} --largest {input.paf} \
             | grep -v "cg:Z:{params.window}=" \
             > {output.paf} 2> {log}
@@ -235,6 +233,22 @@ rule gene_conversion_windows:
         window=config.get("window", window),
     script:
         "../scripts/gene-conversion-windows.R"
+
+
+rule make_gene_conversion_windows_for_realign:
+    input:
+        bed=rules.gene_conversion_windows.output.acceptor,
+    output:
+        bed="results/{ref}/gene-conversion/realign/realign.bed",
+    conda:
+        "../envs/env.yml"
+    shell:
+        """
+        csvtk -tT -C "$" cut -f  original_source,sample {input.bed} \
+            | sed -r 's/-|:/\t/g' \
+            | tail -n +1 \
+        > {output.bed}
+        """
 
 
 rule make_big_bed:
@@ -391,3 +405,13 @@ rule gene_conversion:
         ),
     message:
         "Gene conversion run complete"
+
+
+rule setup_realign:
+    input:
+        expand(
+            rules.make_gene_conversion_windows_for_realign.output,
+            ref=config.get("ref").keys(),
+        ),
+    message:
+        "Setup rerun"

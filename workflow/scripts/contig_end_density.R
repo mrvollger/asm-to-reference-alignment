@@ -1,6 +1,8 @@
 #!/usr/bin/env Rscript
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 source("contig_end_density_utilities.R")
+options(scipen=999)
+
 ########################################################################
 exclude <-
   c("Chromosome end",
