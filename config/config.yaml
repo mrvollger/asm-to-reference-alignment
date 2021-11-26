@@ -1,8 +1,9 @@
 ref:
-  CHM13_V1.1: /net/eichler/vol26/projects/chm13_t2t/nobackups/assemblies/chm13_v1.1_plus38Y.fasta
+  CHM13_V1.1_v2.23: /net/eichler/vol26/projects/chm13_t2t/nobackups/assemblies/chm13_v1.1_plus38Y.fasta
 tbl: config/table.asm.tbl
 aln_threads: 8
 # subset the gene conversion analysis to just these regions on the reference
-bed: /net/eichler/vol26/projects/chm13_t2t/nobackups/Assembly_analysis/SEDEF/chm13_v1.1_plus38Y.SDs.bed
-window: 2000
-slide: 1000
+#bed: /net/eichler/vol26/projects/chm13_t2t/nobackups/Assembly_analysis/SEDEF/chm13_v1.1_plus38Y.SDs.bed
+bed: config/SDs.and.lowid.bed
+window: 3000
+slide: 200
