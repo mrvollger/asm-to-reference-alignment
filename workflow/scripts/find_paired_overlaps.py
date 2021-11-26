@@ -49,6 +49,9 @@ if __name__ == "__main__":
         help="in order list of columns to use for second set of intervals",
         default=[11, 12, 13],
     )
+    parser.add_argument(
+        "-n", "--no-group", action="store_true", help="do not attempt to make groups."
+    )
     args = parser.parse_args()
 
     pre = None
@@ -64,7 +67,7 @@ if __name__ == "__main__":
         second_intersects = intersect(
             pre[3], pre[4], pre[5], cur[3], cur[4], cur[5], args.dist
         )
-        if first_intersects and second_intersects:
+        if first_intersects and second_intersects and not args.no_group:
             group += 0
         else:
             group += 1
