@@ -200,7 +200,7 @@ rule gene_conversion_windows_per_sample:
         "../envs/env.yml"
     params:
         window=config.get("window", window),
-        sinmplify=True if "gcwindows" in config else False,
+        simplify=True if "gcwindows" in config else False,
     script:
         "../scripts/gene-conversion-windows.R"
 
@@ -234,7 +234,7 @@ rule gene_conversion_windows:
         "../envs/env.yml"
     params:
         window=config.get("window", window),
-        sinmplify=True if "gcwindows" in config else False,
+        simplify=True if "gcwindows" in config else False,
     script:
         "../scripts/gene-conversion-windows.R"
 
