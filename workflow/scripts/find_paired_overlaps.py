@@ -3,13 +3,22 @@ import argparse
 import sys
 
 
+def overlap(a0, a1, b0, b1):
+    r = min(a1, b1) - max(a0, b0)
+    if r >= 0:
+        return r
+    return 0
+
+
 def intersect(a, a0, a1, b, b0, b1, dist):
     """
     check if two genomic intervals overlap
     """
-    # if limit:
-    #    dist = min(dist, limit * (a1 - a0 + b1 - b0))
-    return (a == b) and ((a1 + dist) >= b0) and ((b1 + dist) >= a0)
+    intersects = (a == b) and ((a1 + dist) >= b0) and ((b1 + dist) >= a0)
+    if intersects:
+        return overlap(a0, a1, b0, b1)
+    else:
+        return 0
 
 
 def read_bed_line(args):
@@ -52,6 +61,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "-n", "--no-group", action="store_true", help="do not attempt to make groups."
     )
+    parser.add_argument(
+        "-f",
+        "--fraction",
+        type=float,
+        default=0.0,
+        help="group things overlaping by this fraction",
+    )
     args = parser.parse_args()
 
     pre = None
@@ -67,7 +83,14 @@ if __name__ == "__main__":
         second_intersects = intersect(
             pre[3], pre[4], pre[5], cur[3], cur[4], cur[5], args.dist
         )
-        if first_intersects and second_intersects and not args.no_group:
+        if (
+            args.fraction
+            and first_intersects
+            and second_intersects
+            and first_intersects > args.fraction * (pre[2] - pre[1])
+        ):
+            group += 0
+        elif first_intersects and second_intersects and not args.no_group:
             group += 0
         else:
             group += 1

@@ -3,14 +3,22 @@ f <- "/Users/mrvollger/Desktop/EichlerVolumes/assembly_breaks/nobackups/asm-to-r
 f <- "results/CHM13_V1.1/gene-conversion/all_candidate_windows.tbl.gz"
 window <- 1e4
 window <- snakemake@params$window
+simplify <- snakemake@params$simplify
 f <- snakemake@input$bed
 print(f)
 options(scipen = 999)
 
-
 df <- fread(f, nThread = 8, sep = "\t") %>%
     mutate(reference_name = `#reference_name`) %>%
-    group_by(group, contig, reference_name, reference_name.liftover, sample) %>%
+    group_by(group, contig, reference_name, reference_name.liftover, sample)
+
+if (simplify) {
+    df <- df %>%
+        arrange(matches.liftover - matches) %>% # order with one with most matches first
+        filter(row_number() == 1)
+}
+
+df <- df %>%
     summarise(
         `#reference_name` = unique(`#reference_name`),
         reference_name = unique(reference_name),

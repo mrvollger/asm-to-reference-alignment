@@ -177,13 +177,13 @@ rule group_gene_conversion:
     params:
         dist=min(2 * config.get("slide", slide), config.get("window", window)),
         find_pairs=workflow.source_path("../scripts/find_paired_overlaps.py"),
-        group="--no-group" if "gcwindows" in config else "",
+        fraction="-s 0.75" if "gcwindows" in config else "",
     shell:
         """
         python {params.find_pairs} \
             --cols 23 24 25 \
             --dist {params.dist} \
-            {params.group} \
+            {params.fraction} \
             {input.bed} \
         > {output.bed}
         """
@@ -200,6 +200,7 @@ rule gene_conversion_windows_per_sample:
         "../envs/env.yml"
     params:
         window=config.get("window", window),
+        sinmplify=True if "gcwindows" in config else False,
     script:
         "../scripts/gene-conversion-windows.R"
 
@@ -233,6 +234,7 @@ rule gene_conversion_windows:
         "../envs/env.yml"
     params:
         window=config.get("window", window),
+        sinmplify=True if "gcwindows" in config else False,
     script:
         "../scripts/gene-conversion-windows.R"
 
