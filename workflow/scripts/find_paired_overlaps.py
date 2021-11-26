@@ -66,7 +66,7 @@ if __name__ == "__main__":
         "--fraction",
         type=float,
         default=0.0,
-        help="group things overlaping by this fraction",
+        help="group things with this level of reciprocal overlap in the first region of the pair.",
     )
     args = parser.parse_args()
 
@@ -86,8 +86,8 @@ if __name__ == "__main__":
         if (
             args.fraction
             and first_intersects
-            and second_intersects
             and first_intersects > args.fraction * (pre[2] - pre[1])
+            and first_intersects > args.fraction * (cur[2] - cur[1])
         ):
             group += 0
         elif first_intersects and second_intersects and not args.no_group:
