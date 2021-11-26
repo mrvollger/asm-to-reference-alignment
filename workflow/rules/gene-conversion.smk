@@ -177,15 +177,22 @@ rule group_gene_conversion:
     params:
         dist=min(2 * config.get("slide", slide), config.get("window", window)),
         find_pairs=workflow.source_path("../scripts/find_paired_overlaps.py"),
-        fraction="--fraction 0.5" if "gcwindows" in config else "",
+        group_overlaps=workflow.source_path("../scripts/group-overlaps.py"),
+        pick_best="best" if "gcwindows" in config else "",
     shell:
         """
-        python {params.find_pairs} \
-            --cols 23 24 25 \
-            --dist {params.dist} \
-            {params.fraction} \
-            {input.bed} \
-        > {output.bed}
+        if [ {params.pick_best} == "best" ]; then
+            python {params.group_overlaps} \
+                --fraction 0.75 \
+                {input.bed} \
+            > {output.bed}
+        else
+            python {params.find_pairs} \
+                --cols 23 24 25 \
+                --dist {params.dist} \
+                {input.bed} \
+            > {output.bed}
+        fi 
         """
 
 
@@ -200,7 +207,7 @@ rule gene_conversion_windows_per_sample:
         "../envs/env.yml"
     params:
         window=config.get("window", window),
-        simplify=True if "gcwindows" in config else False,
+        simplify=False,  #True if "gcwindows" in config else False,
     script:
         "../scripts/gene-conversion-windows.R"
 
@@ -234,7 +241,7 @@ rule gene_conversion_windows:
         "../envs/env.yml"
     params:
         window=config.get("window", window),
-        simplify=True if "gcwindows" in config else False,
+        simplify=False,  #True if "gcwindows" in config else False,
     script:
         "../scripts/gene-conversion-windows.R"
 
