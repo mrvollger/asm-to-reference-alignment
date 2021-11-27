@@ -16,7 +16,7 @@ def make_self_intersect(df, names, args):
     n_df.columns = cols
     n_df.st = n_df.st - args.distance
     n_df.en = n_df.en + args.distance
-    n_df.st[n_df.st < 0] = 0
+    n_df.loc[n_df.st < 0, "st"] = 0
 
     bed = pybedtools.BedTool().from_dataframe(n_df)
     inter = bed.intersect(bed, wao=True, f=args.fraction).to_dataframe(names=new_header)
