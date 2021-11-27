@@ -167,38 +167,129 @@ rule candidate_gene_conversion:
         "../scripts/combine-mappings.R"
 
 
-rule group_gene_conversion:
+rule group_source_windows_gene_conversion:
     input:
         bed=rules.candidate_gene_conversion.output.bed,
     output:
-        bed=temp("temp/{ref}/gene-conversion/{sm}_candidate_windows.group.bed"),
+        bed=temp("temp/{ref}/gene-conversion/{sm}_candidate_source_windows.group.bed"),
     conda:
         "../envs/env.yml"
     params:
-        dist=min(2 * config.get("slide", slide), config.get("window", window)),
-        find_pairs=workflow.source_path("../scripts/find_paired_overlaps.py"),
-        group_overlaps=workflow.source_path("../scripts/group-overlaps.py"),
-        pick_best="best" if "gcwindows" in config else "",
+        find_pairs=workflow.source_path("../scripts/paired-groups.py"),
     shell:
         """
-        if [ {params.pick_best} == "best" ]; then
-            python {params.group_overlaps} \
-                --fraction 0.75 \
-                {input.bed} \
-            > {output.bed}
-        else
-            python {params.find_pairs} \
-                --cols 23 24 25 \
-                --dist {params.dist} \
-                {input.bed} \
-            > {output.bed}
-        fi 
+        python {params.find_pairs} \
+            --fraction 0.01 --overlap 1 --source-windows \
+            --input {input.bed} \
+        > {output.bed}
+        """
+
+
+rule make_query_windows_realign:
+    input:
+        genome=get_fai,
+        paf=rules.sam_to_paf.output.paf,
+        bed=rules.group_source_windows_gene_conversion.output.bed,
+    output:
+        paf=temp("temp/{ref}/gene-conversion/{sm}_liftover_2.paf"),
+    log:
+        "logs/{ref}/gene-conversion/{sm}_liftover_2.log",
+    threads: 1
+    conda:
+        "../envs/env.yml"
+    params:
+        window=config.get("window", window),
+    shell:
+        """
+        rb liftover -q \
+            --bed <(cut -f 1-3 {input.bed}) \
+            --largest {input.paf} \
+                | grep -v "cg:Z:{params.window}=" \
+        > {output.paf} 2> {log}
+        """
+
+
+rule window_alignment_realign:
+    input:
+        ref=rules.alignment_index.output.mmi,
+        query=rules.unzip_ref.output.fa,
+        fai=rules.unzip_ref.output.fai,
+        paf=rules.make_query_windows_realign.output.paf,
+    output:
+        aln=temp("temp/{ref}/gene-conversion/{sm}_windows_2.paf"),
+    benchmark:
+        "logs/{ref}/gene-conversion/alignment.{ref}_{sm}_2.benchmark.txt"
+    conda:
+        "../envs/env.yml"
+    threads: config.get("aln_threads", 4)
+    shell:
+        """
+        minimap2 -K 1G -t {threads} \
+            -cx asm20 \
+            --secondary=no --eqx \
+            {input.ref} \
+                <( bedtools getfasta -name+ \
+                    -fi {input.query} \
+                    -bed <(awk -v OFS=$'\t' '{{name=$1":"$3"-"$4}}{{print $6,$8,$9,name}}' {input.paf}) \
+                ) \
+            > {output.aln}
+        """
+
+
+rule window_stats_realign:
+    input:
+        paf=rules.window_alignment_realign.output.aln,
+        liftover_paf=rules.make_query_windows_realign.output.paf,
+    output:
+        tbl=temp("temp/{ref}/gene-conversion/{sm}_windows_2.tbl"),
+        liftover_tbl=temp("temp/{ref}/gene-conversion/{sm}_liftover_windows_2.tbl"),
+    conda:
+        "../envs/env.yml"
+    threads: 1
+    shell:
+        """
+        rb stats --threads {threads} --paf {input.paf} \
+            > {output.tbl}
+        rb stats --threads {threads} --paf {input.liftover_paf} \
+            > {output.liftover_tbl}
+        """
+
+
+rule candidate_gene_conversion_realign:
+    input:
+        window=rules.window_stats_realign.output.tbl,
+        liftover=rules.window_stats_realign.output.liftover_tbl,
+    output:
+        bed=temp("temp/{ref}/gene-conversion/{sm}_candidate_windows_2.bed"),
+    conda:
+        "../envs/env.yml"
+    params:
+        window=config.get("window", window),
+    script:
+        "../scripts/combine-mappings.R"
+
+
+rule group_gene_conversion_realign:
+    input:
+        bed=rules.candidate_gene_conversion_realign.output.bed,
+    output:
+        bed=temp("temp/{ref}/gene-conversion/{sm}_candidate_windows.group_2.bed"),
+    conda:
+        "../envs/env.yml"
+    params:
+        find_pairs=workflow.source_path("../scripts/paired-groups.py"),
+    shell:
+        """
+        python {params.find_pairs} \
+            --fraction 0.75 --overlap 1 \
+            --input {input.bed} \
+        > {output.bed}
         """
 
 
 rule gene_conversion_windows_per_sample:
     input:
-        bed=rules.group_gene_conversion.output.bed,
+        bed=rules.group_gene_conversion_realign.output.bed,
     output:
         acceptor="results/{ref}/gene-conversion/tables/{sm}.acceptor.bed",
         bed="results/{ref}/gene-conversion/tables/{sm}.bed",
@@ -215,7 +306,9 @@ rule gene_conversion_windows_per_sample:
 rule large_table:
     input:
         beds=expand(
-            rules.group_gene_conversion.output.bed, sm=df.index, allow_missing=True
+            rules.group_gene_conversion_realign.output.bed,
+            sm=df.index,
+            allow_missing=True,
         ),
     output:
         bed="results/{ref}/gene-conversion/all_candidate_windows.tbl.gz",
@@ -244,22 +337,6 @@ rule gene_conversion_windows:
         simplify=False,  #True if "gcwindows" in config else False,
     script:
         "../scripts/gene-conversion-windows.R"
-
-
-rule make_gene_conversion_windows_for_realign:
-    input:
-        bed=rules.gene_conversion_windows.output.acceptor,
-    output:
-        bed="results/{ref}/gene-conversion/realign/realign.bed",
-    conda:
-        "../envs/env.yml"
-    shell:
-        """
-        csvtk -tT -C "$" cut -f  original_source,sample {input.bed} \
-            | sed -r 's/-|:/\t/g' \
-            | tail -n +2 \
-        > {output.bed}
-        """
 
 
 rule make_big_bed:
@@ -309,7 +386,7 @@ rule make_big_beds:
     input:
         bed=rules.gene_conversion_windows_per_sample.output.bed,
         interact=rules.gene_conversion_windows_per_sample.output.interact,
-        liftover_tbl=rules.window_stats.output.liftover_tbl,
+        liftover_tbl=rules.window_stats_realign.output.liftover_tbl,
         fai=get_fai,
     output:
         bed=temp("temp/{ref}/gene-conversion/trackHub/gene-conversion/{sm}.bed"),
@@ -416,13 +493,3 @@ rule gene_conversion:
         ),
     message:
         "Gene conversion run complete"
-
-
-rule setup_realign:
-    input:
-        expand(
-            rules.make_gene_conversion_windows_for_realign.output,
-            ref=config.get("ref").keys(),
-        ),
-    message:
-        "Setup rerun"

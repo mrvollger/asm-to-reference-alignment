@@ -5,7 +5,6 @@ from snakemake.utils import min_version
 
 min_version("6.0")
 SMKDIR = os.path.dirname(workflow.snakefile)
-print(SMKDIR)
 shell.prefix("which python; ")
 
 
