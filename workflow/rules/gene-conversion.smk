@@ -65,7 +65,7 @@ rule make_query_windows:
     input:
         genome=get_fai,
         paf=rules.sam_to_paf.output.paf,
-        bed=config.get("gcwindows", rules.make_gene_conversion_windows.output.bed),
+        bed=rules.make_gene_conversion_windows.output.bed,
     output:
         paf=temp("temp/{ref}/gene-conversion/{sm}_liftover.paf"),
         tbed=temp("temp/{ref}/gene-conversion/{sm}_liftover.bed"),
@@ -298,7 +298,7 @@ rule gene_conversion_windows_per_sample:
         "../envs/env.yml"
     params:
         window=config.get("window", window),
-        simplify=False,  #True if "gcwindows" in config else False,
+        simplify=False,
     script:
         "../scripts/gene-conversion-windows.R"
 
@@ -334,7 +334,7 @@ rule gene_conversion_windows:
         "../envs/env.yml"
     params:
         window=config.get("window", window),
-        simplify=False,  #True if "gcwindows" in config else False,
+        simplify=False,
     script:
         "../scripts/gene-conversion-windows.R"
 
