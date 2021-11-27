@@ -176,10 +176,12 @@ rule group_source_windows_gene_conversion:
         "../envs/env.yml"
     params:
         find_pairs=workflow.source_path("../scripts/paired-groups.py"),
+        window=config.get("window", window),
     shell:
         """
         python {params.find_pairs} \
             --fraction 0.01 --overlap 1 --source-windows \
+            --distance {params.window} \
             --input {input.bed} \
         > {output.bed}
         """

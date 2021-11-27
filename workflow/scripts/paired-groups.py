@@ -11,7 +11,14 @@ def make_self_intersect(df, names, args):
     cols = ["chrom", "st", "en", "record_id"]
     new_header = list(cols) + [f"{col}_b" for col in cols] + ["record_overlap"]
 
-    bed = pybedtools.BedTool().from_dataframe(df[names])
+    # add slop to the overlapping intervals
+    n_df = df[names].copy()
+    n_df.columns = cols
+    n_df.st = n_df.st - args.distance
+    n_df.en = n_df.en + args.distance
+    n_df.st[n_df.st < 0] = 0
+
+    bed = pybedtools.BedTool().from_dataframe(n_df)
     inter = bed.intersect(bed, wao=True, f=args.fraction).to_dataframe(names=new_header)
     # filter for min number of base overlaps
     inter = inter[inter.record_overlap > args.overlap]
@@ -76,6 +83,13 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "-o", "--overlap", help="minimum required overlap.", type=int, default=0
+    )
+    parser.add_argument(
+        "-d",
+        "--distance",
+        help="allowed distance between overlapping segments.",
+        type=int,
+        default=0,
     )
     parser.add_argument(
         "--source-windows",
