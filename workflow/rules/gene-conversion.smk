@@ -494,7 +494,9 @@ rule group_gene_conversion_realign_merged:
         find_pairs=workflow.source_path("../scripts/paired-groups.py"),
     shell:
         """
-        cat {input.bed} > {output.tmp}
+        head -n1 {input.bed[0]} > {output.tmp}
+        cat {input.bed} | grep -v "^#" >> {output.tmp}
+
         python {params.find_pairs} \
             --fraction 0.95 --overlap 1 \
             --input {output.tmp} \
