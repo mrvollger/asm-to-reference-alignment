@@ -4,6 +4,8 @@ f <- "results/CHM13_V1.1/gene-conversion/all_candidate_windows.tbl.gz"
 window <- 1e4
 window <- snakemake@params$window
 simplify <- snakemake@params$simplify
+merge <- snakemake@params$merge
+
 f <- snakemake@input$bed
 print(f)
 options(scipen = 999)
@@ -11,6 +13,12 @@ options(scipen = 999)
 df <- fread(f, nThread = 8, sep = "\t") %>%
     mutate(reference_name = `#reference_name`) %>%
     group_by(group, contig, reference_name, reference_name.liftover, sample)
+
+if (merge) {
+    df <- df %>%
+        ungroup() %>%
+        group_by(group, contig, reference_name, reference_name.liftover)
+}
 
 if (simplify) {
     df <- df %>%

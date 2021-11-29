@@ -301,6 +301,7 @@ rule gene_conversion_windows_per_sample:
     params:
         window=config.get("window", window),
         simplify=False,
+        merge=True,
     script:
         "../scripts/gene-conversion-windows.R"
 
@@ -337,6 +338,7 @@ rule gene_conversion_windows:
     params:
         window=config.get("window", window),
         simplify=False,
+        merge=True,
     script:
         "../scripts/gene-conversion-windows.R"
 
@@ -476,11 +478,56 @@ rule make_tbl:
                 )
 
 
+rule group_gene_conversion_realign_merged:
+    input:
+        bed=expand(
+            rules.candidate_gene_conversion_realign.output.bed,
+            sm=df.index,
+            allow_missing=True,
+        ),
+    output:
+        bed=temp("temp/{ref}/gene-conversion/merged_candidate_windows.group.bed"),
+        tmp=temp("temp/{ref}/gene-conversion/merged_candidate_windows.group.bed.tmp"),
+    conda:
+        "../envs/env.yml"
+    params:
+        find_pairs=workflow.source_path("../scripts/paired-groups.py"),
+    shell:
+        """
+        cat {input.bed} > {output.tmp}
+        python {params.find_pairs} \
+            --fraction 0.95 --overlap 1 \
+            --input {input.tmp} \
+        > {output.bed}
+        """
+
+
+rule gene_conversion_windows_merged:
+    input:
+        bed=rules.group_gene_conversion_realign_merged.output.bed,
+    output:
+        acceptor="results/{ref}/gene-conversion/merged_acceptor.bed",
+        bed="results/{ref}/gene-conversion/merged.bed",
+        interact="results/{ref}/gene-conversion/merged_interactions.bed",
+    conda:
+        "../envs/env.yml"
+    params:
+        window=config.get("window", window),
+        simplify=False,
+        merge=True,
+    script:
+        "../scripts/gene-conversion-windows.R"
+
+
 rule gene_conversion:
     input:
         expand(rules.make_tbl.output, ref=config.get("ref").keys()),
         expand(rules.large_table.output, ref=config.get("ref").keys()),
         expand(rules.gene_conversion_windows.output.bed, ref=config.get("ref").keys()),
+        expand(
+            rules.gene_conversion_windows_merged.output.bed,
+            ref=config.get("ref").keys(),
+        ),
         expand(
             rules.gene_conversion_windows_per_sample.output,
             sm=df.index,
