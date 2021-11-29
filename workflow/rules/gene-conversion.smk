@@ -498,7 +498,7 @@ rule group_gene_conversion_realign_merged:
         cat {input.bed} | grep -v "^#" >> {output.tmp}
 
         python {params.find_pairs} \
-            --fraction 0.95 --overlap 1 \
+            --fraction 0.95 --reciprocal \
             --input {output.tmp} \
         > {output.bed}
         """

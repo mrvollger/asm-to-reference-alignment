@@ -19,7 +19,9 @@ def make_self_intersect(df, names, args):
     n_df.loc[n_df.st < 0, "st"] = 0
 
     bed = pybedtools.BedTool().from_dataframe(n_df)
-    inter = bed.intersect(bed, wao=True, f=args.fraction).to_dataframe(names=new_header)
+    inter = bed.intersect(
+        bed, wao=True, f=args.fraction, r=args.reciprocal
+    ).to_dataframe(names=new_header)
     # filter for min number of base overlaps
     inter = inter[inter.record_overlap > args.overlap]
     # make a key based on the records that are intersecting
@@ -94,6 +96,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--source-windows",
         help="print the source windows that appear to be part of one gene conversion event",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-r",
+        "--reciprocal",
+        help="force overlaps to be reciprocal.",
         action="store_true",
     )
     args = parser.parse_args()
