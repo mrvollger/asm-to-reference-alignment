@@ -50,7 +50,8 @@ def read_bed(args):
         df.rename(columns={"#reference_name": "reference_name"}, inplace=True)
     if "#reference_name.liftover" in df.columns:
         df.rename(
-            columns={"#reference_name.liftoff": "reference_name.liftoff"}, inplace=True
+            columns={"#reference_name.liftover": "reference_name.liftover"},
+            inplace=True,
         )
 
     df["record_id"] = df.index
