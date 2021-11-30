@@ -46,8 +46,15 @@ def print_source_windows(df):
 
 def read_bed(args):
     df = pd.read_csv(args.input, sep="\t")
+    if "#reference_name" in df.columns:
+        df.rename(columns={"#reference_name": "reference_name"}, inplace=True)
+    if "#reference_name.liftover" in df.columns:
+        df.rename(
+            columns={"#reference_name.liftoff": "reference_name.liftoff"}, inplace=True
+        )
+
     df["record_id"] = df.index
-    names1 = ["#reference_name", "reference_start", "reference_end", "record_id"]
+    names1 = ["reference_name", "reference_start", "reference_end", "record_id"]
     names2 = [
         "reference_name.liftover",
         "reference_start.liftover",
@@ -65,7 +72,7 @@ def read_bed(args):
     # get ready to print
     df.drop("record_id", inplace=True, axis=1)
     df["group"] = 0
-    sys.stdout.write("\t".join(df.columns) + "\n")
+    sys.stdout.write("#" + "\t".join(df.columns) + "\n")
     for idx, group in enumerate(nx.connected_components(graph)):
         cur_df = df.loc[sorted(group)]
         cur_df["group"] = idx + 1
