@@ -17,7 +17,7 @@ df <- fread(f, nThread = 8, sep = "\t") %>%
 if (merge) {
     df <- df %>%
         ungroup() %>%
-        group_by(group, contig, reference_name, reference_name.liftover)
+        group_by(group, reference_name, reference_name.liftover)
 }
 
 if (simplify) {
