@@ -49,6 +49,7 @@ df <- df %>%
         insertions.liftover = sum(insertions.liftover),
         sample = paste(unique(sample), collapse = ";"),
         # sample= unique(sample),
+        contig = paste(unique(contig), collapse = ";"),
         contig_start = min(contig_start),
         contig_end = max(contig_end),
         overlap = sum(overlap)
