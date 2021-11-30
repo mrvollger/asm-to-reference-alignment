@@ -47,7 +47,8 @@ df <- df %>%
         insertion_events.liftover = sum(insertion_events.liftover),
         deletions.liftover = sum(deletions.liftover),
         insertions.liftover = sum(insertions.liftover),
-        sample = unique(sample),
+        sample = summarise(name = paste(unique(sample), collapse = ";")),
+        # sample= unique(sample),
         contig_start = min(contig_start),
         contig_end = max(contig_end),
         overlap = sum(overlap)
