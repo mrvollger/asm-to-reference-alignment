@@ -478,7 +478,7 @@ rule make_tbl:
                 )
 
 
-rule group_gene_conversion_realign_merged:
+rule merged_gene_conversion:
     input:
         bed=expand(
             rules.gene_conversion_windows_per_sample.output.acceptor,
@@ -511,7 +511,7 @@ rule gene_conversion:
         expand(rules.large_table.output, ref=config.get("ref").keys()),
         expand(rules.gene_conversion_windows.output.bed, ref=config.get("ref").keys()),
         expand(
-            rules.group_gene_conversion_realign_merged.output.bed,
+            rules.merged_gene_conversion.output.bed,
             ref=config.get("ref").keys(),
         ),
         expand(
