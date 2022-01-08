@@ -123,7 +123,12 @@ rule sam_to_paf:
     conda:
         "../envs/env.yml"
     shell:
-        "samtools view -h {input.aln} | paftools.js sam2paf - > {output.paf}"
+        """
+        samtools view -h {input.aln} \
+            | paftools.js sam2paf - \
+            | rustybam trim-paf \
+        > {output.paf}
+        """
 
 
 rule aln_to_bed:

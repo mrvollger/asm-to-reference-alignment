@@ -81,8 +81,9 @@ p <-
   theme_cowplot() +
   theme(legend.position = "none") +
   coord_cartesian(clip = "off") +
-  theme(plot.margin = margin(r = 1, unit = "in")) +
-  ggtitle("Contig ends (gaps) in HPRC Hifiasm assemblies")
+  #ggtitle("Contig ends (gaps) in HPRC Hifiasm assemblies") +
+  theme(plot.margin = margin(r = 1, unit = "in")) 
+
 p
 my_ggsave(
   plot = p,
@@ -293,7 +294,7 @@ dim(large_sd_blocks_with_ends)
 
 #large_sd_blocks_with_ends= fread(glue("{odir}/len_vs_nsamples.datatable.tsv"))
 p.len_vs_n_samples = ggplot(data = large_sd_blocks_with_ends,
-                            aes(x = n_haplotypes, y = y/1e3)) +
+                            aes(x = n_haplotypes, y = y/1e3, color = `SD locus`)) +
   geom_point(aes(color = `SD locus`),#, shape = mCNV),
              size = 3,
              alpha = 0.75) +
@@ -312,8 +313,8 @@ p.len_vs_n_samples
 my_ggsave(
   file = "{odir}/len_vs_nsamples.pdf",
   plot = p.len_vs_n_samples,
-  height = 11*0.55,
-  width = 10*0.55
+  height = 12*0.55,
+  width = 14*0.55
 )
 
 #----------------------- windowed anlysis -----------------------------------#
@@ -392,10 +393,10 @@ if (T) {
     factor(rand_seq$name, levels = unique(rand_seq$name))
   p_seq_content <- ggplot(data = rand_seq) +
     geom_density_ridges(aes(x = value, fill = name, y = name), alpha = 0.5) +
-    ylab("Sequence content") +
+    ylab("")+#ylab("Sequence content") +
     xlab("Fraction of the 1,000 bp window") +
     scale_x_continuous(breaks = seq(0, 1, 0.05)) +
-    theme_minimal_vgrid() +
+    theme_cowplot() +
     theme(legend.position = "none") +
     ggtitle("Simulation of sequnece content in 1,000 bp widnows (n=100,000)")
   p_seq_content
@@ -409,7 +410,7 @@ if (T) {
 
 
 #----------------------- SD simulations wide -----------------------------------#
-if (T) {
+if (F) {
   high_nuc <- nuc[(num_G + num_A > 800) | (num_C + num_T > 800)]
   myseqlengths = FAI_v1.1$chrlen
   names(myseqlengths) = FAI_v1.1$chr
@@ -444,7 +445,7 @@ if (T) {
   sim <- data.table::rbindlist(sim)
   sim_median <- sim %>%
     group_by(name) %>%
-    summarise(median_simulation = median(value))
+    summarise(`median simulation` = median(value))
   
   obs <- data.table(
     name = c("SD", "Alpha", "Satellite", "High GA/TC (80%)"),
@@ -456,64 +457,67 @@ if (T) {
     )
   ) %>% merge(sim_median) %>%
     mutate(observation = value,
-           `fold increase` = value / median_simulation) %>%
+           `fold increase` = value / `median simulation`) %>%
     data.table()
   obs
 
     p_sd_content <- ggplot(data = sim) +
-    geom_density_ridges(aes(x = value, y = name, fill = name), alpha = 0.5) +
+    geom_density_ridges(aes(x = value, y = name, fill = name, color=name), alpha = 0.5) +
     geom_point(data = obs,
                aes(x = value, y = name, color = name),
                size = 3) +
-    geom_text(
+    geom_label_repel(
       data = obs,
-      aes(
-        x = value,
-        y = name,
-        label = comma(value),
-        color = name
-      ),
-      vjust = -1
+      aes(x = value, y = name, label = comma(value), #color = name
+      ), size = 4, nudge_y = -0.5, direction = "y"
     ) +
-    geom_text(data = obs,
+    geom_label_repel(
+      data = obs,
+      aes(x = `median simulation`, y = name, label = comma(`median simulation`), #color = name
+      ), size = 4, nudge_y = -0.5, direction = "y"
+    ) +
+    geom_text_repel(data = obs,
               aes(
-                x = (value + median_simulation) / 2,
+                x = (value + `median simulation`) / 2,
                 y = name,
-                label = paste0("fold increase = ", round(`fold increase`, 2)),
-                color = name
+                label = paste0(round(`fold increase`, 2), "x"),
+                #color = name,
+                size = 4
               ),
-              vjust = -3) +
-    ylab("Sequence content") +
+              vjust = 2) +
+    geom_segment(data=obs,aes(x=value, xend=`median simulation`, y=name,yend=name),vjust=2, linetype="dashed")+
+    ylab("")+#ylab("Sequence content") +
     xlab("# of windows with the annotation") +
-    theme_minimal_grid() +
-    theme(legend.position = "none") +
+    theme_minimal_hgrid() +
     scale_fill_manual(values = mycolors) +
     scale_color_manual(values = mycolors) +
     scale_x_continuous(labels = comma) +
     coord_cartesian(xlim = c(1, NA)) +
-    annotation_custom(
-      tableGrob(
-        obs %>% dplyr::select(-value),
-        theme = ttheme_minimal(),
-        rows = NULL
-      ),
-      xmin = 10e3,
-      xmax = 20e3,
-      ymin = "Satellite",
-      ymax = "Satellite"
-    ) +
-    ggtitle(
-      glue(
-        "Simulation showing the number of windows (1 kbp width) out of {nrow(df)}\nthat overlap with seq class (n=10,000)"
-      )
-    )
-  p_sd_content
+    # annotation_custom(
+    #   tableGrob(
+    #     obs %>% dplyr::select(-value),
+    #     theme = ttheme_minimal(),
+    #     rows = NULL
+    #   ),
+    #   xmin = 10e3,
+    #   xmax = 20e3,
+    #   ymin = "Satellite",
+    #   ymax = "Satellite"
+    # ) +
+    #ggtitle(
+    #  glue(
+    #    "Simulation showing the number of windows (1 kbp width) out of {nrow(df)}\nthat overlap with sequence context (n=10,000)"
+    #  )
+    #)
+    theme(legend.position = "none") 
+      
+  #p_sd_content
   obs
   my_ggsave(
     "{odir}/2_simulation_of_SDs.pdf",
     plot = p_sd_content,
-    height = 9,
-    width = 12
+    height = 6*0.799,
+    width = 12*0.799
   )
 }
 
@@ -543,9 +547,10 @@ sd.plot.df <-
                      SEDEF_V1.1[SEDEF_V1.1$original, c("fracMatch", "matchB")]),
             idcol = "ContigEnd")
 sd.plot.df$ContigEnd <- sd.plot.df$ContigEnd == 1
+sd.plot.df$`SDs with contig ends` = sd.plot.df$ContigEnd
 
 summary <- sd.plot.df %>%
-  group_by(ContigEnd) %>%
+  group_by(`SDs with contig ends`) %>%
   summarise(
     meanID = round(mean(fracMatch) * 100, 2),
     meanLen = comma(round(mean(matchB), 2)),
@@ -560,16 +565,16 @@ sd_density <-
          aes(
            x = matchB,
            y = fracMatch * 100,
-           color = ContigEnd,
-           fill = ContigEnd
+           color = `SDs with contig ends`,
+           fill = `SDs with contig ends`
          )) +
-  annotation_custom(
-    tableGrob(t(summary), theme = ttheme_minimal()),
-    xmin = 6,
-    xmax = 7,
-    ymin = 91,
-    ymax = 93
-  ) +
+  #annotation_custom(
+  #  tableGrob(t(summary), theme = ttheme("light")),
+  #  xmin = 5.5,
+  #  xmax = 6.5,
+  #  ymin = 91,
+  #  ymax = 93
+  #) +
   geom_point(alpha = 0.25, size = 0.1) +
   geom_density_2d(size = 0.5, alpha = 0.75) +
   scale_fill_manual(values = sd_col) +
@@ -578,12 +583,13 @@ sd_density <-
   ylab("% identity") +
   scale_x_log10(labels = comma) +
   annotation_logticks(sides = "b") +
-  ggtitle("Distribution of SD length and identity\nin contig ends vs whole genome") +
-  theme_cowplot(font_size = 18)
+  #ggtitle("Distribution of SD length and identity\nin contig ends vs whole genome") +
+  theme_cowplot() +
+  theme(legend.position = "top")
 my_ggsave(
   "{odir}/5_SD_length_frac_density.pdf",
-  height = 4 * 1.5,
-  width = 6 * 1.5,
+  height = 12 * 0.60,
+  width = 14 * 0.60,
   plot = sd_density
 )
 sd_density
@@ -686,20 +692,20 @@ p.cov.breaks <- ggplot(
     alpha = 0.75,
     min.segment.length = unit(0, 'lines')
   ) +
-  theme_cowplot() +
+  theme_minimal_grid() +
   scale_x_continuous() +
   scale_y_continuous() +
   #annotation_logticks()+
   #facet_zoom(x = total_Gbp < 200, show.area=TRUE)+
   facet_row(~ sequence_context, scales = "free") +
-  ggtitle("Number of contig ends in high GA/TC regions vs coverage") +
+  #ggtitle("Number of contig ends in high GA/TC regions vs coverage") +
   theme(legend.position = "bottom") +
-  xlab("Fold coverage of Hifi data") + ylab("# of GA/TC (80%) associated contig ends")
+  xlab("HiFi sequence coverage") + ylab("# of GA/TC (80%) associated contig ends")
 p.cov.breaks 
 my_ggsave(
   "{odir}/7_sample_coverage_and_breaks.pdf",
-  height = 8,
-  width = 16,
+  height = 6,
+  width = 6,
   plot = p.cov.breaks
 )
 p.cov.breaks

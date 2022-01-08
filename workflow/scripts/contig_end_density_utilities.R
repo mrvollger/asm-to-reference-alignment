@@ -97,7 +97,7 @@ if (F) {
   
   ### load seq content
   seq_content <-
-    readbed(glue("{pre}/ends/all.ends.nuc.content.bed"),
+    readbed(glue("{pre}/ends/all.ends.nuc.content.bed.gz"),
             tag = "nuc")
   colnames(seq_content) <- gsub("\\d+_", "", colnames(seq_content))
   seq_content <- seq_content %>%
@@ -105,7 +105,7 @@ if (F) {
            pct_tc = (num_T + num_C) / seq_len) %>%
     data.table()
   
-  nuc <- readbed(glue("{pre}/ends/all.nuc.content.bed"),
+  nuc <- readbed(glue("{pre}/ends/all.nuc.content.bed.gz"),
                  tag = "nuc")
   ################################################
   
@@ -126,7 +126,7 @@ if (F) {
     data.table()
   
   # read in the ends
-  df <- fread(glue("{pre}/ends/all.ends.bed")) %>%
+  df <- fread(glue("{pre}/ends/all.ends.bed.gz")) %>%
     drop_na() %>%
     separate(`reference_name`,
              into = c("sample", "hap", "tig"),
@@ -222,23 +222,23 @@ if (F) {
   
   
   mycolors <- c(
-    `Chromosome end` = "green",
-    `Poisson breaks` = "cyan",
-    `SD and High GA/TC (80%)` = "orange",
+    `Chromosome end` = OLDCOLOR,#"green",
+    `Poisson breaks` = OLDCOLOR,#"cyan",
+    `SD and High GA/TC (80%)` = NEWCOLOR, #"orange",
     `High GA/TC (80%)` = "darkgreen",
     SD = NEWCOLOR,
-    Alpha = "purple",
-    Satellite = "blue",
-    `10% Low Complexity` = "lightblue",
-    `High GC (75%)` = "green",
-    `High AT (80%)` = "lightgreen",
-    `T2T HiFi low coverage` = "orange",
+    Alpha = "blue", #"purple",
+    Satellite = "blue",#"blue",
+    `10% Low Complexity` = "blue",
+    `High GC (75%)` = OLDCOLOR,#"green",
+    `High AT (80%)` = OLDCOLOR,#"lightgreen",
+    `T2T HiFi low coverage` = OLDCOLOR,#"orange",
     other = OLDCOLOR
   )
   df$sequence_context <-
     factor(df$sequence_context, rev(names(mycolors)))
   
-  dfr <- fread(glue("{pre}/ends/windowed.all.ends.bed"))
+  dfr <- fread(glue("{pre}/ends/windowed.all.ends.bed.gz"))
   
   save.image(file = glue("{odir}/contig_ends.RData"))
 } else {
