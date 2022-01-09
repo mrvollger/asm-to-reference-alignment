@@ -146,9 +146,9 @@ rule window_stats:
     threads: 1
     shell:
         """
-        rb stats --threads {threads} --paf {input.paf} \
+        rb --threads {threads} stats --paf {input.paf} \
             > {output.tbl}
-        rb stats --threads {threads} --paf {input.liftover_paf} \
+        rb --threads {threads} stats --paf {input.liftover_paf} \
             > {output.liftover_tbl}
         """
 
@@ -250,9 +250,9 @@ rule window_stats_realign:
     threads: 1
     shell:
         """
-        rb stats --threads {threads} --paf {input.paf} \
+        rb --threads {threads} stats --paf {input.paf} \
             > {output.tbl}
-        rb stats --threads {threads} --paf {input.liftover_paf} \
+        rb --threads {threads} stats --paf {input.liftover_paf} \
             > {output.liftover_tbl}
         """
 

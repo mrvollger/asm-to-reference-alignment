@@ -142,7 +142,7 @@ rule aln_to_bed:
     threads: 1
     shell:
         """
-        rb stats --threads {threads} {input.aln} > {output.bed}
+        rb --threads {threads} stats {input.aln} > {output.bed}
         """
 
 
