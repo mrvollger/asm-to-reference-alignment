@@ -1,7 +1,7 @@
 #!/bin/bash
 
 configfile=config/config.yaml
-threads=150
+threads=200
 snakemake --configfile $configfile --cores $threads --use-conda \
     gene_conversion \
     -p --notemp \
