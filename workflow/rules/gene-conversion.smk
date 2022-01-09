@@ -124,6 +124,7 @@ rule window_alignment:
         """
         minimap2 -K 1G -t {threads} \
             -cx asm20 \
+            -k 15 \
             --secondary=no --eqx \
             {input.ref} \
                 <( bedtools getfasta -name+ \
@@ -228,6 +229,7 @@ rule window_alignment_realign:
         """
         minimap2 -K 1G -t {threads} \
             -cx asm20 \
+            -k 15 \
             --secondary=no --eqx \
             {input.ref} \
                 <( bedtools getfasta -name+ \
