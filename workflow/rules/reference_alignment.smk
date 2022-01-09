@@ -196,7 +196,9 @@ rule find_contig_ends:
         "../envs/env.yml"
     shell:
         """
-        rb liftover --largest --qbed --bed {input.bed} {input.paf} \
+        rb liftover --largest --qbed \
+            --bed <( grep -v "^#" {input.bed} ) \
+            {input.paf} \
           | rb stats --paf --qbed \
           > {output.bed}
         """

@@ -53,7 +53,7 @@ rule make_gene_conversion_windows:
         """
         awk '$4-$3>{params.min_aln_len}' {input.paf} \
             | rb break-paf --max-size {params.window} - \
-            | rb liftover --bed {input.bed} \
+            | rb liftover --bed <( grep -v "^#" {input.bed}) \
             | csvtk cut  -tT -f 1,3,4 \
             | bedtools makewindows -s {params.slide} -w {params.window} -b - \
             | sed 's/$/\t{wildcards.sm}/g' \
@@ -82,7 +82,9 @@ rule make_query_windows:
             | cut -f 1-3 \
             | bedtools sort -i -  > {output.tbed}
 
-        rb liftover -q --bed {output.tbed} --largest {input.paf} \
+        rb liftover \
+            -q --bed <( grep -v "^#" {output.tbed} ) \
+            --largest {input.paf} \
             | grep -v "cg:Z:{params.window}=" \
             > {output.paf} 2> {log}
         """
@@ -210,7 +212,7 @@ rule make_query_windows_realign:
     shell:
         """
         rb liftover -q \
-            --bed <(cut -f 1-3 {input.bed}) \
+            --bed <(cut -f 1-3 {input.bed} | grep -v "^#" ) \
             --largest {input.paf} \
                 | grep -v "cg:Z:{params.window}=" \
         > {output.paf} 2> {log}
