@@ -107,10 +107,14 @@ rule unzip_ref:
         """
 
 
+def get_ref(wc):
+    return config.get("ref")[wc.ref]
+
+
 rule window_alignment:
     input:
         #ref=rules.alignment_index.output.mmi,
-        ref=config.get("ref")[wc.ref],
+        ref=get_ref,
         query=rules.unzip_ref.output.fa,
         fai=rules.unzip_ref.output.fai,
         paf=rules.make_query_windows.output.paf,
@@ -216,7 +220,7 @@ rule make_query_windows_realign:
 rule window_alignment_realign:
     input:
         #ref=rules.alignment_index.output.mmi,
-        ref=config.get("ref")[wc.ref],
+        ref=get_ref,
         query=rules.unzip_ref.output.fa,
         fai=rules.unzip_ref.output.fai,
         paf=rules.make_query_windows_realign.output.paf,
