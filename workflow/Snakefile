@@ -26,4 +26,4 @@ include: "rules/SafFire.smk"
 rule all:
     input:
         ra=rules.reference_alignment.input,
-        SafFire=rules.SafFire.output,
+        SafFire=expand(rules.SafFire.output, sm=df.index, ref=config.get("ref").keys()),
