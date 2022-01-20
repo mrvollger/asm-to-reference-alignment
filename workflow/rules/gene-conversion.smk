@@ -539,7 +539,7 @@ rule gene_conversion:
     input:
         expand(rules.make_tbl.output, ref=config.get("ref").keys()),
         expand(rules.large_table.output, ref=config.get("ref").keys()),
-        expand(rules.gene_conversion_windows.output.bed, ref=config.get("ref").keys()),
+        expand(rules.gene_conversion_windows.output, ref=config.get("ref").keys()),
         expand(rules.compress_large_bed.output, ref=config.get("ref").keys()),
         expand(
             rules.merged_gene_conversion.output.bed,
