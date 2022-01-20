@@ -83,9 +83,9 @@ def read_bed(args):
             print_source_windows(cur_df)
         else:
             # 2022-01-20 addition
-            tmp_df = cur_df.sort_values(["name"], ascending=False).iloc[0]
+            # tmp_df = cur_df.sort_values(["name"], ascending=False).iloc[0]
             # end addition
-            tmp_df.to_csv(sys.stdout, sep="\t", index=False, header=False)
+            cur_df.to_csv(sys.stdout, sep="\t", index=False, header=False)
 
 
 if __name__ == "__main__":
