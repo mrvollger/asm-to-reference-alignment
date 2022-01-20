@@ -24,6 +24,7 @@ if (simplify) {
     print("SIMPLIFY")
     df <- df %>%
         mutate(mmscore = matches - matches.liftover) %>%
+        group_by(group, contig, reference_name, reference_name.liftover, sample) %>%
         top_n(1, mmscore) %>%
         dplyr::select(-mmscore)
 }
