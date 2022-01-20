@@ -21,9 +21,11 @@ if (merge) {
 }
 
 if (simplify) {
+    print("SIMPLIFY")
     df <- df %>%
-        arrange(matches.liftover - matches) %>% # order with one with most matches first
-        filter(row_number() == 1)
+        filter(
+            max(matches - matches.liftover) == matches - matches.liftover
+        )
 }
 
 df <- df %>%
