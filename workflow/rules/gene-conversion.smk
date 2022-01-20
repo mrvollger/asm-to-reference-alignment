@@ -364,6 +364,7 @@ rule compress_large_bed:
         interact=rules.gene_conversion_windows.output.interact + ".gz",
     conda:
         "../envs/env.yml"
+    threads: 8
     shell:
         """
         bgzip -@ {threads} {input.acceptor} -c > {output.acceptor}
