@@ -310,7 +310,7 @@ rule gene_conversion_windows_per_sample:
         "../envs/env.yml"
     params:
         window=config.get("window", window),
-        simplify=False,
+        simplify=True,
         merge=False,
     script:
         "../scripts/gene-conversion-windows.R"
