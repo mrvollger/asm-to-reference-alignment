@@ -517,12 +517,13 @@ rule merged_gene_conversion:
         ),
         # rules.candidate_gene_conversion_realign.output.bed,
     output:
-        bed="results/{ref}/gene-conversion/merged_acceptor.bed",
+        bed="results/{ref}/gene-conversion/merged_acceptor.bed.gz",
         tmp=temp("temp/{ref}/gene-conversion/merged_candidate_windows.group.bed.tmp"),
     conda:
         "../envs/env.yml"
     params:
         find_pairs=workflow.source_path("../scripts/paired-groups.py"),
+    threads: 4
     shell:
         """
         head -n1 {input.bed[0]} > {output.tmp}
@@ -531,6 +532,7 @@ rule merged_gene_conversion:
         python {params.find_pairs} \
             --fraction 0.95 --reciprocal \
             --input {output.tmp} \
+            | bgzip -@ {threads} \
         > {output.bed}
         """
 
