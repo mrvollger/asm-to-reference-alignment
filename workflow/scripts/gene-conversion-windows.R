@@ -22,13 +22,14 @@ if (merge) {
 
 if (simplify) {
     print("SIMPLIFY")
-    print(nrow(ttdf))
     tdf <- ttdf %>%
         mutate(mmscore = matches - matches.liftover) %>%
-        group_by(group, contig, reference_name, reference_name.liftover, sample) %>%
+        group_by(
+            group, contig, reference_name, reference_name.liftover, sample
+        ) %>%
         top_n(1, mmscore) %>%
         dplyr::select(-mmscore)
-    print(nrow(tdf))
+    print(paste(nrow(ttdf), nrow(tdf)))
 }
 
 df <- tdf %>%
