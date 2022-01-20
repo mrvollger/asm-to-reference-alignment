@@ -2,6 +2,7 @@ ref:
   CHM13_V1.1_v2.23: /net/eichler/vol26/projects/chm13_t2t/nobackups/assemblies/chm13_v1.1_plus38Y.fasta
 tbl: config/table.asm.tbl
 aln_threads: 8
+## THE FOLLOWING OPTIONS ARE ONLY USED FOR GENE CONVERSION ANALYSIS AND NOT ALIGNMENT AND CAN BE IGNORRED
 # subset the gene conversion analysis to just these regions on the reference
 #bed: /net/eichler/vol26/projects/chm13_t2t/nobackups/Assembly_analysis/SEDEF/chm13_v1.1_plus38Y.SDs.bed
 bed: config/SDs.and.lowid.bed
