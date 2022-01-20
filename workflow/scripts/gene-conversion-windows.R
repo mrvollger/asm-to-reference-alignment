@@ -22,7 +22,7 @@ if (merge) {
 
 if (simplify) {
     print("SIMPLIFY")
-    print(nrow(tdf))
+    print(nrow(ttdf))
     tdf <- ttdf %>%
         mutate(mmscore = matches - matches.liftover) %>%
         group_by(group, contig, reference_name, reference_name.liftover, sample) %>%
