@@ -347,7 +347,7 @@ rule gene_conversion_windows:
         "../envs/env.yml"
     params:
         window=config.get("window", window),
-        simplify=False,
+        simplify=True,
         merge=False,
     script:
         "../scripts/gene-conversion-windows.R"
