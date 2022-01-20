@@ -23,9 +23,9 @@ if (merge) {
 if (simplify) {
     print("SIMPLIFY")
     df <- df %>%
-        filter(
-            max(matches - matches.liftover) == matches - matches.liftover
-        )
+        mutate(mmscore = matches - matches.liftover) %>%
+        top_n(1, mmscore) %>%
+        dplyr::select(-mmscore)
 }
 
 df <- df %>%
