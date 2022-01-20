@@ -64,9 +64,11 @@ def read_bed(args):
     ]
     inter1 = make_self_intersect(df, names1, args)
     inter2 = make_self_intersect(df, names2, args)
-
     paired_intersect = inter1.key.isin(inter2.key)
-    valid_intersect = inter1[paired_intersect]
+    if not args.source_windows:
+        valid_intersect = inter2  # only check for overlap in the acceptor windows
+    else:
+        valid_intersect = inter1[paired_intersect]
     graph = nx.Graph()
     graph.add_edges_from(zip(valid_intersect.record_id, valid_intersect.record_id_b))
 
@@ -80,7 +82,10 @@ def read_bed(args):
         if args.source_windows:
             print_source_windows(cur_df)
         else:
-            cur_df.to_csv(sys.stdout, sep="\t", index=False, header=False)
+            # 2022-01-20 addition
+            tmp_df = cur_df.sort_values(["name"], ascending=False).iloc[0]
+            # end addition
+            tmp_df.to_csv(sys.stdout, sep="\t", index=False, header=False)
 
 
 if __name__ == "__main__":

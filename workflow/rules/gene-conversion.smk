@@ -293,7 +293,7 @@ rule group_gene_conversion_realign:
     shell:
         """
         python {params.find_pairs} \
-            --fraction 0.75 --overlap 1 \
+            --fraction 0.5 --overlap 1 \
             --input {input.bed} \
         > {output.bed}
         """
