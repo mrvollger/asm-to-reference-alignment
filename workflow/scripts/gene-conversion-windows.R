@@ -10,28 +10,28 @@ f <- snakemake@input$bed
 print(f)
 options(scipen = 999)
 
-df <<- fread(f, nThread = 8, sep = "\t") %>%
+ttdf <- fread(f, nThread = 8, sep = "\t") %>%
     mutate(reference_name = `#reference_name`) %>%
     group_by(group, contig, reference_name, reference_name.liftover, sample)
 
 if (merge) {
-    df <<- df %>%
+    tdf <- ttdf %>%
         ungroup() %>%
         group_by(group, reference_name, reference_name.liftover)
 }
 
 if (simplify) {
     print("SIMPLIFY")
-    print(nrow(df))
-    df <<- df %>%
+    print(nrow(tdf))
+    tdf <- ttdf %>%
         mutate(mmscore = matches - matches.liftover) %>%
         group_by(group, contig, reference_name, reference_name.liftover, sample) %>%
         top_n(1, mmscore) %>%
         dplyr::select(-mmscore)
-    print(nrow(df))
+    print(nrow(tdf))
 }
 
-df <<- df %>%
+df <- tdf %>%
     summarise(
         `#reference_name` = unique(`#reference_name`),
         reference_name = unique(reference_name),
