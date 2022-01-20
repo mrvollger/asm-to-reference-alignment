@@ -353,6 +353,25 @@ rule gene_conversion_windows:
         "../scripts/gene-conversion-windows.R"
 
 
+rule compress_large_bed:
+    input:
+        acceptor=rules.gene_conversion_windows.output.acceptor,
+        bed=rules.gene_conversion_windows.output.bed,
+        interact=rules.gene_conversion_windows.output.interact,
+    output:
+        acceptor=rules.gene_conversion_windows.output.acceptor + ".gz",
+        bed=rules.gene_conversion_windows.output.bed + ".gz",
+        interact=rules.gene_conversion_windows.output.interact + ".gz",
+    conda:
+        "../envs/env.yml"
+    shell:
+        """
+        bgzip -@ {threads} {input.acceptor} -c > {output.acceptor}
+        bgzip -@ {threads} {input.bed} -c > {output.bed}
+        bgzip -@ {threads} {input.interact} -c > {output.interact}
+        """
+
+
 rule make_big_bed:
     input:
         bed=rules.gene_conversion_windows.output.bed,
@@ -520,6 +539,7 @@ rule gene_conversion:
         expand(rules.make_tbl.output, ref=config.get("ref").keys()),
         expand(rules.large_table.output, ref=config.get("ref").keys()),
         expand(rules.gene_conversion_windows.output.bed, ref=config.get("ref").keys()),
+        expand(rules.compress_large_bed.output, ref=config.get("ref").keys()),
         expand(
             rules.merged_gene_conversion.output.bed,
             ref=config.get("ref").keys(),
