@@ -530,7 +530,7 @@ rule merged_gene_conversion:
         cat {input.bed} | grep -v "^#" >> {output.tmp}
 
         python {params.find_pairs} \
-            --fraction 0.95 --reciprocal \
+            --fraction 0.8 --reciprocal \
             --input {output.tmp} \
             | bgzip -@ {threads} \
         > {output.bed}
