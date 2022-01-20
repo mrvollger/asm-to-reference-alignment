@@ -31,7 +31,7 @@ if (simplify) {
     print(nrow(df))
 }
 
-df <- df %>%
+df <<- df %>%
     summarise(
         `#reference_name` = unique(`#reference_name`),
         reference_name = unique(reference_name),
