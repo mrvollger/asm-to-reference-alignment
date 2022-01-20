@@ -27,7 +27,7 @@ if (simplify) {
         group_by(
             group, contig, reference_name, reference_name.liftover, sample
         ) %>%
-        top_n(1, mmscore) %>%
+        slice_max(mmscore, n = 1, with_ties = FALSE) %>%
         dplyr::select(-mmscore)
     print(paste(nrow(ttdf), nrow(tdf)))
 }
