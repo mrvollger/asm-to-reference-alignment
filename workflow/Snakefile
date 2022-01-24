@@ -36,4 +36,8 @@ rule all:
 
 rule ideogram:
     input:
-        ideo=expand(rules.bed_to_pdf.output, sm=df.index, ref=config.get("ref").keys()),
+        expand(
+            rules.bed_to_pdf.output,
+            sm=df["sample"].str.strip(),
+            ref=config.get("ref").keys(),
+        ),
