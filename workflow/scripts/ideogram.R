@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
-options(repos = structure(c(CRAN = "http://cran.us.r-project.org")))
-.libPaths(c("~/local/R/library", .libPaths()))
+# options(repos = structure(c(CRAN = "http://cran.us.r-project.org")))
+# .libPaths(c("~/local/R/library", .libPaths()))
 # setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 # if (!require("tidyverse")) install.packages("tidyverse")
