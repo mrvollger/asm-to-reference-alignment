@@ -25,7 +25,7 @@ include: "rules/SafFire.smk"
 
 wildcard_constraints:
     i="\d+",
-    sm="|".join(df.index),
+    sm="|".join(df.index) + "|" + "|".join(df["sample"].str.strip()),
 
 
 rule all:
