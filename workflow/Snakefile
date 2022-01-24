@@ -27,3 +27,8 @@ rule all:
     input:
         ra=rules.reference_alignment.input,
         SafFire=expand(rules.SafFire.output, sm=df.index, ref=config.get("ref").keys()),
+
+
+rule ideogram:
+    input:
+        ideo=expand(rules.bed_to_pdf.output, sm=df.index, ref=config.get("ref").keys()),
