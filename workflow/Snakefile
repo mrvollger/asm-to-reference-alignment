@@ -23,6 +23,11 @@ include: "rules/gene-conversion.smk"
 include: "rules/SafFire.smk"
 
 
+wildcard_constraints:
+    i="\d+",
+    sm="|".join(df.index),
+
+
 rule all:
     input:
         ra=rules.reference_alignment.input,
