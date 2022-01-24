@@ -1,6 +1,6 @@
 # Reference alignment workflow
 
-## an exmaple run scrpt 
+## an example run scrpt 
 ```
 configfile=config/config.yaml
 threads=200
