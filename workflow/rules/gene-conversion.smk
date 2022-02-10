@@ -45,6 +45,7 @@ rule make_gene_conversion_windows:
     conda:
         "../envs/env.yml"
     params:
+        indel_break=config.get("indel_break", 1e4),
         window=config.get("window", window),
         slide=config.get("slide", slide),
         min_aln_len=config.get("min_aln_len", 1e6),
@@ -52,7 +53,8 @@ rule make_gene_conversion_windows:
     shell:
         """
         awk '$4-$3>{params.min_aln_len}' {input.paf} \
-            | rb break-paf --max-size {params.window} - \
+            | rb break-paf --max-size {params.indel_break} - \
+            | awk '$4-$3>{params.min_aln_len}' \
             | rb liftover --bed <( grep -v "^#" {input.bed}) \
             | csvtk cut  -tT -f 1,3,4 \
             | bedtools makewindows -s {params.slide} -w {params.window} -b - \
@@ -499,7 +501,13 @@ rule make_tbl:
             out.write("sample\thap\tfile\n")
             for sm, f in zip(params.samples, input):
                 sm, hap = sm.split("_")
-                out.write("{}\t{}\t{}\n".format(sm, hap, os.path.abspath(f),))
+                out.write(
+                    "{}\t{}\t{}\n".format(
+                        sm,
+                        hap,
+                        os.path.abspath(f),
+                    )
+                )
 
 
 rule merged_gene_conversion:
@@ -538,7 +546,8 @@ rule gene_conversion:
         expand(rules.gene_conversion_windows.output, ref=config.get("ref").keys()),
         expand(rules.compress_large_bed.output, ref=config.get("ref").keys()),
         expand(
-            rules.merged_gene_conversion.output.bed, ref=config.get("ref").keys(),
+            rules.merged_gene_conversion.output.bed,
+            ref=config.get("ref").keys(),
         ),
         expand(
             rules.gene_conversion_windows_per_sample.output,
@@ -549,7 +558,8 @@ rule gene_conversion:
         expand(rules.make_big_beds.output, sm=df.index, ref=config.get("ref").keys()),
         expand(rules.make_trackdb.output, ref=config.get("ref").keys()),
         expand(
-            rules.gene_conversion_target_regions.output, ref=config.get("ref").keys(),
+            rules.gene_conversion_target_regions.output,
+            ref=config.get("ref").keys(),
         ),
     message:
         "Gene conversion run complete"
