@@ -8,7 +8,6 @@ SMKDIR = os.path.dirname(workflow.snakefile)
 shell.prefix("which python; ")
 
 
-um_score = config.get("um_score", 10)
 df = pd.read_csv(config["tbl"], sep="\t")
 df.asm = df.asm.map(os.path.abspath)
 
