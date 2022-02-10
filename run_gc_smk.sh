@@ -1,13 +1,18 @@
 #!/bin/bash
 
+
+
+mkdir dir -p logs/drmaa
+
 configfile=config/config.yaml
 threads=200
-snakemake --configfile $configfile --cores $threads --use-conda \
+snakemake --configfile $configfile --cores $threads --jobs $threads --use-conda \
     gene_conversion \
     -p --notemp \
     "$@"
 
 exit
+    --drmaa " -l centos=7 -l h_rt=48:00:00 -l mfree=8G -pe serial {threads} -V -cwd -S /bin/bash -w n" --drmaa-log-dir logs/drmaa \
 configfile=$2
 if [ $1 == "setup" ]; then
     snakemake --configfile $configfile --cores $threads --use-conda \
