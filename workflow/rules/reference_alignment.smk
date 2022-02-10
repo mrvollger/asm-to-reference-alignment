@@ -139,6 +139,23 @@ rule sam_to_paf:
         """
 
 
+rule trim_and_break_paf:
+    input:
+        paf=rules.sam_to_paf.output.paf,
+    output:
+        paf="results/{ref}/paf_trim_and_break/{sm}.paf",
+    conda:
+        "../envs/env.yml"
+    params:
+        break_paf=config.get("break_paf", 10_000),
+    shell:
+        """
+        rustybam trim-paf {input.paf} \
+            | rustybam break-paf --max-size {params.break_paf} \
+        > {output.paf}
+        """
+
+
 rule aln_to_bed:
     input:
         #paf=rules.sam_to_paf.output.paf,
