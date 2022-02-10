@@ -23,7 +23,21 @@ include: "rules/gene-conversion.smk"
 include: "rules/SafFire.smk"
 
 
+wildcard_constraints:
+    i="\d+",
+    sm="|".join(df.index) + "|" + "|".join(df["sample"].str.strip()),
+
+
 rule all:
     input:
         ra=rules.reference_alignment.input,
         SafFire=expand(rules.SafFire.output, sm=df.index, ref=config.get("ref").keys()),
+
+
+rule ideogram:
+    input:
+        expand(
+            rules.bed_to_pdf.output,
+            sm=df["sample"].str.strip(),
+            ref=config.get("ref").keys(),
+        ),

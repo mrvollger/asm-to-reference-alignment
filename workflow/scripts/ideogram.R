@@ -1,111 +1,123 @@
 #!/usr/bin/env Rscript
-options(repos=structure(c(CRAN="http://cran.us.r-project.org")))
-.libPaths(c("~/local/R/library", .libPaths()))
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+# options(repos = structure(c(CRAN = "http://cran.us.r-project.org")))
+# .libPaths(c("~/local/R/library", .libPaths()))
+# setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
-if(! require("tidyverse")) install.packages("tidyverse")
-if(! require("ggnewscale")) install.packages("ggnewscale")
-if(! require("ggrepel")) install.packages("ggrepel")
-if(! require("data.table")) install.packages("data.table")
-if(! require("glue")) install.packages("glue")
-if(! require("RColorBrewer")) install.packages("RColorBrewer")
-if(! require("scales")) install.packages("scales")
-if(! require("cowplot")) install.packages("cowplot")
-if(! require("argparse")) install.packages("argparse")
-if (!requireNamespace("BiocManager", quietly = TRUE))
-  install.packages("BiocManager")
-if(! require("karyoploteR")) BiocManager::install("karyoploteR")
-if(! require("GenomicRanges")) BiocManager::install("GenomicRanges")
-if(! require("argparse")) BiocManager::install("argparse")
+# if (!require("tidyverse")) install.packages("tidyverse")
+# if (!require("ggnewscale")) install.packages("ggnewscale")
+# if (!require("ggrepel")) install.packages("ggrepel")
+# if (!require("data.table")) install.packages("data.table")
+# if (!require("glue")) install.packages("glue")
+# if (!require("RColorBrewer")) install.packages("RColorBrewer")
+# if (!require("scales")) install.packages("scales")
+# if (!require("cowplot")) install.packages("cowplot")
+# if (!require("argparse")) install.packages("argparse")
+# if (!requireNamespace("BiocManager", quietly = TRUE)) {
+#       install.packages("BiocManager")
+#   }
+# if (!require("karyoploteR")) BiocManager::install("karyoploteR")
+# if (!require("GenomicRanges")) BiocManager::install("GenomicRanges")
+# if (!require("argparse")) BiocManager::install("argparse")
+library(tidyverse)
+library(ggnewscale)
+library(ggrepel)
+library(data.table)
+library(glue)
+library(RColorBrewer)
+library(scales)
+library(cowplot)
+library(argparse)
+library(karyoploteR)
+library(GenomicRanges)
 
-dir = paste0(getwd())#,"/workflow/scripts")
+dir <- paste0(getwd(), "/workflow/scripts")
 print(dir)
 load(glue("{dir}/chm13.karyo.RData"))
 
 
 # create parser object
-indir="~/Desktop/EichlerVolumes/chm13_t2t/nobackups/assembly_alignments/rustybam/reference_alignment/bed/"
+indir <- "~/Desktop/EichlerVolumes/chm13_t2t/nobackups/assembly_alignments/rustybam/reference_alignment/bed/"
 parser <- ArgumentParser()
-parser$add_argument("-a", "--asm",  help="bed file with all the asm mapping", default = glue("{indir}/HG00733_1.bed"))
-parser$add_argument("-b", "--asm2",  help="bed file with a second asm mapping")
-parser$add_argument("-k", "--karyotype",  help="karyotpye file for different genomes")
-parser$add_argument("--min",  help="minimum amount of total alginemnts between a target and query for it to appear", default=1e6)
-parser$add_argument("-p", "--plot",  help="output plot, must have .pdf ext.", default = "~/Desktop/ideogram.pdf")
+parser$add_argument("-a", "--asm", help = "bed file with all the asm mapping", default = glue("{indir}/HG00733_1.bed"))
+parser$add_argument("-b", "--asm2", help = "bed file with a second asm mapping")
+parser$add_argument("-k", "--karyotype", help = "karyotpye file for different genomes")
+parser$add_argument("--min", help = "minimum amount of total alginemnts between a target and query for it to appear", default = 1e6)
+parser$add_argument("-p", "--plot", help = "output plot, must have .pdf ext.", default = "~/Desktop/ideogram.pdf")
 args <- parser$parse_args()
-filename=args$asm
-filename="~/Desktop/EichlerVolumes/chm13_t2t/nobackups/chm1_20211004_from_phillippy_group/2021-10-25/chm1_to_chm13.tbl"
+filename <- args$asm
+# filename="~/Desktop/EichlerVolumes/chm13_t2t/nobackups/chm1_20211004_from_phillippy_group/2021-10-25/chm1_to_chm13.tbl"
 
 
-asmdf<- function(filename, colors, minalnsize=args$min){
-  asmvshg = read.table(filename, header=T, comment.char = ">")
-  names(asmvshg)[1:3] = c("chr", "start", "end") #, "rlen", "strand", "name")
-  asmvshg = asmvshg %>% 
-    group_by(query_name, chr) %>%
-    summarise(bp_aligned = sum(end-start),
-              min_start=min(start),
-              max_end=max(end)
-              ) %>%
-    merge(asmvshg) %>% 
-    filter(bp_aligned > minalnsize) %>%
-    arrange(chr, min_start) %>%
-    data.table()
+asmdf <- function(filename, colors, minalnsize = args$min) {
+    asmvshg <- read.table(filename, header = T, comment.char = ">")
+    names(asmvshg)[1:3] <- c("chr", "start", "end") # , "rlen", "strand", "name")
+    asmvshg <- asmvshg %>%
+        group_by(query_name, chr) %>%
+        summarise(
+            bp_aligned = sum(end - start),
+            min_start = min(start),
+            max_end = max(end)
+        ) %>%
+        merge(asmvshg) %>%
+        filter(bp_aligned > minalnsize) %>%
+        arrange(chr, min_start) %>%
+        data.table()
 
-  asmvshg$name = asmvshg$query_name
-  print(head(asmvshg))
-  curcolor = 1
-  lencolors = length(colors)
-  precontig = ""
-  asmcolor = NULL
-  seen = c()
-  y = NULL
-  for(i in 1:nrow(asmvshg) ){
-    contig = as.character(asmvshg$name[i])
-    if( contig != precontig ){
-      curcolor = (curcolor + 1) %% lencolors 
-      precontig = contig
+    asmvshg$name <- asmvshg$query_name
+    print(head(asmvshg))
+    curcolor <- 1
+    lencolors <- length(colors)
+    precontig <- ""
+    asmcolor <- NULL
+    seen <- c()
+    y <- NULL
+    for (i in 1:nrow(asmvshg)) {
+        contig <- as.character(asmvshg$name[i])
+        if (contig != precontig) {
+            curcolor <- (curcolor + 1) %% lencolors
+            precontig <- contig
+        }
+        asmcolor <- c(asmcolor, colors[curcolor + 1])
+        y <- c(y, curcolor / 4)
     }
-    asmcolor = c(asmcolor, colors[curcolor + 1])
-    y = c(y, curcolor/4)
-  }
-  asmvshg$color = asmcolor
-  asmvshg$y = y
-  asmvshg$y1 = asmvshg$y + .25
-  print(head(asmvshg))
-  return(asmvshg)
+    asmvshg$color <- asmcolor
+    asmvshg$y <- y
+    asmvshg$y1 <- asmvshg$y + .25
+    print(head(asmvshg))
+    return(asmvshg)
 }
 
-asmvshg = asmdf(filename,  c("#2081f9", "#f99820") ) 
+asmvshg <- asmdf(filename, c("#2081f9", "#f99820"))
 
-if(!is.null(args$asm2)){
-  asmvshg2 = asmdf(args$asm2,  c("#159934", "#99157a") )
+if (!is.null(args$asm2)) {
+    asmvshg2 <- asmdf(args$asm2, c("#159934", "#99157a"))
 }
 
 
-cex = 0.5 
+cex <- 0.5
 
-print("Plotting") 
+print("Plotting")
 
-pdf(file=args$plot, width = 9, height =11 )
+pdf(file = args$plot, width = 9, height = 11)
 
-if(is.null(args$asm2)){
-  kp <- plotKaryotype(genome=GENOME, cytobands = CYTOFULL, chromosomes = NOM)
+if (is.null(args$asm2)) {
+    kp <- plotKaryotype(genome = GENOME, cytobands = CYTOFULL, chromosomes = NOM)
 } else {
-kp <- plotKaryotype(genome=GENOME, cytobands = CYTOFULL, chromosomes = NOM, plot.type = 2)
+    kp <- plotKaryotype(genome = GENOME, cytobands = CYTOFULL, chromosomes = NOM, plot.type = 2)
 }
 
 # adding asm bed number one
-kpRect(kp, chr=asmvshg$chr, x0=asmvshg$min_start, x1=asmvshg$max_end, y0=(asmvshg$y+asmvshg$y1)/2, y1=(asmvshg$y+asmvshg$y1)/2, col=asmvshg$color)
-kpRect(kp, chr=asmvshg$chr, x0=asmvshg$start, x1=asmvshg$end, y0=asmvshg$y, y1=asmvshg$y1, col=asmvshg$color)
+kpRect(kp, chr = asmvshg$chr, x0 = asmvshg$min_start, x1 = asmvshg$max_end, y0 = (asmvshg$y + asmvshg$y1) / 2, y1 = (asmvshg$y + asmvshg$y1) / 2, col = asmvshg$color)
+kpRect(kp, chr = asmvshg$chr, x0 = asmvshg$start, x1 = asmvshg$end, y0 = asmvshg$y, y1 = asmvshg$y1, col = asmvshg$color)
 
 # adding second asm if there
-if(!is.null(args$asm2)){
-  kpRect(kp, chr=asmvshg2$chr, x0=asmvshg2$start, x1=asmvshg2$end, y0=asmvshg2$y, y1=asmvshg2$y1, col=asmvshg2$color, data.panel = 2)
+if (!is.null(args$asm2)) {
+    kpRect(kp, chr = asmvshg2$chr, x0 = asmvshg2$start, x1 = asmvshg2$end, y0 = asmvshg2$y, y1 = asmvshg2$y1, col = asmvshg2$color, data.panel = 2)
 }
 
 dev.off()
 
-if(F){
-  dir ="~/Desktop/EichlerVolumes/chm13_t2t/nobackups/assembly_alignments/rustybam/workflow/scripts/"
-  save(GENOME, CYTOFULL, NOM, file = glue("{dir}/chm13.karyo.RData"))
+if (F) {
+    dir <- "~/Desktop/EichlerVolumes/chm13_t2t/nobackups/assembly_alignments/rustybam/workflow/scripts/"
+    save(GENOME, CYTOFULL, NOM, file = glue("{dir}/chm13.karyo.RData"))
 }
-
