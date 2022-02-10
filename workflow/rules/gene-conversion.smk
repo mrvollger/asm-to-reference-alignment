@@ -499,13 +499,7 @@ rule make_tbl:
             out.write("sample\thap\tfile\n")
             for sm, f in zip(params.samples, input):
                 sm, hap = sm.split("_")
-                out.write(
-                    "{}\t{}\t{}\n".format(
-                        sm,
-                        hap,
-                        os.path.abspath(f),
-                    )
-                )
+                out.write("{}\t{}\t{}\n".format(sm, hap, os.path.abspath(f),))
 
 
 rule merged_gene_conversion:
@@ -544,8 +538,7 @@ rule gene_conversion:
         expand(rules.gene_conversion_windows.output, ref=config.get("ref").keys()),
         expand(rules.compress_large_bed.output, ref=config.get("ref").keys()),
         expand(
-            rules.merged_gene_conversion.output.bed,
-            ref=config.get("ref").keys(),
+            rules.merged_gene_conversion.output.bed, ref=config.get("ref").keys(),
         ),
         expand(
             rules.gene_conversion_windows_per_sample.output,
@@ -556,8 +549,7 @@ rule gene_conversion:
         expand(rules.make_big_beds.output, sm=df.index, ref=config.get("ref").keys()),
         expand(rules.make_trackdb.output, ref=config.get("ref").keys()),
         expand(
-            rules.gene_conversion_target_regions.output,
-            ref=config.get("ref").keys(),
+            rules.gene_conversion_target_regions.output, ref=config.get("ref").keys(),
         ),
     message:
         "Gene conversion run complete"

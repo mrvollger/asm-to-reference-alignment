@@ -41,7 +41,7 @@ rule alignment_index:
         "minimap2 -t {threads} -ax asm20 -d {output.mmi} {input.ref}"
 
 
-#ref=ancient(rules.alignment_index.output.mmi),
+# ref=ancient(rules.alignment_index.output.mmi),
 rule alignment:
     input:
         ref=get_ref,
@@ -56,7 +56,7 @@ rule alignment:
         "../envs/env.yml"
     threads: config.get("aln_threads", 4)
     params:
-        mm2_opts = config.get("mm2_opts", "-x asm20 --secondary=no -s 25000 -K 8G")
+        mm2_opts=config.get("mm2_opts", "-x asm20 --secondary=no -s 25000 -K 8G"),
     shell:
         """
         minimap2 -t {threads} -a --eqx \
@@ -82,8 +82,8 @@ rule alignment2:
         "../envs/env.yml"
     threads: config.get("aln_threads", 4)
     params:
-        mm2_opts = config.get("mm2_opts", "-x asm20 --secondary=no -s 25000 -K 8G"),
-        second_aln=config.get("second_aln", "no")
+        mm2_opts=config.get("mm2_opts", "-x asm20 --secondary=no -s 25000 -K 8G"),
+        second_aln=config.get("second_aln", "no"),
     shell:
         """
         if [ {params.second_aln} == "yes" ]; then
