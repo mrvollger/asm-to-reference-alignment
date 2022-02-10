@@ -31,7 +31,9 @@ wildcard_constraints:
 rule all:
     input:
         ra=rules.reference_alignment.input,
-        SafFire=expand(rules.SafFire.output, sm=df.index, ref=config.get("ref").keys()),
+        SafFire=expand(
+            rules.SafFire.output, sm=df.index, ref=config.get("ref").keys()
+        ),
 
 
 rule ideogram:
