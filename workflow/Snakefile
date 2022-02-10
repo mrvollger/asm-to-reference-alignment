@@ -15,8 +15,6 @@ df.asm = df.asm.map(os.path.abspath)
 
 config["smkdir"] = SMKDIR
 
-config["rb"] = config.get("rb", os.path.abspath(f"{SMKDIR}/../target/release/rustybam"))
-
 
 include: "rules/reference_alignment.smk"
 include: "rules/gene-conversion.smk"
@@ -31,9 +29,7 @@ wildcard_constraints:
 rule all:
     input:
         ra=rules.reference_alignment.input,
-        SafFire=expand(
-            rules.SafFire.output, sm=df.index, ref=config.get("ref").keys()
-        ),
+        SafFire=expand(rules.SafFire.output, sm=df.index, ref=config.get("ref").keys()),
 
 
 rule ideogram:
