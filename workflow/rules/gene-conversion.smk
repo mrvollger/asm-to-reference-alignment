@@ -53,8 +53,6 @@ rule make_gene_conversion_windows:
     shell:
         """
         awk '$4-$3>{params.min_aln_len}' {input.paf} \
-            | rb break-paf --max-size {params.indel_break} - \
-            | awk '$4-$3>{params.min_aln_len}' \
             | rb liftover --bed <( grep -v "^#" {input.bed}) \
             | csvtk cut  -tT -f 1,3,4 \
             | bedtools makewindows -s {params.slide} -w {params.window} -b - \
