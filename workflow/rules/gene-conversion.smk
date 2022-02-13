@@ -45,7 +45,6 @@ rule make_gene_conversion_windows:
     conda:
         "../envs/env.yml"
     params:
-        indel_break=config.get("indel_break", 1e4),
         window=config.get("window", window),
         slide=config.get("slide", slide),
         min_aln_len=config.get("min_aln_len", 1e6),

@@ -59,7 +59,7 @@ rule alignment:
         mm2_opts=config.get("mm2_opts", "-x asm20 --secondary=no -s 25000 -K 8G"),
     shell:
         """
-        minimap2 -t {threads} -a --eqx \
+        minimap2 -t {threads} -a --eqx --cs \
             {params.mm2_opts} \
             {input.ref} {input.query} \
             | samtools view -F 4 -b - \
@@ -87,7 +87,7 @@ rule alignment2:
     shell:
         """
         if [ {params.second_aln} == "yes" ]; then
-          minimap2 -t {threads} -a --eqx \
+          minimap2 -t {threads} -a --eqx --cs \
               {params.mm2_opts} \
               <(seqtk seq \
                   -M <(samtools view -h {input.aln} | paftools.js sam2paf - | cut -f 6,8,9 | bedtools sort -i -) \
