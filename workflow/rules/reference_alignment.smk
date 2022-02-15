@@ -318,5 +318,8 @@ rule reference_alignment:
         #),
         expand(rules.aln_to_bed.output, sm=df.index, ref=config.get("ref").keys()),
         expand(rules.sam_to_paf.output, sm=df.index, ref=config.get("ref").keys()),
+        expand(
+            rules.trim_and_break_paf.output, sm=df.index, ref=config.get("ref").keys()
+        ),
     message:
         "Reference alignments complete"
