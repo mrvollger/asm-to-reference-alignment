@@ -134,7 +134,6 @@ rule sam_to_paf:
         """
         samtools view -h {input.aln} \
             | paftools.js sam2paf - \
-            | rustybam trim-paf \
         > {output.paf}
         """
 
