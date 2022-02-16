@@ -58,6 +58,8 @@ rule vcf_bed:
     conda:
         "../envs/env.yml"
     threads: 1
+    params:
+        header="#CHROM\tPOS\tEND\tID\tTYPE\tREF\tALT\tSAMPLE\tHAP\tGT",
     shell:
         """
         #CHROM  POS0     END         ID           SVTYPE  SVLEN
@@ -65,7 +67,7 @@ rule vcf_bed:
         #CLUSTER_MATCH   CALL_SOURCE     HAP     HAP_VARIANTS    GT
         bcftools norm -Ov -m-any {input.vcf} \
             | bcftools query \
-                -f '%CHROM\t%POS0\t%END\t%CHROM-%POS-%TYPE-%REF-%ALT\t%TYPE\t%REF\t%ALT\t%SAMPLE\th1;h2\t%GT\n' \
+                -f '%CHROM\t%POS0\t%END\t%CHROM-%POS-%TYPE-%REF-%ALT\t%TYPE\t%REF\t%ALT\t%SAMPLE\th1;h2\t[ %GT]\n' \
                 - \
             | bgzip > {output.bed}
         """
