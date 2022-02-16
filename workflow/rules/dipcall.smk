@@ -7,7 +7,7 @@ rule dip_sort:
     output:
         bam=temp("temp/{ref}/bam/sorted.{sm}.bam"),
     conda:
-        "../envs/env.yml"
+        "../envs/dipcall.yml"
     threads: 4
     resources:
         mem=8,
@@ -28,7 +28,7 @@ rule dip_make_vcf:
     output:
         vcf=temp("temp/{ref}/vcf/{sm}.vcf"),
     conda:
-        "../envs/env.yml"
+        "../envs/dipcall.yml"
     threads: 1
     shell:
         """
@@ -42,7 +42,7 @@ rule dip_phase_vcf:
     output:
         vcf="results/{ref}/vcf/{sm}.vcf.gz",
     conda:
-        "../envs/env.yml"
+        "../envs/dipcall.yml"
     threads: 1
     shell:
         """
@@ -56,7 +56,7 @@ rule vcf_bed:
     output:
         vcf="results/{ref}/vcf_bed/{sm}.bed.gz",
     conda:
-        "../envs/env.yml"
+        "../envs/dipcall.yml"
     threads: 1
     shell:
         """

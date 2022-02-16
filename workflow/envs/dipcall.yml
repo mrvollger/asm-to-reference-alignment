@@ -1,0 +1,9 @@
+name: smk
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - dipcall
+  - samtools>=1.13
+  - htslib>=1.13
