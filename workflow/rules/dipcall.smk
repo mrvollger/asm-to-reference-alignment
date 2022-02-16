@@ -68,6 +68,6 @@ rule vcf_bed:
         ( echo '{params.header}'; \
             bcftools norm -Ov -m-any {input.vcf} | bcftools query \
                 -f '%CHROM\t%POS0\t%END\t%CHROM-%POS-%TYPE-%REF-%ALT\t%TYPE\t%REF\t%ALT\t{wildcards.sm}\th1;h2\t[ %GT]\n' - ) \
-            | sed 's/\bSNP\b/SNV/g' \
+            | sed 's/\\bSNP\\b/SNV/g' \
             | bgzip > {output.bed}
         """
