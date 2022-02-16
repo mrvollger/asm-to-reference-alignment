@@ -18,6 +18,7 @@ config["smkdir"] = SMKDIR
 include: "rules/reference_alignment.smk"
 include: "rules/gene-conversion.smk"
 include: "rules/SafFire.smk"
+include: "rules/dipcall.smk"
 
 
 wildcard_constraints:
@@ -35,6 +36,15 @@ rule ideogram:
     input:
         expand(
             rules.bed_to_pdf.output,
+            sm=df["sample"].str.strip(),
+            ref=config.get("ref").keys(),
+        ),
+
+
+rule dipcall:
+    input:
+        expand(
+            rules.dip_phase_vcf.output,
             sm=df["sample"].str.strip(),
             ref=config.get("ref").keys(),
         ),
