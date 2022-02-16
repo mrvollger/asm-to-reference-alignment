@@ -19,7 +19,7 @@ rule dip_sort:
 
 rule dip_make_vcf:
     input:
-        bam=expand(
+        bam=lambda wc: expand(
             rules.dip_sort.output.bam,
             sm=[f"{wc.sm}_{i}" for i in [1, 2]],
             allow_missing=True,
