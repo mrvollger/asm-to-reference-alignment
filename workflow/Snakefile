@@ -44,7 +44,6 @@ rule ideogram:
 rule dipcall:
     input:
         expand(
-            rules.dip_phase_vcf.output,
             rules.vcf_bed.output,
             sm=df["sample"].str.strip(),
             ref=config.get("ref").keys(),
