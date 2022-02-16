@@ -13,7 +13,7 @@ rule dip_sort:
         mem=8,
     shell:
         """
-        samtools sort -@ {threads} -m {resources.mem} {input.bam} > {output.bam}
+        samtools sort -@ {threads} -m {resources.mem}G {input.bam} > {output.bam}
         """
 
 
