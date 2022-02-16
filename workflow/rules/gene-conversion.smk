@@ -167,7 +167,7 @@ rule candidate_gene_conversion:
     output:
         bed=temp("temp/{ref}/gene-conversion/{sm}_candidate_windows.bed"),
     conda:
-        "../envs/env.yml"
+        "../envs/R.yml"
     params:
         window=config.get("window", window),
     script:
@@ -273,7 +273,7 @@ rule candidate_gene_conversion_realign:
     output:
         bed=temp("temp/{ref}/gene-conversion/{sm}_candidate_windows_2.bed"),
     conda:
-        "../envs/env.yml"
+        "../envs/R.yml"
     params:
         window=config.get("window", window),
     script:
@@ -306,7 +306,7 @@ rule gene_conversion_windows_per_sample:
         bed="results/{ref}/gene-conversion/tables/{sm}.bed",
         interact="results/{ref}/gene-conversion/interactions/{sm}.bed",
     conda:
-        "../envs/env.yml"
+        "../envs/R.yml"
     params:
         window=config.get("window", window),
         simplify=True,
@@ -343,7 +343,7 @@ rule gene_conversion_windows:
         bed="results/{ref}/gene-conversion/gene_conversion_windows.tbl",
         interact="results/{ref}/gene-conversion/gene_conversion_interactions.bed",
     conda:
-        "../envs/env.yml"
+        "../envs/R.yml"
     params:
         window=config.get("window", window),
         simplify=True,
