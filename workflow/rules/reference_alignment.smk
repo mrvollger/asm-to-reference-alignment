@@ -178,7 +178,7 @@ rule bed_to_pdf:
         pdf="results/{ref}/pdf/ideogram.{sm}.pdf",
     threads: 1
     conda:
-        "../envs/env.yml"
+        "../envs/R.yml"
     params:
         smkdir=config["smkdir"],
     shell:
