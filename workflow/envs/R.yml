@@ -1,0 +1,23 @@
+name: smk
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - bioconductor-karyoploter
+  - bioconductor-genomicranges
+  - r::r-tidyverse
+  - r::r-rcolorbrewer
+  - r::r-scales
+  - r::r-gridextra
+  - r-data.table
+  - r-ggrepel
+  - r-cowplot
+  - r-argparse
+  - r-glue
+  - r-ggnewscale
+  - bioconductor-helloranges
+  - r-ggforce
+  - r::r-xlsx
+  - r-r.utils
+  - r-ggridges
