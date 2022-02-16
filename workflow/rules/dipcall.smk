@@ -24,6 +24,7 @@ rule dip_make_vcf:
             sm=[f"{wc.sm}_{i}" for i in [1, 2]],
             allow_missing=True,
         ),
+        ref=get_ref,
     output:
         vcf=temp("temp/{ref}/vcf/{sm}.vcf"),
     conda:
