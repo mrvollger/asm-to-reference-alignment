@@ -54,7 +54,7 @@ rule vcf_bed:
     input:
         vcf=rules.dip_phase_vcf.output.vcf,
     output:
-        vcf="results/{ref}/vcf_bed/{sm}.bed.gz",
+        bed="results/{ref}/vcf_bed/{sm}.bed.gz",
     conda:
         "../envs/dipcall.yml"
     threads: 1
