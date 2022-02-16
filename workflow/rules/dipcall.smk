@@ -56,7 +56,7 @@ rule vcf_bed:
     output:
         bed="results/{ref}/vcf_bed/{sm}.bed.gz",
     conda:
-        "../envs/dipcall.yml"
+        "../envs/env.yml"
     threads: 1
     shell:
         """
