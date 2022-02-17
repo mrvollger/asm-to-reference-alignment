@@ -18,7 +18,7 @@ config["smkdir"] = SMKDIR
 include: "rules/reference_alignment.smk"
 include: "rules/gene-conversion.smk"
 include: "rules/SafFire.smk"
-include: "rules/dipcall.smk"
+include: "rules/asm-call.smk"
 
 
 wildcard_constraints:
@@ -46,5 +46,10 @@ rule dipcall:
         expand(
             rules.vcf_bed.output,
             sm=df["sample"].str.strip(),
+            ref=config.get("ref").keys(),
+        ),
+        expand(
+            rules.pav_bam.output,
+            sm=df.index,
             ref=config.get("ref").keys(),
         ),
