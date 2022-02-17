@@ -77,6 +77,7 @@ rule dip_make_vcf:
 rule dip_phase_vcf:
     input:
         vcf=rules.dip_make_vcf.output.vcf,
+        ref=get_ref,
     output:
         vcf="results/{ref}/vcf/{sm}.vcf.gz",
     conda:
@@ -85,7 +86,9 @@ rule dip_phase_vcf:
     shell:
         """
         dipcall-aux.js vcfpair -s {wildcards.sm} -a {input.vcf} \
-            | bcftools norm -Ov -d exact -m-any \
+            | bcftools norm -Ov -m-any \
+            | bcftools norm -Ov -d exact \
+            | bcftools norm -Ov -m-any --fasta-ref {input.ref} --check-ref w \
             | htsbox bgzip > {output.vcf}
         """
 
@@ -122,10 +125,10 @@ rule vcf_bed:
         #REF    ALT     TIG_REGION  QUERY_STRAND CI      ALIGN_INDEX 
         #CLUSTER_MATCH   CALL_SOURCE     HAP     HAP_VARIANTS    GT
         ( echo '{params.header}'; \
-            bcftools norm -Ov -m-any {input.vcf} \
-                | bcftools norm -Ov --fasta-ref {input.ref} --check-ref w \
-                | bcftools query \
-                    -f '%CHROM\t%POS0\t%END\t%CHROM-%POS-%TYPE-%REF-%ALT\t%TYPE\t%REF\t%ALT\t{wildcards.sm}\th1;h2\t[ %GT]\n' - ) \
+            bcftools query \
+                    -f '%CHROM\t%POS0\t%END\t%CHROM-%POS-%TYPE-%REF-%ALT\t%TYPE\t%REF\t%ALT\t{wildcards.sm}\th1;h2\t[ %GT]\n' \
+                    {input.vcf} \
+        ) \
             |  sed "s/[[:<:]]SNP[[:>:]]/SNV/g" \
             | bgzip > {output.bed}
         """
