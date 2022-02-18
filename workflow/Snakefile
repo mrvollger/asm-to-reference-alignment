@@ -44,13 +44,13 @@ rule ideogram:
 rule dipcall:
     input:
         expand(
-            rules.vcf_bed.output,
-            sm=df["sample"].str.strip(),
+            rules.callable_regions.output,
+            sm=df.index,
             ref=config.get("ref").keys(),
         ),
         expand(
-            rules.pav_bam.output,
-            sm=df.index,
+            rules.vcf_bed.output,
+            sm=df["sample"].str.strip(),
             ref=config.get("ref").keys(),
         ),
         expand(

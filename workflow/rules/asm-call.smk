@@ -118,12 +118,12 @@ rule merged_vcf:
     input:
         vcf=expand(
             rules.dip_phase_vcf.output.vcf,
-            sm=df["sample"].str.strip(),
+            sm=df["sample"].str.strip().unique(),
             ref=config.get("ref").keys(),
         ),
         idx=expand(
             rules.dip_phase_index.output,
-            sm=df["sample"].str.strip(),
+            sm=df["sample"].str.strip().unique(),
             ref=config.get("ref").keys(),
         ),
     output:
@@ -149,9 +149,12 @@ rule callable_regions:
     conda:
         "../envs/env.yml"
     threads: 1
+    params:
+        min_aln_len=config.get("min_aln_len", 1e6),
     shell:
         """
-        csvtk cut  -tT -f 6,8,9,1,3,4 {input.paf} \
+        awk '$4-$3>{params.min_aln_len}' {input.paf} \
+            | csvtk cut  -tT -f 6,8,9,1,3,4 \
             | bgzip > {output.bed}
         """
 
