@@ -90,6 +90,8 @@ rule dip_phase_vcf:
         "../envs/dipcall.yml"
     log:
         "logs/{ref}/dipcall_phased_vcf/{sm}.log",
+    resources:
+        mem=8,
     threads: 1
     shell:
         """
@@ -97,6 +99,7 @@ rule dip_phase_vcf:
             | bcftools norm -Ov -m-any \
             | bcftools norm -Ov -d exact \
             | bcftools norm -Ov -m-any --fasta-ref {input.ref} --check-ref w \
+            | bcftools sort -m {resources.mem}G \
             | htsbox bgzip > {output.vcf} ) 2> {log}
         """
 
