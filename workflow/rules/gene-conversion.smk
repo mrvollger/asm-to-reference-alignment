@@ -41,7 +41,7 @@ rule make_gene_conversion_windows:
         bed=temp("temp/{ref}/gene-conversion/{sm}_sliding_windows.bed"),
     log:
         "logs/{ref}/gene-conversion/{sm}_liftover.log",
-    threads: 1
+    threads: 4
     conda:
         "../envs/env.yml"
     params:
@@ -52,7 +52,7 @@ rule make_gene_conversion_windows:
     shell:
         """
         awk '$4-$3>{params.min_aln_len}' {input.paf} \
-            | rb liftover --bed <( grep -v "^#" {input.bed}) \
+            | rb --threads {threads} liftover --bed <( grep -v "^#" {input.bed}) \
             | csvtk cut  -tT -f 1,3,4 \
             | bedtools makewindows -s {params.slide} -w {params.window} -b - \
             | sed 's/$/\t{wildcards.sm}/g' \
