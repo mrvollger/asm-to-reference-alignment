@@ -70,7 +70,7 @@ rule make_query_windows:
         tbed=temp("temp/{ref}/gene-conversion/{sm}_liftover.bed"),
     log:
         "logs/{ref}/gene-conversion/{sm}_liftover.log",
-    threads: 1
+    threads: 4
     conda:
         "../envs/env.yml"
     params:
@@ -81,7 +81,7 @@ rule make_query_windows:
             | cut -f 1-3 \
             | bedtools sort -i -  > {output.tbed}
 
-        rb liftover \
+        rb -vv --threads {threads} liftover \
             -q --bed <( grep -v "^#" {output.tbed} ) \
             --largest {input.paf} \
             | grep -v "cg:Z:{params.window}=" \
