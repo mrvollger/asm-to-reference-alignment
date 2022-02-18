@@ -11,9 +11,12 @@ rule pav_bam:
     threads: 4
     resources:
         mem=8,
+    params:
+        min_aln_len=config.get("min_aln_len", 1e6),
     shell:
         """
-        rb paf-to-sam {input.paf} \
+        awk '$4-$3>{params.min_aln_len}' {input.paf} \
+            | rb paf-to-sam \
             | samtools sort -@ {threads} -m {resources.mem}G \
         > {output.bam}
         """
@@ -30,9 +33,12 @@ rule dip_sort:
     threads: 4
     resources:
         mem=8,
+    params:
+        min_aln_len=config.get("min_aln_len", 1e6),
     shell:
         """
-        rb paf-to-sam {input.paf} -f {input.query} \
+        awk '$4-$3>{params.min_aln_len}' {input.paf} \
+            | rb paf-to-sam -f {input.query} \
             | samtools sort -@ {threads} -m {resources.mem}G \
         > {output.bam}
         """
@@ -121,9 +127,6 @@ rule vcf_bed:
         header="#CHROM\tPOS\tEND\tID\tTYPE\tREF\tALT\tSAMPLE\tHAP\tGT",
     shell:
         """
-        #CHROM  POS0     END         ID           SVTYPE  SVLEN
-        #REF    ALT     TIG_REGION  QUERY_STRAND CI      ALIGN_INDEX 
-        #CLUSTER_MATCH   CALL_SOURCE     HAP     HAP_VARIANTS    GT
         ( echo '{params.header}'; \
             bcftools query \
                     -f '%CHROM\t%POS0\t%END\t%CHROM-%POS-%TYPE-%REF-%ALT\t%TYPE\t%REF\t%ALT\t{wildcards.sm}\th1;h2\t[ %GT]\n' \
