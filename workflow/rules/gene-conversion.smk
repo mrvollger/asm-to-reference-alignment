@@ -81,13 +81,15 @@ rule make_query_windows:
             | cut -f 1-3 \
             | bedtools sort -i -  > {output.tbed}
 
-        rb -vv --threads {threads} liftover \
+        ( rb -vv --threads {threads} liftover \
             -q --bed <( grep -v "^#" {output.tbed} ) \
             --largest {input.paf} \
             | grep -v "cg:Z:{params.window}=" \
-            > {output.paf} 2> {log}
+            > {output.paf} ) 2> {log}
         """
-        #| awk -v OFS=$'\t' '{{$2+={params.buffer}; $3-={params.buffer}}}{{print $0}}' \
+
+
+# | awk -v OFS=$'\t' '{{$2+={params.buffer}; $3-={params.buffer}}}{{print $0}}' \
 
 
 rule unzip_ref:
