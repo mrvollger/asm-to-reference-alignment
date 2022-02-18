@@ -1,2 +1,4 @@
 sample	asm
-HG002	.test/test_1.fasta,.test/test_2.fasta
+HG002	.test/HG002_1.fa.gz,.test/HG002_2.fa.gz
+HG00733	.test/HG00733_1.fa.gz,.test/HG00733_2.fa.gz
+

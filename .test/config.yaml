@@ -1,7 +1,7 @@
 ref:
-  CHM13_V1.1: .test/ref.fasta
+  CHM13_V1.1: .test/ref.fa.gz
 tbl: .test/table.asm.tbl
 aln_threads: 12
 rb: rustybam
-break_paf: 100
+break_paf: 5000
 bed: .test/test.bed
