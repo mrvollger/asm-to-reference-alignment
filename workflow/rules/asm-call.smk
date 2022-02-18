@@ -177,6 +177,5 @@ rule vcf_bed:
                     -f '%CHROM\t%POS0\t%END\t%CHROM-%POS-%TYPE-%REF-%ALT\t%TYPE\t%REF\t%ALT\t{wildcards.sm}\th1;h2\t[ %GT]\n' \
                     {input.vcf} \
         ) \
-            |  sed "s/[[:<:]]SNP[[:>:]]/SNV/g" \
             | bgzip > {output.bed}
         """
