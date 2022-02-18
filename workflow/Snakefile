@@ -53,3 +53,12 @@ rule dipcall:
             sm=df.index,
             ref=config.get("ref").keys(),
         ),
+        expand(
+            rules.dip_phase_index.output,
+            sm=df["sample"].str.strip(),
+            ref=config.get("ref").keys(),
+        ),
+        expand(
+            rules.merged_vcf.output,
+            ref=config.get("ref").keys(),
+        ),

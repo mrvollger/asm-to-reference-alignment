@@ -88,14 +88,56 @@ rule dip_phase_vcf:
         vcf="results/{ref}/vcf/{sm}.vcf.gz",
     conda:
         "../envs/dipcall.yml"
+    log:
+        "logs/{ref}/dipcall_phased_vcf/{sm}.log",
     threads: 1
     shell:
         """
-        dipcall-aux.js vcfpair -s {wildcards.sm} -a {input.vcf} \
+        ( dipcall-aux.js vcfpair -s {wildcards.sm} -a {input.vcf} \
             | bcftools norm -Ov -m-any \
             | bcftools norm -Ov -d exact \
             | bcftools norm -Ov -m-any --fasta-ref {input.ref} --check-ref w \
-            | htsbox bgzip > {output.vcf}
+            | htsbox bgzip > {output.vcf} ) 2> {log}
+        """
+
+
+rule dip_phase_index:
+    input:
+        vcf=rules.dip_phase_vcf.output.vcf,
+    output:
+        idx=f"{rules.dip_phase_vcf.output.vcf}.csi",
+    conda:
+        "../envs/dipcall.yml"
+    shell:
+        """
+        bcftools index {input.vcf}
+        """
+
+
+rule merged_vcf:
+    input:
+        vcf=expand(
+            rules.dip_phase_vcf.output.vcf,
+            sm=df["sample"].str.strip(),
+            ref=config.get("ref").keys(),
+        ),
+        idx=expand(
+            rules.dip_phase_index.output,
+            sm=df["sample"].str.strip(),
+            ref=config.get("ref").keys(),
+        ),
+    output:
+        vcf="results/{ref}/merged.vcf.gz",
+    conda:
+        "../envs/dipcall.yml"
+    threads: 8
+    shell:
+        """
+        bcftools merge \
+            --threads {threads} {input.vcf} \
+            | bcftools norm --threads {threads} -Ov -m-any \
+            | bgzip -@ {threads} \
+            > {output.vcf}
         """
 
 
