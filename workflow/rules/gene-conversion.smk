@@ -63,7 +63,7 @@ rule make_gene_conversion_windows:
 rule make_query_windows:
     input:
         genome=get_fai,
-        paf=rules.sam_to_paf.output.paf,
+        paf=rules.trim_and_break_paf.output.paf,
         bed=rules.make_gene_conversion_windows.output.bed,
     output:
         paf=temp("temp/{ref}/gene-conversion/{sm}_liftover.paf"),
@@ -199,7 +199,7 @@ rule group_source_windows_gene_conversion:
 rule make_query_windows_realign:
     input:
         genome=get_fai,
-        paf=rules.sam_to_paf.output.paf,
+        paf=rules.trim_and_break_paf.output.paf,
         bed=rules.group_source_windows_gene_conversion.output.bed,
     output:
         paf=temp("temp/{ref}/gene-conversion/{sm}_liftover_2.paf"),
