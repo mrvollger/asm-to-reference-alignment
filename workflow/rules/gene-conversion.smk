@@ -70,7 +70,7 @@ rule make_query_windows:
         tbed=temp("temp/{ref}/gene-conversion/{sm}_liftover.bed"),
     log:
         "logs/{ref}/gene-conversion/{sm}_liftover.log",
-    threads: 4
+    threads: 8
     conda:
         "../envs/env.yml"
     params:
