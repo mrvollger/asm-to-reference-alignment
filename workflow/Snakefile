@@ -44,11 +44,6 @@ rule ideogram:
 rule dipcall:
     input:
         expand(
-            rules.callable_regions.output,
-            sm=df.index,
-            ref=config.get("ref").keys(),
-        ),
-        expand(
             rules.vcf_bed.output,
             sm=df["sample"].str.strip(),
             ref=config.get("ref").keys(),
@@ -62,3 +57,10 @@ rule dipcall:
             rules.merged_vcf.output,
             ref=config.get("ref").keys(),
         ),
+        expand(
+            rules.callable_regions.output,
+            sm=df.index,
+            ref=config.get("ref").keys(),
+        ),
+    run:
+        header = "sample\th1_aln\th1_callable\th2_aln\th2_callable\tsnv\n"
