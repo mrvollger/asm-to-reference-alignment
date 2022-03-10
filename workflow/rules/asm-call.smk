@@ -138,7 +138,7 @@ rule merged_vcf:
         n_samples=len(df["sample"].str.strip().unique()),
     shell:
         """
-        if [ {params.n_samples} == "1" ]; then
+        if [ {params.n_samples} == 1 ]; then
             bcftools norm --threads {threads} -Ov -m-any {input.vcf} \
                 | bgzip -@ {threads} \
                 > {output.vcf}
