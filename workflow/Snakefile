@@ -62,8 +62,10 @@ rule dipcall:
             sm=df.index,
             ref=config.get("ref").keys(),
         ),
-    run:
-        header = "sample\th1_aln\th1_callable\th2_aln\th2_callable\tsnv\n"
-        for sample in df.index:
-            h1_aln = format(rules.trim_and_break_paf.output.paf, sm="") 
-            print()
+
+
+# run:
+#    header = "sample\th1_aln\th1_callable\th2_aln\th2_callable\tsnv\n"
+#    for sample in df.index:
+#        h1_aln = format(rules.trim_and_break_paf.output.paf, sm="")
+#        print()
