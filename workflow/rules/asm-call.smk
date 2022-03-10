@@ -134,13 +134,21 @@ rule merged_vcf:
     conda:
         "../envs/dipcall.yml"
     threads: 8
+    params:
+        n_samples=len(df["sample"].str.strip().unique()),
     shell:
         """
-        bcftools merge \
-            --threads {threads} {input.vcf} \
-            | bcftools norm --threads {threads} -Ov -m-any \
-            | bgzip -@ {threads} \
-            > {output.vcf}
+        if [ {params.n_samples} == "1" ]; then
+            bcftools norm --threads {threads} -Ov -m-any {input.vcf} \
+                | bgzip -@ {threads} \
+                > {output.vcf}
+        else 
+            bcftools merge \
+                --threads {threads} {input.vcf} \
+                | bcftools norm --threads {threads} -Ov -m-any \
+                | bgzip -@ {threads} \
+                > {output.vcf}
+        fi
         """
 
 
