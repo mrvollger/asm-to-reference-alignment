@@ -1,8 +1,8 @@
 ref:
-  CHM13_V1.1_v2.24_asm5: /net/eichler/vol26/projects/chm13_t2t/nobackups/assemblies/chm13_v1.1_plus38Y_par_masked.fasta
+  CHM13_V1.1_v2.24_asm20: /net/eichler/vol26/projects/chm13_t2t/nobackups/assemblies/chm13_v1.1_plus38Y.fasta
 tbl: config/table.asm.tbl
 aln_threads: 8
-mm2_opts: "-x asm5 --secondary=no -s 25000 -K 8G"
+mm2_opts: "-x asm20 --secondary=no -s 25000 -K 8G"
 second_aln: "no"
 ## THE FOLLOWING OPTIONS ARE ONLY USED FOR GENE CONVERSION ANALYSIS AND NOT ALIGNMENT AND CAN BE IGNORRED
 # subset the gene conversion analysis to just these regions on the reference
@@ -11,4 +11,3 @@ break_paf: 10000
 bed: config/SDs.and.lowid.bed
 window: 1000
 slide: 100
-min_aln_len: 1000000

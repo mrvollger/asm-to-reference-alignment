@@ -4,11 +4,11 @@
 
 mkdir dir -p logs/drmaa
 
-configfile=config/config.yaml
+configfile=config/clint.yaml
 threads=200
 snakemake --configfile $configfile --cores $threads --jobs $threads --use-conda \
     -p --notemp \
-    dipcall gene_conversion \
+    dipcall \
     "$@"
 
 exit
