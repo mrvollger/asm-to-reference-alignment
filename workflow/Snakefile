@@ -58,6 +58,10 @@ rule dipcall:
             ref=config.get("ref").keys(),
         ),
         expand(
+            rules.add_missing_genotypes.output,
+            ref=config.get("ref").keys(),
+        ),
+        expand(
             rules.callable_regions.output,
             sm=df.index,
             ref=config.get("ref").keys(),

@@ -170,6 +170,36 @@ rule callable_regions:
         """
 
 
+rule add_missing_genotypes:
+    input:
+        vcf=rules.merged_vcf.output.vcf,
+        bed=expand(
+            rules.callable_regions.output,
+            sm=df.index,
+            ref=config.get("ref").keys(),
+        ),
+    output:
+        bed=temp("results/{ref}/callable/callable_regions.bed"),
+        vcf="results/{ref}/merged.hom.fixed.vcf.gz",
+    conda:
+        "../envs/env.yml"
+    threads: 1
+    params:
+        add_gt=workflow.source_path("../scripts/add-missing-hom-genotypes.py"),
+    shell:
+        """
+        ls {input.bed} \
+            | parallel -n 1 \
+            $'zcat {} | cut -f 1-3 | sed \'s/$/\\t{{/.}}/g\' '
+        > {output.bed}
+        head {output.bed}
+
+        python {params.add_gt} -v {input.vcf} {output.bed} \
+            | bgzip -@ {threads} \
+            > {output.vcf}
+        """
+
+
 rule vcf_bed:
     input:
         vcf=rules.dip_phase_vcf.output.vcf,

@@ -1,0 +1,155 @@
+#!/usr/bin/env python
+import argparse
+import sys
+import pysam
+from intervaltree import Interval, IntervalTree
+import pprint
+import logging
+import math
+
+pp = pprint.PrettyPrinter(width=60)  # , compact=True)
+
+
+def make_interval_tree(bed):
+    # dict of [sample,hap,chromosome] -> interval tree
+    super_tree = {}
+    for line in open(bed).readlines():
+        if line[0] == "#":
+            continue
+        rec = line.split("\t")
+        chrm, start, end, contig = rec[0], int(rec[1]), int(rec[2]), rec[3]
+        sample, hap = contig.split("_")[:2]
+        hap = int(hap)
+
+        if [(sample, hap, chrm) not in super_tree]:
+            super_tree[(sample, hap, chrm)] = IntervalTree()
+
+        super_tree[(sample, hap, chrm)].addi(start, end)
+    return super_tree
+
+
+def is_in_hap_coverage(sample, hap, chrm, pos, hap_coverage):
+    if (sample, hap, chrm) not in hap_coverage:
+        return False
+    cov = hap_coverage[(sample, hap, chrm)][pos]
+    return len(cov) > 0
+
+
+def get_cov_based_genotype_tuple(gts_tuple, sample, chrm, pos, hap_coverage):
+    gts = [gts_tuple[0], gts_tuple[1]]
+    for idx, gt in enumerate(gts):
+        hap = idx + 1
+        if gt is None and is_in_hap_coverage(sample, hap, chrm, pos, hap_coverage):
+            gts[idx] = 0
+    return tuple(gts)
+
+
+def make_chunks_form_vcf(vcf_in, args):
+    if args.chunk is None:
+        return [None]
+    chunk_num = args.chunk[0]
+    num_chunks = args.chunk[1]
+    total_bp = 0
+    length_dict = {}
+    for contig, rec in vcf_in.header.contigs.items():
+        total_bp += rec.length
+        length_dict[contig] = rec.length
+
+    step_size = int(total_bp / num_chunks) + 1
+    regions = []
+    use_regions = []
+    cur_pos = 0
+    total_bp_covered = 0
+    for contig, length in length_dict.items():
+        while cur_pos < length:
+            next_pos = min(cur_pos + step_size, length)
+            total_bp_covered += next_pos - cur_pos
+            cur_chunk = math.floor((total_bp_covered - 1) / step_size) + 1
+            regions.append((contig, cur_pos, next_pos, cur_chunk))
+            if cur_chunk == chunk_num:
+                use_regions.append([contig, cur_pos, next_pos])
+            cur_pos = next_pos
+        cur_pos = 0
+
+    #
+    # check the chunking is correct
+    #
+    check = 0
+    chunk_num_s = set()
+    for contig, start, end, chunk in regions:
+        check += end - start
+        chunk_num_s.add(chunk)
+    assert chunk_num_s == set(
+        range(1, num_chunks + 1)
+    ), f"Chunk numbers are not correct: {chunk_num_s}"
+    assert check == total_bp
+
+    return use_regions
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="", formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    parser.add_argument("vcf", help="paired end bed")
+    parser.add_argument("bed", help="paired end bed")
+    parser.add_argument(
+        "--region", "-r", help="region to process, requires index", default=None
+    )
+    parser.add_argument(
+        "--chunk",
+        "-c",
+        help="Process the Nth chunk of of X total chunks [ -c N X]",
+        nargs=2,
+        type=int,
+        default=None,
+    )
+    parser.add_argument("--verbose", "-v", action="count", default=1)
+    parser.add_argument("--threads", "-t", type=int, default=1)
+    args = parser.parse_args()
+    args.verbose = 40 - (10 * args.verbose) if args.verbose > 0 else 0
+    logging.basicConfig(
+        level=args.verbose,
+        format="%(asctime)s %(levelname)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+    hap_coverage = make_interval_tree(args.bed)
+    # pp.pprint(hap_coverage)
+    # print(is_in_hap_coverage("HG002", 1, "chr1", 100, hap_coverage))
+    # print(is_in_hap_coverage("HG002", 1, "chr4", 100, hap_coverage))
+    # exit()
+
+    vcf_in = pysam.VariantFile(
+        args.vcf, threads=args.threads
+    )  # auto-detect input format
+    regions = make_chunks_form_vcf(vcf_in, args)
+    # logging.error(f"Processing {regions} regions")
+
+    # pp.pprint(list(vcf_in.header.records))
+    vcf_out = pysam.VariantFile("-", "w", header=vcf_in.header)
+    changed_gts = 0
+    total_gts = 0
+    for region in regions:
+        if args.region is not None:
+            vcf_iter = vcf_in.fetch(region=args.region)
+        elif region is None:
+            vcf_iter = vcf_in.fetch()
+        else:
+            logging.info(f"Processing {region}")
+            vcf_iter = vcf_in.fetch(*region)
+
+        for idx, rec in enumerate(vcf_iter):
+            for sample in rec.samples:
+                gts = rec.samples[sample]["GT"]
+                total_gts += 1
+                if None in gts:
+                    rec.samples[sample]["GT"] = get_cov_based_genotype_tuple(
+                        gts, sample, rec.chrom, rec.pos, hap_coverage
+                    )
+                    rec.samples[sample].phased = True
+                    changed_gts += 1
+            vcf_out.write(rec)
+            logging.debug(f"\r{idx+1} variants proccessed")
+    logging.info(
+        "{:.2f}% of genotypes changed".format(changed_gts / (total_gts + 0.00001))
+    )
