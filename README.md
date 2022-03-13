@@ -25,3 +25,23 @@ configfile=config/config.yaml
 threads=200
 snakemake --configfile $configfile --cores $threads --use-conda -p ideogram
 ```
+
+```mermaid
+flowchart LR;
+    A[THIS IS A];
+    B(THIS IS B);
+    C(THIS IS C);
+    D(THIS IS D);
+    d(THIS IS d);
+
+    subgraph COMBO [name for combinations]
+        direction LR;
+        A-->D;
+        A-->C;
+        B-->D;
+        B-->C;
+    end
+
+    start --> COMBO;
+    COMBO --> END;
+```
