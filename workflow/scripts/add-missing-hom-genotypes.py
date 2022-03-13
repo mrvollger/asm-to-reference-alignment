@@ -20,6 +20,7 @@ def make_interval_tree(bed):
         chrm, start, end, contig = rec[0], int(rec[1]), int(rec[2]), rec[3]
         sample, hap = contig.split("_")[:2]
         hap = int(hap)
+        # hap = 1 if hap == 2 else 2
 
         if [(sample, hap, chrm) not in super_tree]:
             super_tree[(sample, hap, chrm)] = IntervalTree()
@@ -131,7 +132,7 @@ if __name__ == "__main__":
     total_gts = 0
     for region in regions:
         if args.region is not None:
-            vcf_iter = vcf_in.fetch(region=args.region)
+            vcf_iter = vcf_in.fetch()
         elif region is None:
             vcf_iter = vcf_in.fetch()
         else:
@@ -143,13 +144,18 @@ if __name__ == "__main__":
                 gts = rec.samples[sample]["GT"]
                 total_gts += 1
                 if None in gts:
-                    rec.samples[sample]["GT"] = get_cov_based_genotype_tuple(
+                    new_gt = get_cov_based_genotype_tuple(
                         gts, sample, rec.chrom, rec.pos, hap_coverage
                     )
-                    rec.samples[sample].phased = True
-                    changed_gts += 1
+                    if new_gt != rec.samples[sample]["GT"]:
+                        rec.samples[sample]["GT"] = new_gt
+                        rec.samples[sample].phased = True
+                        logging.debug(f"Updated to: {new_gt}")
+                        changed_gts += 1
             vcf_out.write(rec)
-            logging.debug(f"\r{idx+1} variants proccessed")
+            logging.debug(f"{idx+1} variants proccessed")
     logging.info(
-        "{:.2f}% of genotypes changed".format(changed_gts / (total_gts + 0.00001))
+        "{:.2f}% of genotypes changed: {:,} of {:,}".format(
+            changed_gts / (total_gts + 0.00001), changed_gts, total_gts
+        )
     )
