@@ -106,6 +106,7 @@ if __name__ == "__main__":
         default=None,
     )
     parser.add_argument("--verbose", "-v", action="count", default=1)
+    parser.add_argument("--exclude", "-e", help="Chromosomes to exclude", default=[])
     parser.add_argument("--threads", "-t", type=int, default=1)
     args = parser.parse_args()
     args.verbose = 40 - (10 * args.verbose) if args.verbose > 0 else 0
@@ -140,6 +141,8 @@ if __name__ == "__main__":
             vcf_iter = vcf_in.fetch(*region)
 
         for idx, rec in enumerate(vcf_iter):
+            if rec.chrom in args.exclude:
+                continue
             for sample in rec.samples:
                 gts = rec.samples[sample]["GT"]
                 total_gts += 1
