@@ -153,7 +153,7 @@ if __name__ == "__main__":
                     new_gt = get_cov_based_genotype_tuple(
                         gts, sample, rec.chrom, rec.pos, hap_coverage
                     )
-                    if new_gt != rec.samples[sample]["GT"]:
+                    if new_gt[0] != gts[0] or new_gt[1] != gts[1]:
                         rec.samples[sample]["GT"] = new_gt
                         rec.samples[sample].phased = True
                         # logging.debug(f"Updated to: {new_gt}")
