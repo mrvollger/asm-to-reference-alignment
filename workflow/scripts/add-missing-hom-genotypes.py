@@ -26,7 +26,7 @@ def make_interval_tree(bed):
             super_tree[(sample, hap, chrm)] = IntervalTree()
 
         super_tree[(sample, hap, chrm)].addi(start, end)
-    pp.pprint(super_tree)
+    logging.debug(super_tree)
     return super_tree
 
 
