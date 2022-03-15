@@ -131,6 +131,7 @@ if __name__ == "__main__":
     vcf_out = pysam.VariantFile("-", "w", header=vcf_in.header)
     changed_gts = 0
     total_gts = 0
+    none_count = 0
     for region in regions:
         if args.region is not None:
             vcf_iter = vcf_in.fetch()
@@ -147,6 +148,7 @@ if __name__ == "__main__":
                 gts = rec.samples[sample]["GT"]
                 total_gts += 1
                 if None in gts:
+                    none_count += 1
                     new_gt = get_cov_based_genotype_tuple(
                         gts, sample, rec.chrom, rec.pos, hap_coverage
                     )
@@ -158,7 +160,7 @@ if __name__ == "__main__":
             vcf_out.write(rec)
             logging.debug(f"{idx+1} variants proccessed")
     logging.info(
-        "{:.2%} of genotypes changed: {:,} of {:,}".format(
-            changed_gts / (total_gts + 0.00001), changed_gts, total_gts
+        "{:.2%} of genotypes changed: {:,} of {:,}. {} total missing GTs".format(
+            changed_gts / (total_gts + 0.00001), changed_gts, total_gts, none_count
         )
     )
