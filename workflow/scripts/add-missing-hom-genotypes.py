@@ -158,8 +158,6 @@ if __name__ == "__main__":
                         rec.samples[sample].phased = True
                         logging.debug(f"Updated to: {new_gt}")
                         changed_gts += 1
-                else:
-                    logging.debug(f"{sample} {gts}")
             vcf_out.write(rec)
             logging.debug(f"{idx+1} variants proccessed")
     logging.info(
