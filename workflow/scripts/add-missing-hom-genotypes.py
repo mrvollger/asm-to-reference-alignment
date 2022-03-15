@@ -31,6 +31,7 @@ def make_interval_tree(bed):
 
 def is_in_hap_coverage(sample, hap, chrm, pos, hap_coverage):
     if (sample, hap, chrm) not in hap_coverage:
+        logging.debug(f"'{sample}' '{hap}' '{chrm}' '{pos}' not in hap_coverage")
         return False
     cov = hap_coverage[(sample, hap, chrm)][pos]
     return len(cov) > 0
