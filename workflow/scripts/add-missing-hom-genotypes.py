@@ -148,7 +148,6 @@ if __name__ == "__main__":
                 gts = rec.samples[sample]["GT"]
                 total_gts += 1
                 if None in gts:
-                    logging.debug(f"{sample} {gts}")
                     none_count += 1
                     new_gt = get_cov_based_genotype_tuple(
                         gts, sample, rec.chrom, rec.pos, hap_coverage
@@ -158,6 +157,8 @@ if __name__ == "__main__":
                         rec.samples[sample].phased = True
                         logging.debug(f"Updated to: {new_gt}")
                         changed_gts += 1
+                else:
+                    logging.debug(f"{sample} {gts}")
             vcf_out.write(rec)
             logging.debug(f"{idx+1} variants proccessed")
     logging.info(
