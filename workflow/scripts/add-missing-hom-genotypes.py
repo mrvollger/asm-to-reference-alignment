@@ -155,7 +155,7 @@ if __name__ == "__main__":
                     if new_gt != rec.samples[sample]["GT"]:
                         rec.samples[sample]["GT"] = new_gt
                         rec.samples[sample].phased = True
-                        logging.debug(f"Updated to: {new_gt}")
+                        # logging.debug(f"Updated to: {new_gt}")
                         changed_gts += 1
                 else:
                     logging.debug(f"{sample} {gts}")
