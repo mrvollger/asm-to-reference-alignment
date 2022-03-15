@@ -27,7 +27,6 @@ def make_interval_tree(bed):
             super_tree[(sample, hap, chrm)] = IntervalTree()
 
         super_tree[(sample, hap, chrm)][start:end] = contig
-    logging.debug(super_tree)
     return super_tree
 
 
@@ -128,7 +127,6 @@ if __name__ == "__main__":
         args.vcf, threads=args.threads
     )  # auto-detect input format
     regions = make_chunks_form_vcf(vcf_in, args)
-    # logging.error(f"Processing {regions} regions")
 
     # pp.pprint(list(vcf_in.header.records))
     vcf_out = pysam.VariantFile("-", "w", header=vcf_in.header)
@@ -158,7 +156,7 @@ if __name__ == "__main__":
                     if new_gt[0] != gts[0] or new_gt[1] != gts[1]:
                         rec.samples[sample]["GT"] = new_gt
                         rec.samples[sample].phased = True
-                        # logging.debug(f"Updated to: {new_gt}")
+                        logging.debug(f"Updated to: {new_gt}")
                         changed_gts += 1
                 else:
                     logging.debug(f"{sample} {gts}")
