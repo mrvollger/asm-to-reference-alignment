@@ -35,7 +35,6 @@ def is_in_hap_coverage(sample, hap, chrm, pos, hap_coverage):
         logging.debug(f"'{sample}' '{hap}' '{chrm}' not in hap_coverage")
         return False
     cov = hap_coverage[(sample, hap, chrm)][pos : pos + 1]
-    logging.debug(f"{sample} {hap} {chrm} {pos} {cov}")
     return len(cov) > 0
 
 
