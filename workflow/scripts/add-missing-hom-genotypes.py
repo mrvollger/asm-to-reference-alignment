@@ -160,7 +160,7 @@ if __name__ == "__main__":
             vcf_out.write(rec)
             logging.debug(f"{idx+1} variants proccessed")
     logging.info(
-        "{:.2%} of genotypes changed: {:,} of {:,}. {} total missing GTs".format(
+        "{:.2%} of genotypes changed: {:,} of {:,}. {:,} total missing GTs".format(
             changed_gts / (total_gts + 0.00001), changed_gts, total_gts, none_count
         )
     )
