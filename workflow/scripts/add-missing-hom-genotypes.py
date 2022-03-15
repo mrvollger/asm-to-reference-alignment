@@ -18,7 +18,8 @@ def make_interval_tree(bed):
             continue
         rec = line.split("\t")
         chrm, start, end, contig = rec[0], int(rec[1]), int(rec[2]), rec[3]
-        sample, hap = contig.split("_")[:2]
+        # sample, hap = contig.split("_")[:2]
+        sample, hap = contig.rsplit("_", 1)
         hap = int(hap)
         # hap = 1 if hap == 2 else 2
 
