@@ -25,7 +25,7 @@ def make_interval_tree(bed):
         if [(sample, hap, chrm) not in super_tree]:
             super_tree[(sample, hap, chrm)] = IntervalTree()
 
-        super_tree[(sample, hap, chrm)].addi(start, end)
+        super_tree[(sample, hap, chrm)][start:end] = contig
     logging.debug(super_tree)
     return super_tree
 
