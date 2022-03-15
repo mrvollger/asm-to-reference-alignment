@@ -23,6 +23,7 @@ def make_interval_tree(bed):
         # hap = 1 if hap == 2 else 2
 
         if [(sample, hap, chrm) not in super_tree]:
+            logging.debug(f"Adding {sample} {hap} {chrm} to interval tree")
             super_tree[(sample, hap, chrm)] = IntervalTree()
 
         super_tree[(sample, hap, chrm)][start:end] = contig
