@@ -148,6 +148,7 @@ if __name__ == "__main__":
                 gts = rec.samples[sample]["GT"]
                 total_gts += 1
                 if None in gts:
+                    logging.debug(f"{sample} {gts}")
                     none_count += 1
                     new_gt = get_cov_based_genotype_tuple(
                         gts, sample, rec.chrom, rec.pos, hap_coverage
