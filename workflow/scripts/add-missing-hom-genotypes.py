@@ -110,6 +110,9 @@ if __name__ == "__main__":
     )
     parser.add_argument("--verbose", "-v", action="count", default=1)
     parser.add_argument("--exclude", "-e", help="Chromosomes to exclude", default=[])
+    parser.add_argument(
+        "--strict", "-s", help="Force results to be phased", action="store_true"
+    )
     parser.add_argument("--threads", "-t", type=int, default=1)
     args = parser.parse_args()
     args.verbose = 40 - (10 * args.verbose) if args.verbose > 0 else 0
@@ -149,16 +152,26 @@ if __name__ == "__main__":
             for sample in rec.samples:
                 gts = rec.samples[sample]["GT"]
                 total_gts += 1
-                if None in gts:
+
+                # strict mode
+                # one genotypes is missing and it is not phased
+                if (
+                    not rec.sample[sample].phased
+                    and args.strict
+                    and gts.count(None) == 1
+                ):
+                    rec.samples[sample]["GT"] = (None, None)
+                elif None in gts:
                     none_count += 1
                     new_gt = get_cov_based_genotype_tuple(
                         gts, sample, rec.chrom, rec.pos, hap_coverage
                     )
                     if new_gt[0] != gts[0] or new_gt[1] != gts[1]:
                         rec.samples[sample]["GT"] = new_gt
-                        rec.samples[sample].phased = True
                         logging.debug(f"Updated to: {new_gt}")
                         changed_gts += 1
+                    # always need phased outputs
+                    rec.samples[sample].phased = True
             vcf_out.write(rec)
             logging.debug(f"{idx+1} variants proccessed")
     logging.info(
