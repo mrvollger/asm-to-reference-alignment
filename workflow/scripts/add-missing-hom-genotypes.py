@@ -137,6 +137,7 @@ if __name__ == "__main__":
     changed_gts = 0
     total_gts = 0
     none_count = 0
+    un_phased = 0
     for region in regions:
         if args.region is not None:
             vcf_iter = vcf_in.fetch()
@@ -161,6 +162,7 @@ if __name__ == "__main__":
                     and gts.count(None) == 1
                 ):
                     rec.samples[sample]["GT"] = (None, None)
+                    un_phased += 1
                 elif None in gts:
                     none_count += 1
                     new_gt = get_cov_based_genotype_tuple(
@@ -175,7 +177,11 @@ if __name__ == "__main__":
             vcf_out.write(rec)
             logging.debug(f"{idx+1} variants proccessed")
     logging.info(
-        "{:.2%} of genotypes changed: {:,} of {:,}. {:,} total missing GTs".format(
-            changed_gts / (total_gts + 0.00001), changed_gts, total_gts, none_count
+        "{:.2%} of genotypes changed: {:,} of {:,}. {:,} total missing GTs\n{} un-phased variants.".format(
+            changed_gts / (total_gts + 0.00001),
+            changed_gts,
+            total_gts,
+            none_count,
+            un_phased,
         )
     )
