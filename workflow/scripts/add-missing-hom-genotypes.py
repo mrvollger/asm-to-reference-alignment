@@ -158,6 +158,7 @@ if __name__ == "__main__":
                 gts = rec.samples[sample]["GT"]
                 total_gts += 1
 
+                logging.info("GAP1" in rec.filter)
                 # strict mode
                 # one genotypes is missing and it is not phased
                 if (
@@ -167,6 +168,9 @@ if __name__ == "__main__":
                 ):
                     rec.samples[sample]["GT"] = (None, None)
                     un_phased += 1
+                # if not strict then we can check for ambiguous genotypes that are fake
+                elif "GAP2" in rec.filter and gts[1] is None:
+                    rec.samples[sample].phased = True
                 elif None in gts:
                     none_count += 1
                     new_gt = get_cov_based_genotype_tuple(
