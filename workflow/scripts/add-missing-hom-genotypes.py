@@ -133,7 +133,7 @@ if __name__ == "__main__":
     regions = make_chunks_form_vcf(vcf_in, args)
 
     # pp.pprint(list(vcf_in.header.records))
-    vcf_out = pysam.VariantFile("-", "w", header=vcf_in.header)
+    vcf_out = pysam.VariantFile("-", "w", header=vcf_in.header, threads=1)
     changed_gts = 0
     total_gts = 0
     none_count = 0
