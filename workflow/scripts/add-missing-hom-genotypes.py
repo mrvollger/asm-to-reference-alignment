@@ -171,7 +171,6 @@ if __name__ == "__main__":
                     and gts.count(None) == 1
                 ):
                     rec.samples[sample]["GT"] = (None, None)
-                    un_phased += 1
                 elif None in gts:
                     none_count += 1
                     new_gt = get_cov_based_genotype_tuple(
@@ -183,6 +182,11 @@ if __name__ == "__main__":
                         changed_gts += 1
                     # always need phased outputs
                     rec.samples[sample].phased = True
+
+                # just for the count
+                if not rec.samples[sample].phases:
+                    un_phased += 1
+
             vcf_out.write(rec)
             logging.debug(f"{idx+1} variants proccessed")
     logging.info(
