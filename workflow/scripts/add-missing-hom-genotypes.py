@@ -184,7 +184,7 @@ if __name__ == "__main__":
                     rec.samples[sample].phased = True
 
                 # just for the count
-                if not rec.samples[sample].phases:
+                if not rec.samples[sample].phased:
                     un_phased += 1
 
             vcf_out.write(rec)
