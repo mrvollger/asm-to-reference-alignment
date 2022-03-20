@@ -156,7 +156,7 @@ if __name__ == "__main__":
                 # strict mode
                 # one genotypes is missing and it is not phased
                 if (
-                    not rec.sample[sample].phased
+                    not rec.samples[sample].phased
                     and args.strict
                     and gts.count(None) == 1
                 ):
