@@ -6,6 +6,10 @@ from intervaltree import Interval, IntervalTree
 import pprint
 import logging
 import math
+import os
+
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+
 
 pp = pprint.PrettyPrinter(width=60)  # , compact=True)
 
