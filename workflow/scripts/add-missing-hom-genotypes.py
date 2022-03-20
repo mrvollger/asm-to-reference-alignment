@@ -158,7 +158,6 @@ if __name__ == "__main__":
                 gts = rec.samples[sample]["GT"]
                 total_gts += 1
 
-                logging.info("GAP1" in rec.filter)
                 # strict mode
                 # one genotypes is missing and it is not phased
                 if (
