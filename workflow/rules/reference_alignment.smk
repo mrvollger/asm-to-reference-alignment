@@ -22,7 +22,7 @@ def get_asm(wc):
 
 
 def get_ref(wc):
-    return config.get("ref")[wc.ref]
+    return ancient(config.get("ref")[wc.ref])
 
 
 def get_fai(wc):
