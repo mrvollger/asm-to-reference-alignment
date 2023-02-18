@@ -25,3 +25,24 @@ configfile=config/config.yaml
 threads=200
 snakemake --configfile $configfile --cores $threads --use-conda -p ideogram
 ```
+
+### Notes on use of the pipeline in Vollger et al., 2023
+Config files for human assemblies:
+```
+config/config_asm20.yaml
+config/table.asm.tbl
+```
+Config files for the Clint PTR assembly:
+```
+config/clint.yaml
+config/clint.asm.tbl
+```
+To running alignment and gene conersion identification pipeline:
+```
+snakemake \
+    --configfile config/config_asm20.yaml \
+    --cores $threads \
+    --use-conda \
+    -p \
+    gene_conversion
+```
