@@ -37,6 +37,7 @@ snakemake \
     gene_conversion
 ```
 Information on where to download the input assemblies can be found on [Zenodo](https://doi.org/10.5281/zenodo.6792653).
+
 Config files for human assemblies:
 ```
 config/config_asm20.yaml
