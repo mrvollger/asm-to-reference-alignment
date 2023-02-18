@@ -1,4 +1,6 @@
 # Reference alignment workflow
+[![DOI](https://zenodo.org/badge/414304026.svg)](https://zenodo.org/badge/latestdoi/414304026)
+
 
 ## an example run script
 
