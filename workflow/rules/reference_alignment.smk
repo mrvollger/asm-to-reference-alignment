@@ -103,6 +103,21 @@ rule compress_sam:
         """
 
 
+rule diploid_bam:
+    input:
+        h1="results/{ref}/bam/{sample}_1.bam",
+        h2="results/{ref}/bam/{sample}_2.bam",
+    output:
+        bam="results/{ref}/bam/diploid/{sample}.bam",
+    threads: 4
+    conda:
+        "../envs/env.yml"
+    shell:
+        """
+        samtools merge -@ {threads} {input} --write-index -o {output.bam} 
+        """
+
+
 rule sam_to_paf:
     input:
         aln=rules.compress_sam.output.aln,
@@ -301,5 +316,8 @@ rule reference_alignment:
         expand(
             rules.trim_and_break_paf.output, sm=df.index, ref=config.get("ref").keys()
         ),
+        expand(
+            rules.diploid_bam.output, sample=SAMPLES, ref=config.get("ref").keys()
+        )
     message:
         "Reference alignments complete"
