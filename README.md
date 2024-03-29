@@ -24,8 +24,6 @@ snakemake --configfile config/config.yaml ideogram
 ```
 
 
-
-
 ### Notes on use of the pipeline in Vollger et al., 2023
 Running alignment and gene conersion identification pipeline:
 ```
