@@ -1,22 +1,3 @@
-import os
-import sys
-import pandas as pd
-
-shell.prefix(f"set -eo pipefail;")
-
-df = pd.read_csv(config.get("tbl"), sep="\t")
-df.asm = df.asm.map(os.path.abspath)
-df["asm"] = df.asm.str.split(",")
-df = df.explode("asm")
-df["num"] = df.groupby(level=0).cumcount() + 1
-df.set_index(df["sample"] + "_" + df["num"].astype(str), inplace=True)
-
-
-wildcard_constraints:
-    i="\d+",
-    sm="|".join(df.index) + "|" + "|".join(df["sample"].str.strip()),
-
-
 def get_asm(wc):
     return df.loc[str(wc.sm)].asm
 

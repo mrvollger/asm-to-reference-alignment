@@ -3,16 +3,27 @@ import sys
 import pandas as pd
 from snakemake.utils import min_version
 
+
 min_version("8.0")
 SMKDIR = os.path.dirname(workflow.snakefile)
-shell.prefix("which python; ")
-
-
-df = pd.read_csv(config["tbl"], sep="\t")
-df.asm = df.asm.map(os.path.abspath)
-
 
 config["smkdir"] = SMKDIR
+
+
+df = pd.read_csv(config.get("tbl"), sep="\t")
+df.asm = df.asm.map(os.path.abspath)
+df["asm"] = df.asm.str.split(",")
+df = df.explode("asm")
+df["num"] = df.groupby(level=0).cumcount() + 1
+df.set_index(df["sample"] + "_" + df["num"].astype(str), inplace=True)
+
+SAMPLES = list(df["sample"].unique())
+print(f"Samples: {SAMPLES}", file=sys.stderr)
+
+
+wildcard_constraints:
+    i=r"\d+",
+    sm="|".join(df.index) + "|" + "|".join(df["sample"].str.strip()),
 
 
 include: "rules/reference_alignment.smk"
