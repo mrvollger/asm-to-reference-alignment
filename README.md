@@ -1,32 +1,30 @@
 # Reference alignment workflow
 [![DOI](https://zenodo.org/badge/414304026.svg)](https://zenodo.org/badge/latestdoi/414304026)
 
+This repository is a snakemake workflow for aligning many genome assemblies to a reference genome using my preferred parameters, tools, and outputs. 
+
+This workflow is also convenient for making inputs for my visualization tool [SafFire](https://mrvollger.github.io/SafFire/).
+
+## try the test case
+
+```
+snakemake --configfile .test/config.yaml      
+```
 
 ## an example run script
 
 ```
-configfile=config/config.yaml
-threads=200
-snakemake --configfile $configfile --cores $threads --use-conda -p
+snakemake --configfile config/config.yaml 
 ```
 
-Or if you want to distribute over a cluster:
+## an example run script with ideograms
 
 ```
-mkdir dir -p logs/drmaa
-configfile=config/config.yaml
-threads=200
-snakemake --configfile $configfile --jobs $threads --use-conda -p  \
-    --drmaa " -l centos=7 -l h_rt=48:00:00 -l mfree=8G -pe serial {threads} -V -cwd -S /bin/bash -w n" --drmaa-log-dir logs/drmaa
+snakemake --configfile config/config.yaml ideogram 
 ```
 
-Or if you want to make ideograms:
 
-```
-configfile=config/config.yaml
-threads=200
-snakemake --configfile $configfile --cores $threads --use-conda -p ideogram
-```
+
 
 ### Notes on use of the pipeline in Vollger et al., 2023
 Running alignment and gene conersion identification pipeline:
