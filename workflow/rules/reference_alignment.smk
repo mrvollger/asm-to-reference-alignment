@@ -116,11 +116,10 @@ rule compress_sam:
         "../envs/env.yml"
     shell:
         """
-        samtools cat {input.aln} {input.aln2} \
-                 -o {output.aln}
+        samtools cat -@ {threads} {input.aln} {input.aln2} \
+            | samtools sort -@ {threads} -m 8G --write-index \
+            -o {output.bam} 
         """
-        # for some reason if I sort some cigars are turned into M instead of =/X
-        #| samtools sort -m 8G --write-index \
 
 
 rule sam_to_paf:
