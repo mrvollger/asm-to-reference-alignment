@@ -118,7 +118,7 @@ rule compress_sam:
         """
         samtools cat -@ {threads} {input.aln} {input.aln2} \
             | samtools sort -@ {threads} -m 8G --write-index \
-            -o {output.bam} 
+            -o {output.aln} 
         """
 
 
