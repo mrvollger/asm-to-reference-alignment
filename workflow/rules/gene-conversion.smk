@@ -1,6 +1,3 @@
-include: "reference_alignment.smk"
-
-
 window = 5000
 slide = window
 

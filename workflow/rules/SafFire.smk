@@ -1,6 +1,3 @@
-include: "reference_alignment.smk"
-
-
 rule SafFire:
     input:
         paf=rules.trim_and_break_paf.output.paf,
