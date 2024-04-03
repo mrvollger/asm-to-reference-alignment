@@ -23,6 +23,11 @@ snakemake --configfile config/config.yaml
 snakemake --configfile config/config.yaml ideogram 
 ```
 
+## note on arm Macs
+For arm Macs (MX) many bioconda packages are not available, but I have had luck with the following:
+```
+CONDA_SUBDIR=osx-64 snakemake --configfile config/config.yaml 
+```
 
 ### Notes on use of the pipeline in Vollger et al., 2023
 Running alignment and gene conversion identification pipeline:
