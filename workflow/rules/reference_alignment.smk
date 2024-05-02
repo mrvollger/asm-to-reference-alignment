@@ -326,8 +326,8 @@ rule help_chain:
     input:
         paf=rules.sam_to_paf.output.paf,
     output:
-        tmp=temp("temp/{ref}/chain/{sm}.tmp"),
-        tmp_invert=temp("temp/{ref}/chain/{sm}.tmp"),
+        tmp=temp("temp/{ref}/chain/{sm}.tmp.paf"),
+        tmp_invert=temp("temp/{ref}/chain/{sm}.tmp.invert.paf"),
         chain="results/{ref}/chain/{sm}.chain",
         chain_invert="results/{ref}/chain/{sm}.invert.chain",
     conda:
