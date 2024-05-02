@@ -328,8 +328,8 @@ rule help_chain:
     output:
         tmp=temp("temp/{ref}/chain/{sm}.tmp.paf"),
         tmp_invert=temp("temp/{ref}/chain/{sm}.tmp.invert.paf"),
-        chain="results/{ref}/chain/{sm}.chain",
-        chain_invert="results/{ref}/chain/{sm}.invert.chain",
+        chain="results/{ref}/chain/{sm}.query_to_target.chain",
+        chain_invert="results/{ref}/chain/{sm}.target_to_query.inverted.chain",
     conda:
         "../envs/env.yml"
     params:
