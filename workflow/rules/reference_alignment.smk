@@ -321,3 +321,32 @@ rule reference_alignment:
         )
     message:
         "Reference alignments complete"
+
+rule help_chain:
+    input:
+        paf=rules.sam_to_paf.output.paf,
+    output:
+        tmp=temp("temp/{ref}/chain/{sm}.tmp"),
+        tmp_invert=temp("temp/{ref}/chain/{sm}.tmp"),
+        chain="results/{ref}/chain/{sm}.chain",
+        chain_invert="results/{ref}/chain/{sm}.invert.chain",
+    conda:
+        "../envs/env.yml"
+    params:
+        min_aln_len=config.get("min_aln_len", 100_000),
+    shell:
+        """
+        rb trim-paf {input.paf} \ 
+            | rb filter -a {params.min_aln_len} \
+            > {output.tmp}
+
+        rb invert {output.tmp} > {output.tmp_invert}
+
+        paf2chain --input {output.tmp} > {output.chain}
+        paf2chain --input {output.tmp_invert} > {output.chain_invert}
+        """
+
+
+rule chain:
+    input:
+        chain=expand(rules.help_chain.output, sm=df.index, ref=config.get("ref").keys()),
