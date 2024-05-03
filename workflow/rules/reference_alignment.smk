@@ -322,9 +322,24 @@ rule reference_alignment:
     message:
         "Reference alignments complete"
 
-rule help_chain:
+
+rule trim_paf:
     input:
         paf=rules.sam_to_paf.output.paf,
+    output:
+        paf="results/{ref}/chain/{sm}.trimmed.paf",
+    conda:
+        "../envs/env.yml"
+    threads: 8
+    shell:
+        """
+        rb trim-paf {input.paf} > {output.paf}
+        """
+
+
+rule help_chain:
+    input:
+        paf=rules.trim_paf.output.paf,
     output:
         tmp=temp("temp/{ref}/chain/{sm}.tmp.paf"),
         tmp_invert=temp("temp/{ref}/chain/{sm}.tmp.invert.paf"),
@@ -336,10 +351,7 @@ rule help_chain:
         min_aln_len=config.get("min_aln_len", 100_000),
     shell:
         """
-        rb trim-paf {input.paf} \
-            | rb filter -a {params.min_aln_len} \
-            > {output.tmp}
-
+        rb filter -a {params.min_aln_len} {input.paf} > {output.tmp}
         rb invert {output.tmp} > {output.tmp_invert}
 
         paf2chain --input {output.tmp} > {output.chain}
