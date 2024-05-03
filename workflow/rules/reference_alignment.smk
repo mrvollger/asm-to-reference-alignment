@@ -333,7 +333,7 @@ rule trim_paf:
     threads: 8
     shell:
         """
-        rb trim-paf {input.paf} > {output.paf}
+        rb trim-paf --remove-contained {input.paf} > {output.paf}
         """
 
 
