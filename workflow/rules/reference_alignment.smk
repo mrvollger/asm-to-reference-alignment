@@ -336,7 +336,7 @@ rule help_chain:
         min_aln_len=config.get("min_aln_len", 100_000),
     shell:
         """
-        rb trim-paf {input.paf} \ 
+        rb trim-paf {input.paf} \
             | rb filter -a {params.min_aln_len} \
             > {output.tmp}
 
