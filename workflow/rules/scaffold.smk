@@ -57,7 +57,8 @@ rule scaffold_gaps:
         "../envs/env.yml"
     shell:
         """
-        seqtk gap {input.fa} > {output.bed}
+        printf "#ct\tst\ten\tname\tscore\tstrand\ttst\tten\tcolor\tb_ct\tb_sz\tb_st\n" > {output.bed}
+        seqtk gap {input.fa} >> {output.bed}
         """
 
 
