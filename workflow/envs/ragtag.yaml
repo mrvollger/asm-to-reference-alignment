@@ -1,0 +1,8 @@
+name: ragtag
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - rustybam
+  - ragtag

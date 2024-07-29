@@ -316,9 +316,7 @@ rule reference_alignment:
         expand(
             rules.trim_and_break_paf.output, sm=df.index, ref=config.get("ref").keys()
         ),
-        expand(
-            rules.diploid_bam.output, sample=SAMPLES, ref=config.get("ref").keys()
-        )
+        expand(rules.diploid_bam.output, sample=SAMPLES, ref=config.get("ref").keys()),
     message:
         "Reference alignments complete"
 

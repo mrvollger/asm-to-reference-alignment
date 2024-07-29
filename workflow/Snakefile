@@ -27,6 +27,7 @@ wildcard_constraints:
 
 
 include: "rules/reference_alignment.smk"
+include: "rules/scaffold.smk"
 include: "rules/gene-conversion.smk"
 include: "rules/SafFire.smk"
 include: "rules/asm-call.smk"
