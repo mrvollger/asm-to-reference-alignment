@@ -52,7 +52,7 @@ rule scaffold_gaps:
     input:
         fa=rules.run_scaffold.output.fa,
     output:
-        bed="results/{ref}/scaffold/{sm}.gaps.bed",
+        bed="results/{ref}/scaffold/{sm}_gaps.bed",
     conda:
         "../envs/env.yml"
     shell:
