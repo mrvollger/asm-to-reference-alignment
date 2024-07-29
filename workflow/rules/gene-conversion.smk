@@ -5,7 +5,7 @@ slide = window
 rule gene_conversion_target_regions:
     input:
         genome=get_fai,
-        bed=config["bed"],
+        bed=config.get("bed", []),
     output:
         bed=temp(
             expand(
