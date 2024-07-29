@@ -84,4 +84,11 @@ rule scaffold:
             grep -v '^h' $fai | awk '{{sum+=$2}} END {{print sum/1e6}}'
             grep '^h' $fai | awk '{{sum+=$2}} END {{print sum/1e6}}'
         done
+
+        echo ""
+        
+        for gap in {input.gaps}; do
+            rb bl -r $gap
+        done
+        
         """
