@@ -50,13 +50,19 @@ rule index_scaffold:
 
 rule scaffold:
     input:
-        expand(
-            rules.index_scaffold.output,
+        fai=expand(
+            rules.index_scaffold.output.fai,
             ref=config.get("ref").keys(),
             sm=df.index,
         ),
-        expand(
+        fa=expand(
             rules.run_scaffold.output.fa,
             ref=config.get("ref").keys(),
             sm=df.index,
         ),
+    shell:
+        """
+        for fai in {input.fai}; do
+            grep -v '^h' $fai | awk '{{sum+=$2}} END {{print sum/1e6}}'
+        done
+        """
