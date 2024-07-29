@@ -90,5 +90,4 @@ rule scaffold:
         for gap in {input.gaps}; do
             rb bl -r $gap
         done
-        
         """
