@@ -41,7 +41,7 @@ rule index_scaffold:
     output:
         fai=f"{rules.run_scaffold.output.fa}.fai",
     conda:
-        DEFAULT_ENV
+        "../envs/env.yml"
     shell:
         """
         samtools faidx {input.fa}
