@@ -60,6 +60,7 @@ rule scaffold_gaps:
         seqtk gap {input.fa} > {output.bed}
         """
 
+
 rule scaffold:
     input:
         fai=expand(

@@ -1,4 +1,5 @@
-import os 
+import os
+
 
 def get_asm(wc):
     return os.path.abspath(df.loc[str(wc.sm)].asm)
