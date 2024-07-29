@@ -1,9 +1,11 @@
+import os 
+
 def get_asm(wc):
-    return df.loc[str(wc.sm)].asm
+    return os.path.abspath(df.loc[str(wc.sm)].asm)
 
 
 def get_ref(wc):
-    return ancient(config.get("ref")[wc.ref])
+    return ancient(os.path.abspath(config.get("ref")[wc.ref]))
 
 
 def get_fai(wc):
