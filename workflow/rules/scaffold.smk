@@ -48,6 +48,18 @@ rule index_scaffold:
         """
 
 
+rule scaffold_gaps:
+    input:
+        fa=rules.run_scaffold.output.fa,
+    output:
+        bed="results/{ref}/scaffold/{sm}.gaps.bed",
+    conda:
+        "../envs/env.yml"
+    shell:
+        """
+        seqtk gap {input.fa} > {output.bed}
+        """
+
 rule scaffold:
     input:
         fai=expand(
@@ -57,6 +69,11 @@ rule scaffold:
         ),
         fa=expand(
             rules.run_scaffold.output.fa,
+            ref=config.get("ref").keys(),
+            sm=df.index,
+        ),
+        gaps=expand(
+            rules.scaffold_gaps.output.bed,
             ref=config.get("ref").keys(),
             sm=df.index,
         ),
