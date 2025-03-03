@@ -100,7 +100,7 @@ rule compress_sam:
         "../envs/env.yml"
     shell:
         """
-        samtools cat -@ {threads} {input.aln} {input.aln2} \
+        samtools cat {input.aln} {input.aln2} \
             | samtools sort -@ {threads} -m 8G --write-index \
             -o {output.aln} 
         """
